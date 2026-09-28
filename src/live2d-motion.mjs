@@ -1,15 +1,14 @@
+import { LIVE2D_MOTIONS, resolveLive2DMotion } from "./motion/adapters/Live2DMotionAdapter.mjs";
+
 export const LIVE2D_MODEL_URL = "/live2d/haru/haru_greeter_t03.model3.json";
 
-const ACTIONS = Object.freeze({
-  idle: { group: "Idle", index: 0, expression: null, duration: 11000 },
-  pat: { group: "Tap", index: 0, expression: "f04", duration: 3600 },
-  wave: { group: "Idle", index: 1, expression: "f00", duration: 4500 },
-  happy: { group: "Idle", index: 2, expression: "f04", duration: 5900 },
-  shy: { group: "Tap", index: 1, expression: "f06", duration: 2800 },
-});
+const ACTION_ALIASES = Object.freeze({ idle: "idle_neutral" });
+const BUNDLED_GROUPS = Object.freeze({ Idle: 3, Tap: 2 });
 
 export function actionPlan(kind) {
-  return ACTIONS[kind] || ACTIONS.idle;
+  const motionId = ACTION_ALIASES[kind] || kind;
+  const motion = LIVE2D_MOTIONS[motionId] || LIVE2D_MOTIONS.idle_neutral;
+  return { ...resolveLive2DMotion(motion.id, BUNDLED_GROUPS), duration: motion.durationMs };
 }
 
 export function moodExpression(mood) {

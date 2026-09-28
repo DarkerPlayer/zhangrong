@@ -83,16 +83,16 @@ export function createGlamActionQueue() {
   let handler = null;
   let pending = null;
   return {
-    send(kind) {
-      if (handler) handler(kind);
-      else pending = kind;
+    send(kind, options) {
+      if (handler) handler(kind, false, options);
+      else pending = { kind, options };
     },
     connect(perform) {
       handler = perform;
       if (pending) {
-        const kind = pending;
+        const request = pending;
         pending = null;
-        handler(kind);
+        handler(request.kind, false, request.options);
       }
     },
     disconnect() {
@@ -162,30 +162,50 @@ export function glamPose({ time = 0, motion = true, gaze = {}, action, mood = "i
     blink: motion ? blinkAt(time) : 0,
     smile: /happy|joy|开心|高兴/.test(mood) ? 0.3 : 0,
     blush: /shy|blush|害羞|心动/.test(mood) ? 0.18 : 0,
+    bodyX: 0,
+    bodyY: 0,
+    hipX: 0,
+    hipY: 0,
+    hipRoll: 0,
+    chestRoll: 0,
+    shoulderRoll: 0,
+    clothLag: 0,
   };
-  const duration = GLAM_ACTION_DURATION[action?.kind];
+  const layer = action?.pose;
+  if (layer) {
+    for (const key of ["bodyX", "bodyY", "hipX", "hipY", "hipRoll", "chestRoll", "shoulderRoll", "clothLag"]) {
+      if (Number.isFinite(layer[key])) pose[key] += layer[key];
+    }
+    if (Number.isFinite(layer.headAngle)) pose.headAngle += layer.headAngle;
+    if (Number.isFinite(layer.headNod)) pose.headNod += layer.headNod;
+    if (Number.isFinite(layer.hairLag)) pose.hair += layer.hairLag;
+    if (Number.isFinite(layer.armAngle)) pose.armAngle += layer.armAngle;
+    if (Number.isFinite(layer.breath)) pose.breath += layer.breath;
+  }
+  const actionKind = action?.kind || action?.actionKind;
+  const duration = GLAM_ACTION_DURATION[actionKind];
   const elapsed = Number(action?.elapsed);
   if (!duration || !Number.isFinite(elapsed) || elapsed < 0 || elapsed >= duration) return pose;
   const envelope = smooth(0, 380, elapsed) * (1 - smooth(duration - 620, duration, elapsed));
-  if (action.kind === "wave") {
+  if (actionKind === "wave") {
     pose.armAngle = (-0.18 + Math.sin(elapsed / 155) * 0.04) * envelope;
     pose.headAngle += -1.5 * envelope;
     pose.smile = 0.75 * envelope;
-  } else if (action.kind === "pat") {
+  } else if (actionKind === "pat") {
     pose.headAngle += (4 + Math.sin(elapsed / 310) * 0.9) * envelope;
     pose.headNod += 0.002 * envelope;
     pose.smile = envelope;
     pose.blink = Math.max(pose.blink, 0.16 * envelope);
-  } else if (action.kind === "happy") {
+  } else if (actionKind === "happy") {
     pose.headAngle += Math.sin(elapsed / 340) * 2.2 * envelope;
     pose.headNod -= Math.abs(Math.sin(elapsed / 370)) * 0.002 * envelope;
     pose.smile = envelope;
-  } else if (action.kind === "shy") {
+  } else if (actionKind === "shy") {
     pose.headAngle += -3 * envelope;
     pose.headTurn -= 0.011 * envelope;
     pose.headNod += 0.0025 * envelope;
     pose.blush = 0.48 * envelope;
-  } else if (action.kind === "squat" || action.kind === "sexyWalk") {
+  } else if (actionKind === "squat" || actionKind === "sexyWalk") {
     // These full-body poses use matching illustrated frames in GlamPet.
   } else pose.headAngle += 1.7 * envelope;
   return pose;
@@ -197,8 +217,16 @@ export function deformPoint(u, v, pose, rig, width = 1024, height = 1536) {
   const center = rig.head.x;
   const upper = 1 - smooth(0.55, 0.92, v);
   const torso = smooth(0.18, 0.28, v) * (1 - smooth(0.40, 0.59, v));
-  let x = u + pose.sway * upper;
-  let y = v;
+  const hipWeight = smooth(0.34, 0.48, v) * (1 - smooth(0.82, 0.99, v));
+  const chestWeight = smooth(0.17, 0.25, v) * (1 - smooth(0.45, 0.58, v));
+  const shoulderWeight = smooth(0.13, 0.21, v) * (1 - smooth(0.31, 0.42, v));
+  let x = u + pose.sway * upper + pose.bodyX * upper;
+  let y = v + pose.bodyY * upper;
+  x += pose.hipX * hipWeight + pose.clothLag * smooth(0.48, 0.7, v) * (1 - smooth(0.93, 1, v));
+  y += pose.hipY * hipWeight;
+  x += -(v - 0.54) * Math.sin(pose.hipRoll) * hipWeight / aspect;
+  x += -(v - 0.34) * Math.sin(pose.chestRoll) * chestWeight / aspect;
+  x += -(v - 0.24) * Math.sin(pose.shoulderRoll) * shoulderWeight / aspect;
   x += (u - center) * pose.breath * 0.006 * torso;
   y -= pose.breath * 0.00125 * torso;
   const headWeight = 1 - smooth(rig.head.neckY - 0.012, rig.head.neckY + 0.055, v);

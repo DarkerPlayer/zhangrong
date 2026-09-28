@@ -2,9 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { getSpeechLevel } from "./audio.js";
 import GlamPet from "./GlamPet.jsx";
 import { getLook } from "./looks.mjs";
+import { MotionController } from "./motion/MotionController.mjs";
+import { MotionScheduler } from "./motion/MotionScheduler.mjs";
+import { MOTION_PRIORITIES } from "./motion/constants.mjs";
+import {
+  LIVE2D_MOTIONS,
+  Live2DMotionAdapter,
+} from "./motion/adapters/Live2DMotionAdapter.mjs";
 import {
   LIVE2D_MODEL_URL,
-  actionPlan,
   applyExpression,
   moodExpression,
   lipSyncIds,
@@ -56,7 +62,9 @@ function HaruPet({
     let lastDelta = 1000 / 30;
     let mouth = 0;
     let actionUntil = 0;
-    let actionEpoch = 0;
+    let motionController;
+    let idleScheduler;
+    let liveAdapter;
     let lastTelemetry = 0;
     let tickCount = 0;
     let motionCount = 0;
@@ -116,33 +124,34 @@ function HaruPet({
       }
     };
 
-    const perform = async (kind, notify = false) => {
-      if (disposed || !model) return;
+    const perform = (kind, notify = false, options = {}) => {
+      if (disposed || !model || !motionController) return;
       if (notify && latest.current.onInteract) {
         // The parent responds with an action nonce. Let that one path play the
         // motion, so a pointer tap does not interrupt itself with a second play.
         latest.current.onInteract(kind);
         return;
       }
-      const plan = actionPlan(kind);
-      const epoch = ++actionEpoch;
       clearTimeout(introTimer);
       clearTimeout(expressionTimer);
-      actionUntil = performance.now() + plan.duration;
-      canvas.dataset.action = kind;
-      // FORCE replaces an earlier tap; it never queues a long chain of motions.
-      try {
-        await model.motion(plan.group, plan.index, 3);
-        if (disposed || epoch !== actionEpoch) return;
-        await setExpression(plan.expression);
-        if (disposed || epoch !== actionEpoch) return;
+      if (Number.isFinite(options.playbackRate)) motionController.setLocomotionSpeed(options.playbackRate);
+      const priority = options.priority ?? (
+        /^crouch_|^walk_/.test(kind) ? MOTION_PRIORITIES.EXPLICIT : undefined
+      );
+      const result = motionController.playMotion(kind, {
+        ...options,
+        priority,
+        durationMs: options.duration,
+      });
+      if (result.accepted) {
+        const plan = LIVE2D_MOTIONS[result.motionId] || LIVE2D_MOTIONS.idle_neutral;
+        actionUntil = performance.now() + (options.duration || plan.durationMs);
+        canvas.dataset.action = result.motionId;
         expressionTimer = setTimeout(() => {
           setExpression(moodExpression(latest.current.mood)).catch(() => {});
-        }, plan.duration);
-      } catch (error) {
-        if (!disposed)
-          console.warn("Live2D interaction could not start", error);
+        }, options.duration || plan.durationMs);
       }
+      return result;
     };
 
     const visibility = () => {
@@ -215,13 +224,28 @@ function HaruPet({
           powerPreference: "low-power",
           sharedTicker: false,
         });
-        app.ticker.maxFPS = 30;
+        app.ticker.maxFPS = 60;
         app.ticker.minFPS = 15;
         model.anchor.set(0.5, 1);
         app.stage.addChild(model);
         const internal = model.internalModel;
         const core = internal.coreModel;
         const mouthIds = lipSyncIds(manifest);
+        liveAdapter = new Live2DMotionAdapter({
+          model,
+          groups: manifest.FileReferences.Motions,
+          setExpression,
+          onError: (error) => {
+            if (!disposed) console.warn("Live2D interaction could not start", error);
+          },
+        });
+        motionController = new MotionController({
+          motions: LIVE2D_MOTIONS,
+          adapter: liveAdapter,
+          aliases: { idle: "idle_neutral", sexyWalk: "walk_feminine", squat: "crouch_enter" },
+          onEvent: ({ event }) => { canvas.dataset.motionEvent = event; },
+        });
+        idleScheduler = new MotionScheduler();
         const lipUpdate = () => {
           mouth = smoothMouth(mouth, getSpeechLevel(), lastDelta);
           for (const parameter of mouthIds)
@@ -255,6 +279,19 @@ function HaruPet({
         app.ticker.add(() => {
           if (disposed) return;
           lastDelta = Math.min(app.ticker.deltaMS, 64);
+          motionController.update(lastDelta);
+          let motionState = motionController.getMotionState();
+          if (latest.current.motion) {
+            const idleVariation = idleScheduler.update(lastDelta, motionState, (motionId) => motionController.canPlayMotion(motionId));
+            if (idleVariation) motionController.playMotion(idleVariation);
+            motionState = motionController.getMotionState();
+          }
+          canvas.dataset.motionState = motionState.state;
+          canvas.dataset.motionPriority = String(motionState.priority);
+          canvas.dataset.motionQueue = motionState.queue.join(",");
+          canvas.dataset.facing = motionState.facing;
+          canvas.dataset.motionTime = String(Math.round(motionState.totalElapsedMs));
+          canvas.dataset.motionSpeed = String(motionState.speed);
           // A paused ambient setting still permits intentional taps and lip sync.
           if (
             latest.current.motion ||
@@ -292,6 +329,7 @@ function HaruPet({
         resizeObserver.observe(host);
         controllerRef.current = {
           perform,
+          getMotionState: () => motionController.getMotionState(),
           resize,
           setMood: () =>
             setExpression(moodExpression(latest.current.mood)).catch(() => {}),
@@ -342,6 +380,8 @@ function HaruPet({
     return () => {
       disposed = true;
       abort.abort();
+      motionController?.destroy();
+      motionController = null;
       controllerRef.current = null;
       clearTimeout(expressionTimer);
       clearTimeout(introTimer);
@@ -358,7 +398,7 @@ function HaruPet({
   }, [retry]);
 
   useEffect(() => {
-    if (action?.kind) controllerRef.current?.perform(action.kind);
+    if (action?.kind) controllerRef.current?.perform(action.kind, false, action.args || {});
   }, [action?.kind, action?.nonce]);
   useEffect(() => {
     controllerRef.current?.setMood();

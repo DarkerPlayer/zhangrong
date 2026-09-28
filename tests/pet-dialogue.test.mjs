@@ -12,7 +12,7 @@ test('Live2D explicit requests return renderer actions and a short reply', () =>
     ['打个招呼吧', 'wave'],
     ['开心一点', 'happy'],
     ['害羞一点', 'shy'],
-    ['恢复待机', 'idle'],
+    ['恢复待机', 'idle_neutral'],
     ['不要摸摸头，挥挥手', 'wave'],
     ['别害羞，开心一点', 'happy'],
     ['不要摸摸头但可以挥挥手', 'wave'],
@@ -52,7 +52,7 @@ test('Live2D capabilities describe actual movement and keep generation limits', 
   assert.match(movement.reply, /呼吸/);
   assert.match(movement.reply, /挥手/);
   assert.doesNotMatch(movement.reply, /只是.*镜头|不能生成角色的新动作/);
-  for (const message of ['给我生成一段视频', '跳个舞', '给我跳一段舞', '走过来', '你可以走动吗', '站起来转个圈']) {
+  for (const message of ['给我生成一段视频', '跳个舞', '给我跳一段舞', '转个圈', '跑起来', '站起来转个圈']) {
     const result = offlineReply({ message, avatarMode: 'live2d' });
     assert.match(result.reply, /不能|不支持|无法/);
     assert.equal(result.petAction, null);

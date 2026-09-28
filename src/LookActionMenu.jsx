@@ -2,15 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { CaretDown, Sparkle } from "@phosphor-icons/react";
 
 const ACTIONS = [
-  { kind: "squat", label: "优雅下蹲" },
-  { kind: "sexyWalk", label: "性感走路" },
+  { kind: "walk_feminine", label: "轻盈走路", requires: "sexyWalk" },
+  { kind: "walk_confident", label: "自信走路", requires: "sexyWalk" },
+  { kind: "crouch_enter", label: "自然蹲下", requires: "squat" },
+  { kind: "crouch_exit", label: "慢慢起身", requires: "squat" },
+  { kind: "idle_weight_shift", label: "变换重心" },
+  { kind: "idle_hair_touch", label: "整理头发" },
 ];
 
 export default function LookActionMenu({ look, onSelect }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const toggleRef = useRef(null);
-  const actions = ACTIONS.filter(({ kind }) => Array.isArray(look.actions?.[kind]));
+  const actions = ACTIONS.filter(({ requires }) => !requires || Array.isArray(look.actions?.[requires]));
 
   useEffect(() => {
     if (!open) return undefined;

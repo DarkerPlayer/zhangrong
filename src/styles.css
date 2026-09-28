@@ -3053,3 +3053,57 @@ html.pet-transparent #root {
   outline: 2px solid #d9bee9;
   outline-offset: 3px;
 }
+
+.motion-debug-panel {
+  position: fixed;
+  z-index: 80;
+  top: 58px;
+  right: 16px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 76px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid #d4b8ef4d;
+  border-radius: 16px;
+  color: #f6edf9;
+  background: #121825ed;
+  box-shadow: 0 18px 60px #0008;
+  backdrop-filter: blur(18px);
+}
+.motion-debug-heading,
+.motion-debug-tools,
+.motion-debug-rates,
+.motion-debug-gallery section > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.motion-debug-heading { justify-content: space-between; }
+.motion-debug-heading small { color: #c5a6df; font-size: 9px; letter-spacing: .16em; }
+.motion-debug-heading h2 { margin: 2px 0 0; font-size: 19px; }
+.motion-debug-heading strong { color: #9fe6ba; font-size: 12px; }
+.motion-debug-telemetry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 14px 0;
+}
+.motion-debug-telemetry div { min-width: 0; padding: 8px; border-radius: 9px; background: #ffffff09; }
+.motion-debug-telemetry dt { color: #aa9ab8; font-size: 9px; }
+.motion-debug-telemetry dd { overflow: hidden; margin: 3px 0 0; color: #fff; font: 11px/1.25 ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.motion-debug-panel button,
+.motion-debug-tools label {
+  padding: 7px 9px;
+  border: 1px solid #d4b8ef3d;
+  border-radius: 8px;
+  color: #eadcf2;
+  background: #ffffff0b;
+  font-size: 10px;
+}
+.motion-debug-panel button:hover,
+.motion-debug-panel button.active { border-color: #d2afea; background: #ad75d346; }
+.motion-debug-tools label { display: flex; align-items: center; gap: 5px; }
+.motion-debug-rates { margin-top: 9px; }
+.motion-debug-gallery h3 { width: 54px; margin: 12px 0 4px; color: #bba8ca; font-size: 10px; text-transform: uppercase; }
+.motion-debug-gallery section { display: grid; grid-template-columns: 54px 1fr; align-items: start; }

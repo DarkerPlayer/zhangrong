@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile, access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import path from "node:path";
 import vm from "node:vm";
 import {
@@ -13,6 +14,11 @@ import {
   smoothMouth,
   pointerFocus,
 } from "../src/live2d-motion.mjs";
+import {
+  LIVE2D_MOTIONS,
+  Live2DMotionAdapter,
+  resolveLive2DMotion,
+} from "../src/motion/adapters/Live2DMotionAdapter.mjs";
 
 const publicDir = fileURLToPath(new URL("../public/", import.meta.url));
 const modelPath = path.join(publicDir, LIVE2D_MODEL_URL);
@@ -60,13 +66,51 @@ test("every UI interaction selects an available authored motion and expression",
   assert.deepEqual(actionPlan("unsupported"), actionPlan("idle"));
 });
 
+test("V2 motion ids map to current Haru groups without requiring new Cubism assets", () => {
+  const groups = { Idle: 3, Tap: 2 };
+  assert.deepEqual(resolveLive2DMotion("walk_feminine", groups), {
+    group: "Idle", index: 1, priority: 2, expression: "f00",
+  });
+  assert.deepEqual(resolveLive2DMotion("crouch_enter", groups), {
+    group: "Tap", index: 1, priority: 3, expression: "f06",
+  });
+  assert.deepEqual(resolveLive2DMotion("missing", groups), {
+    group: "Idle", index: 0, priority: 1, expression: null,
+  });
+  assert.equal(LIVE2D_MOTIONS.crouch_idle.loop, true);
+});
+
+test("Haru mapping falls back when a configured motion index is absent", () => {
+  assert.deepEqual(resolveLive2DMotion("walk_confident", { Idle: 1, Tap: 1 }), {
+    group: "Idle", index: 0, priority: 1, expression: null,
+  });
+});
+
+test("an interrupted Haru motion cannot apply its stale expression later", async () => {
+  const pending = [];
+  const expressions = [];
+  const adapter = new Live2DMotionAdapter({
+    model: { motion: () => new Promise((resolve) => pending.push(resolve)) },
+    groups: { Idle: 3, Tap: 2 },
+    setExpression: (expression) => expressions.push(expression),
+  });
+  adapter.play(LIVE2D_MOTIONS.idle_hair_touch);
+  adapter.play(LIVE2D_MOTIONS.walk_confident);
+  pending[0](true);
+  await Promise.resolve();
+  assert.deepEqual(expressions, []);
+  pending[1](true);
+  await Promise.resolve();
+  assert.deepEqual(expressions, ["f04"]);
+});
+
 test("a real expression manager reapplies a smile after neutral reset and rejects failed loads", async () => {
   const previousWindow = globalThis.window;
   // The expression manager does not use Core or WebGL; its package only checks
   // for the Core global during import. Exercise the real manager's state machine.
   globalThis.window = { Live2DCubismCore: {} };
-  const { Cubism4ExpressionManager } =
-    await import("../node_modules/pixi-live2d-display/dist/cubism4.es.js");
+  const require = createRequire(import.meta.url);
+  const { Cubism4ExpressionManager } = require("pixi-live2d-display/cubism4");
   globalThis.window = previousWindow;
   const manager = new Cubism4ExpressionManager({
     name: "expression-regression",

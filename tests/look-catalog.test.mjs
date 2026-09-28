@@ -2,10 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as catalog from "../src/looks.mjs";
 
-test("expanded wardrobe keeps existing IDs and the saved default alongside twelve adult companions", () => {
-  assert.equal(catalog.LOOKS.length, 23);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 12);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 23);
+test("expanded wardrobe keeps existing IDs and the saved default alongside thirteen adult companions", () => {
+  assert.equal(catalog.LOOKS.length, 25);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 13);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 25);
   assert.equal(catalog.DEFAULT_LOOK_ID, "ruby-velvet");
   for (const id of [
     "noir-evening",
@@ -45,7 +45,7 @@ test("search and category filters find compatible looks without replacing the se
     ["sakura-kimono"],
   );
   assert.equal(catalog.filterLooks({ category: "可爱" }).length, 6);
-  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 6);
+  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 8);
   assert.equal(catalog.filterLooks({ query: "Ankara" })[0].id, "amara-ankara");
   assert.deepEqual(
     catalog.filterLooks({ category: "日系", query: "非洲公主" }),

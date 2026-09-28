@@ -40,6 +40,7 @@ await build({
   bundle: true,
   platform: "node",
   format: "cjs",
+  define: { "import.meta.env.DEV": "true" },
   external: ["react", "react-dom", "react/jsx-runtime"],
   plugins: [
     {
@@ -143,6 +144,22 @@ test("deleted saved model falls back to discovered local model; negated outfit s
   );
   await resolveChat();
   assert.equal(JSON.parse(localStorage.getItem("muyu-state-v1")).scene, "home");
+});
+
+test("development motion gallery exposes telemetry and P0 preview controls only on its route", async () => {
+  dom.window.history.pushState({}, "", "/dev/motions");
+  try {
+    const ui = await mount({ avatarMode: "live2d", lookId: "linwei-red-sole" });
+    assert.ok(ui.getByRole("heading", { name: "Motion Gallery" }));
+    assert.ok(ui.getByRole("button", { name: "轻盈走路" }));
+    assert.ok(ui.getByRole("button", { name: "自然蹲下" }));
+    assert.ok(ui.getByRole("button", { name: "停止并待机" }));
+    assert.ok(ui.getByRole("button", { name: "0.5×" }));
+    assert.ok(ui.getByText("当前动作"));
+  } finally {
+    cleanup();
+    dom.window.history.pushState({}, "", "/");
+  }
 });
 test("turning voice off during generation prevents the delayed reply from speaking", async () => {
   const ui = await mount();
@@ -278,7 +295,7 @@ test("pet wardrobe changes the visible look without leaving pet mode or closing 
     target: { value: "还没发出的消息" },
   });
   fireEvent.click(ui.getByRole("button", { name: "桌宠换装" }));
-  assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 23);
+  assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 25);
   fireEvent.click(
     ui.getByRole("button", { name: "动态换装：霜华 · 机车皮衣" }),
   );
@@ -349,7 +366,7 @@ test("expanded wardrobe combines search and filters while keeping the selected l
     messages: [{ id: "kept", role: "user", content: "继续保留", createdAt: 1 }],
   });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
-  assert.ok(ui.getByText("12位伙伴 · 23套穿搭"));
+  assert.ok(ui.getByText("13位伙伴 · 25套穿搭"));
   fireEvent.click(ui.getByRole("button", { name: "筛选：中式" }));
   assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 5);
   fireEvent.change(ui.getByRole("searchbox", { name: "搜索伙伴或穿搭" }), {
@@ -367,7 +384,7 @@ test("expanded wardrobe combines search and filters while keeping the selected l
   assert.equal(saved.lookId, "zhixia-qipao");
   assert.equal(saved.messages[0].content, "继续保留");
   fireEvent.click(ui.getByRole("button", { name: "清除筛选" }));
-  assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 23);
+  assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 25);
   assert.equal(
     ui
       .getByRole("button", { name: "动态换装：知夏 · 翡翠旗袍" })

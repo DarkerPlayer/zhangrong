@@ -74,6 +74,7 @@ import "./wardrobe.css";
 import LivePet from "./LivePet.jsx";
 import PetShell from "./PetShell.jsx";
 import LookActionMenu from "./LookActionMenu.jsx";
+import MotionDebugPanel from "./MotionDebugPanel.jsx";
 
 const STORAGE = "muyu-state-v1";
 function load() {
@@ -497,7 +498,7 @@ export default function App() {
           : "calm",
       );
       if (data.petAction)
-        setPetAction({ kind: data.petAction, nonce: Date.now() });
+        setPetAction({ kind: data.petAction, args: data.motionCommand?.args, nonce: Date.now() });
       setMessages((old) =>
         appendMessage(old, "assistant", data.reply, {
           provider: data.provider,
@@ -611,7 +612,7 @@ export default function App() {
   }
   const onPetReady = useCallback(() => setPetReady(true), []);
   const onPetError = useCallback((message) => notify(message), [notify]);
-  function interact(kind) {
+  function interact(kind, args = {}) {
     if (busy) return;
     const lines = {
       pat: [
@@ -641,9 +642,18 @@ export default function App() {
               "那我踩着高跟鞋，慢慢朝你走几步。",
               "好呀，穿着红底高跟鞋走几步给你看。",
             ],
+      walk_feminine: ["好呀，我用自然轻盈的步子走几步给你看。"],
+      walk_confident: ["那我挺直身体，自信又从容地走过来。"],
+      walk_runway: ["好呀，我用更有展示感的步子走一小段。"],
+      crouch_enter: ["好呀，我稳稳地蹲下来，继续陪你。"],
+      crouch_exit: ["好，我慢慢站起来，重新站稳。"],
+      idle_weight_shift: ["站久了，我轻轻换一下重心。"],
+      idle_hair_touch: ["好呀，我轻轻整理一下头发。"],
+      look_back: ["好呀，我回过头看看你。"],
     };
     const choices = lines[kind] || lines.pat;
-    setPetAction({ kind, nonce: Date.now() });
+    setPetAction({ kind, args, nonce: Date.now() });
+    if (args.silent) return;
     setMood(kind === "shy" ? "shy" : "happy");
     say(choices[Math.floor(Math.random() * choices.length)]);
   }
@@ -907,6 +917,9 @@ export default function App() {
             onError={onPetError}
           />
         </div>
+      )}
+      {import.meta.env.DEV && window.location.pathname === "/dev/motions" && (
+        <MotionDebugPanel onPlay={interact} />
       )}
       <aside className="navigation">
         <button

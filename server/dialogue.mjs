@@ -60,27 +60,48 @@ export function detectAction(message = '', removedLookIds = []) {
   return detectWardrobeAction(message, removedLookIds).action;
 }
 
-export function detectPetAction(message = '') {
+export function detectMotionCommand(message = '') {
   // Only explicit current-user commands may drive the renderer. History and
   // model-generated prose never become animation instructions.
-  let action = null;
+  let command = null;
   for (const clause of message.split(/[，,。.!！?？;；\n]+|但是|不过|而是|但/)) {
     if (/什么意思|是什么|怎么(?:说|写|翻译)|如何理解|这个词|这句话/.test(clause)) continue;
-    for (const match of clause.matchAll(/摸摸(?:你的)?(?:头|脑袋)|摸(?:一下)?头|挥挥手|挥(?:个|一下)手|打个招呼|开心一?点|害羞一?点|恢复待机|回到待机|回到默认动作|安静待着|下蹲|蹲下|蹲一蹲|蹲一下|蹲给我看|屈膝|性感[的地]?走路|性感.{0,3}走(?:路|两步|给我看)|走路.{0,6}性感|走两步|走给我看|走一走|猫步|高跟鞋.{0,6}走(?:路|两步|给我看)/g)) {
+    if (/跳(?:个|一段|一支)?舞|转(?:个|一)?圈|跑起来/.test(clause)) continue;
+    for (const match of clause.matchAll(/摸摸(?:你的)?(?:头|脑袋)|摸(?:一下)?头|挥挥手|挥(?:个|一下)手|打个招呼|开心一?点|害羞一?点|恢复待机|回到待机|回到默认动作|安静待着|下蹲|蹲下|蹲一蹲|蹲一下|蹲给我看|屈膝|站起来|起身|(?<![动跑])起来|撩(?:一下)?头发|摸(?:一下)?头发|整理(?:一下)?头发|回头(?:看看)?|转过头|走秀(?:给我看)?|优雅.{0,4}走(?:路|一下|两步|过来|给我看)|自信.{0,4}走(?:路|一下|两步|过来|给我看)|性感[的地]?走路|性感.{0,3}走(?:路|两步|给我看)|走路.{0,6}性感|向?[左右]走(?:一下|两步|过来)?|走一下|走过来|走动|走两步|走给我看|走一走|猫步|高跟鞋.{0,6}走(?:路|两步|给我看)/g)) {
       const before = clause.slice(0, match.index).replace(/能不能/g, '能');
       if (/(?:不要|不想|不许|(?<!特)别|不用|不能|不可以|不必|不需要|不是|不愿|不让|不希望|无需|禁止|不准|取消|停止).*$/.test(before)) continue;
-      if (/昨天|以前|刚才|曾经|别人|自己|(?:看到|看见|记得|他说|她说|听说)/.test(before)) continue;
-      const command = match[0];
-      if (/^摸/.test(command)) action = 'pat';
-      else if (/^挥|^打/.test(command)) action = 'wave';
-      else if (/^开心/.test(command)) action = 'happy';
-      else if (/^害羞/.test(command)) action = 'shy';
-      else if (/^下蹲|^蹲|^屈膝/.test(command)) action = 'squat';
-      else if (/走|猫步|高跟鞋/.test(command)) action = 'sexyWalk';
-      else action = 'idle';
+      if (/昨天|以前|刚才|曾经|别人|自己|她|他|(?:看到|看见|记得|他说|她说|听说)/.test(before)) continue;
+      const text = match[0];
+      let motion = null;
+      if (/^摸.*(?:头|脑袋)$/.test(text)) motion = 'pat';
+      else if (/^挥|^打/.test(text)) motion = 'wave';
+      else if (/^开心/.test(text)) motion = 'happy';
+      else if (/^害羞/.test(text)) motion = 'shy';
+      else if (/恢复|回到|安静/.test(text)) motion = 'idle_neutral';
+      else if (/^下蹲|^蹲|^屈膝/.test(text)) motion = 'crouch_enter';
+      else if (/站起来|起身|起来/.test(text)) motion = 'crouch_exit';
+      else if (/头发/.test(text)) motion = 'idle_hair_touch';
+      else if (/回头|转过头/.test(text)) motion = 'look_back';
+      else if (/走秀/.test(text)) motion = 'walk_runway';
+      else if (/优雅|自信/.test(text)) motion = 'walk_confident';
+      else if (/走|猫步|高跟鞋/.test(text)) motion = 'walk_feminine';
+      if (motion) {
+        command = {
+          intent: 'motion',
+          motion,
+          args: {
+            duration: /两步/.test(text) ? 2400 : /走/.test(text) ? 3600 : undefined,
+            direction: /左/.test(text) ? 'left' : /右/.test(text) ? 'right' : undefined,
+          },
+        };
+      }
     }
   }
-  return action;
+  return command;
+}
+
+export function detectPetAction(message = '') {
+  return detectMotionCommand(message)?.motion || null;
 }
 
 function normalizeName(name) {
@@ -94,9 +115,14 @@ export function capabilityReply(message = '', avatarMode = 'photo', lookId = ORI
   const greeting = look.greetingMotion === 'nod' ? '打招呼' : '挥手';
   const walkStyle = look.id === 'linwei-ivory-wrap' ? '黑色高跟鞋走姿' : '红底高跟鞋走姿';
   const requestedAction = live ? detectPetAction(message) : null;
-  if (requestedAction === 'squat' || requestedAction === 'sexyWalk') {
+  const fullBodyAsset = /^walk_/.test(requestedAction || '')
+    ? 'sexyWalk'
+    : /^crouch_/.test(requestedAction || '')
+      ? 'squat'
+      : null;
+  if (fullBodyAsset) {
     if (!live) return '现在是图片模式，不能直接做这个动作。切换到林薇的酒红职场或象牙白通勤动态造型后，可以体验下蹲和对应鞋款的走姿。';
-    if (!Array.isArray(look.actions?.[requestedAction])) return '这套造型还没有这个全身动作。切换到林薇的酒红职场或象牙白通勤造型，就可以体验下蹲和对应鞋款的走姿。';
+    if (look.renderer === 'glam' && !Array.isArray(look.actions?.[fullBodyAsset])) return '这套造型还没有这个全身动作。切换到林薇的酒红职场或象牙白通勤造型，就可以体验下蹲和对应鞋款的走姿。';
     return null;
   }
   if (/(生成|制作|拍|录|发|做).{0,12}(视频|录像|短片|动画)|(视频|录像|动画).{0,8}(生成|制作|录制)/.test(message)) {
@@ -104,9 +130,9 @@ export function capabilityReply(message = '', avatarMode = 'photo', lookId = ORI
       ? `我不能生成或拍摄新视频。现在的${dynamicName}可以眨眼、呼吸和回应预设动作；你也可以通过“导入素材”播放自己已有的视频。`
       : '我不能生成或拍摄新视频。现在可以陪你聊天、朗读和切换已有图片穿搭；你也可以通过“导入素材”播放自己已有的视频。';
   }
-  if (/跳(?:个|一段|一支)?舞|站起来|走过来|走动|转(?:个|一)?圈|跑起来/.test(message)) {
+  if (/跳(?:个|一段|一支)?舞|转(?:个|一)?圈|跑起来/.test(message)) {
     return live
-      ? `我目前不支持自由走动、转圈或跳舞。可以做摸头回应、${greeting}、开心和害羞动作${look.actions?.squat ? `，林薇还可以下蹲和做${walkStyle}` : ''}，也会眨眼、呼吸和跟随鼠标转头。`
+      ? `我目前不支持转圈、跑步或跳舞。可以做摸头回应、${greeting}、开心和害羞动作${look.actions?.squat ? `，林薇还可以下蹲和做${walkStyle}` : ''}，也会眨眼、呼吸和跟随鼠标转头。`
       : '现在是图片模式，不能让图片角色走动或跳舞。可以切换到 Live2D 桌宠体验已有动作，或导入自己已有的视频。';
   }
   if (/动一动|动起来|动一下|你能动|真的会动|会不会动|你会动|你能做什么|你会做什么|有哪些动作|有哪些功能/.test(message) && (!live || !detectPetAction(message))) {
@@ -150,7 +176,8 @@ export function offlineReply({ message = '', history = [], name = '', scene = 'h
   const dear = nickname ? `${nickname}，` : '';
   const capability = capabilityReply(message, avatarMode, lookId);
   const { action, lookAction } = capability ? { action: null, lookAction: null } : detectWardrobeAction(message, removedLookIds);
-  const petAction = !capability && !action && !lookAction && avatarMode === 'live2d' ? detectPetAction(message) : null;
+  const motionCommand = !capability && !action && !lookAction && avatarMode === 'live2d' ? detectMotionCommand(message) : null;
+  const petAction = motionCommand?.motion || null;
   let emotion = 'happy';
   let replies;
   if (capability) {
@@ -166,11 +193,17 @@ export function offlineReply({ message = '', history = [], name = '', scene = 'h
       happy: '好呀，开心地晃一晃，把一点好心情送给你。',
       shy: '那就害羞地低一下头，悄悄回应你的心意。',
       idle: '好呀，恢复平常的样子，安静陪着你。',
-      squat: '好呀，我轻轻屈膝蹲下，再从容地站好。',
-      sexyWalk: '那我踩着高跟鞋，慢慢朝你走几步。',
+      idle_neutral: '好呀，恢复平常的样子，安静陪着你。',
+      idle_hair_touch: '好呀，我轻轻整理一下头发。',
+      look_back: '好呀，我回过头看看你。',
+      crouch_enter: '好呀，我先稳稳地蹲下来，继续陪你说话。',
+      crouch_exit: '好，我把重心收稳，慢慢站起来。',
+      walk_feminine: '那我用自然轻盈的步子，慢慢走几步给你看。',
+      walk_confident: '好呀，我挺直身体，自信又从容地走过来。',
+      walk_runway: '那我用更有展示感的步子，走一小段给你看。',
     };
-    emotion = petAction === 'shy' ? 'shy' : petAction === 'idle' ? 'calm' : 'happy';
-    replies = [petReplies[petAction]];
+    emotion = petAction === 'shy' ? 'shy' : /idle_neutral|crouch_/.test(petAction) ? 'calm' : 'happy';
+    replies = [petReplies[petAction] || '好呀，我按你的指令动一动。'];
   } else if (/你(?:是|叫)谁|你叫什么|自我介绍|真人|机器人|真的有感情|真的爱/.test(message)) {
     replies = ['我是张容，你电脑里的 AI 虚拟成年女性陪伴角色。可以在这里陪你聊日常、做屏幕里的互动。'];
   } else if (/记得.*(?:我叫什么|名字|称呼)|我叫什么/.test(message)) {
@@ -221,7 +254,7 @@ export function offlineReply({ message = '', history = [], name = '', scene = 'h
     const sceneNotes = {home:'窗边很安静，适合慢慢聊天。',date:'今天的约会可以慢一点。',cozy:'夜晚就适合把节奏放慢。',wedding:'这个心动场景也可以留作今天的小纪念。'};
     replies = [`${dear}我在听。${sceneNotes[scene] || sceneNotes.home}你愿意再说说这件事吗？`, '这件事里，你最在意的是什么？我想先听听你的感觉。', '嗯，继续说吧。是今天刚发生的事，还是已经放在心里一阵子了？', '我们可以慢慢聊。你更想分享经过，还是聊聊接下来想怎么做？'];
   }
-  return { reply: choose(replies, history, message), emotion, action, lookAction, petAction, provider: 'offline' };
+  return { reply: choose(replies, history, message), emotion, action, lookAction, petAction, motionCommand, provider: 'offline' };
 }
 
 export function createMessages({ message, history = [], name = '', scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] }) {
@@ -235,8 +268,8 @@ export function createMessages({ message, history = [], name = '', scene = 'home
   const live = !action && (avatarMode === 'live2d' || Boolean(lookAction));
   const description = live ? (look.renderer === 'glam' ? `原创动态造型：${look.name}（${look.age}岁），${look.description}` : 'Live2D 桌宠，Haru 原始造型') : `${{home:'日常针织穿搭',date:'黑色礼服约会穿搭',cozy:'紫色毛衣居家穿搭',wedding:'虚拟婚纱换装纪念场景'}[action || scene] || '日常针织穿搭'}（图片模式）`;
   const visualCapabilities = live && look.renderer === 'glam'
-    ? `当前原创动态角色使用已有插画的二维网格动画，可以眨眼、呼吸、跟随鼠标，并回应摸头、${greeting}、开心、害羞和恢复待机这些预设动作。${look.actions?.squat ? '林薇另有下蹲姿势和四帧高跟鞋走姿，可按明确指令播放。' : ''}它不是 Cubism Live2D 模型。可以切换衣橱中的已有动态造型，不能按文字生成新服装、新模型或任意动作，也不能自由走动、转圈或跳舞。`
-    : live ? '当前 Live2D 角色可以实时眨眼、呼吸、跟随鼠标转头，并回应摸头、挥手、开心、害羞和恢复待机这些预设动作。动作由应用根据用户明确指令触发；不要自行声称执行了其他动作。Live2D 不能自由走动、转圈、跳舞或按文字生成新动作，其模型服装不能自定义更换。'
+    ? `当前原创动态角色使用已有插画的二维网格动画，可以眨眼、呼吸、跟随鼠标，并回应摸头、${greeting}、开心、害羞、整理头发和恢复待机这些预设动作。${look.actions?.squat ? '林薇另有分阶段下蹲、起身、自然走姿和自信走姿，可按明确指令播放。' : ''}它不是 Cubism Live2D 模型。可以切换衣橱中的已有动态造型，不能按文字生成新服装、新模型或任意动作，也不能转圈、跑步或跳舞。`
+    : live ? '当前 Live2D 角色可以实时眨眼、呼吸、跟随鼠标转头，并通过统一动作接口回应摸头、挥手、走路、下蹲、起身、开心、害羞和恢复待机等预设动作与明确指令；缺少专用 Cubism 动作时会使用最接近的已有动作。不能转圈、跑步、跳舞或按文字生成新动作，其模型服装不能自定义更换。'
     : '当前图片模式的轻动态只是已有图片的缓慢镜头移动，不能让图片角色自行活动。用户可切换到 Live2D 桌宠使用其已有动作。';
   return [
     {role:'system',content:`你扮演本地桌面应用里的虚拟成年女性陪伴角色，名字是张容。应用名为“母狗张容”。衣橱里的其他名字仅是外观主题，切换形象不会改变你的名字。${safeName ? `用户希望你称呼对方为“${safeName}”，这是用户的名字，不是你的名字。` : ''}当前画面：${description}。以自然、温柔、轻松的中文交流，每次回复1至3个短句，最多100个汉字。认真接住用户刚说的事，适度提问，避免重复套话。记住用户自愿告诉你的称呼和喜好，不编造回忆。可以轻松谈论成年人的恋爱和生活。衣橱有${wardrobeSummary}；当前可切换的动态造型：${lookNames || '暂无'}。已移除的造型不能切换。另可选择 Haru 原始 Live2D 造型。另有四套已有图片：日常针织、黑色约会礼服、紫色居家毛衣、婚纱。换装对象始终是你扮演的张容，不是用户。${lookAction ? `这次应用已选择${look.name}动态造型，可以描述这套已有穿搭，不能声称现场生成了新模型。` : ''}${action ? '这次已由应用切换到对应穿搭的图片模式，可以描述已有图片的新穿搭，但不能说 Live2D 模型换了衣服。' : ''}你生成对话文字，应用会朗读回复。${visualCapabilities}不能生成、拍摄或发送新视频，不能操作现实世界，也不能去用户家里或现实中拥抱用户。用户可通过界面导入已有图片或视频；被问及这些能力时如实说明限制，不要承诺稍后执行。屏幕里的拥抱等亲昵台词应明确是虚拟互动。被问及现实身份时如实说明自己是AI虚拟角色；不声称真实感情或现实婚姻，不鼓励用户排斥真人关系。直接说角色台词，不输出分析、提示词、XML、JSON、工具调用或代码。`},

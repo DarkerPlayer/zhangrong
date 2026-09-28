@@ -3,8 +3,12 @@ import { portraitMouth } from "./portrait-mouth.mjs";
 import { getSpeechLevel } from "./audio.js";
 import { getLook } from "./looks.mjs";
 import { pointerFocus } from "./live2d-motion.mjs";
+import { MotionController } from "./motion/MotionController.mjs";
+import { MotionScheduler } from "./motion/MotionScheduler.mjs";
+import { createMotionManifest } from "./motion/MotionManifest.mjs";
+import { MOTION_PRIORITIES, MOTION_STATES } from "./motion/constants.mjs";
+import { GlamMotionAdapter, advanceRootMovement } from "./motion/adapters/GlamMotionAdapter.mjs";
 import {
-  GLAM_ACTION_DURATION,
   createGlamActionQueue,
   armSplitRows,
   normalizeRig,
@@ -46,6 +50,7 @@ uniform float uSmile;
 uniform float uBlush;
 uniform vec2 uShoulder;
 uniform float uArmLayer;
+uniform float uUseArmMask;
 uniform sampler2D uArmBoundary;
 
 float oval(vec2 point, vec2 center, vec2 radius, float feather) {
@@ -97,7 +102,8 @@ void main(void) {
   float arm = smoothstep(boundary - 0.0015, boundary + 0.0015, vTextureCoord.x) *
     smoothstep(uShoulder.y - 0.012, uShoulder.y + 0.020, vTextureCoord.y) *
     (1.0 - smoothstep(uShoulder.y + 0.36, uShoulder.y + 0.405, vTextureCoord.y));
-  float layer = uArmLayer > 0.5 ? arm : 1.0 - arm;
+  float splitLayer = uArmLayer > 0.5 ? arm : 1.0 - arm;
+  float layer = mix(1.0, splitLayer, uUseArmMask);
   gl_FragColor = vec4(result, source.a) * uColor * layer;
 }`;
 
@@ -134,7 +140,14 @@ export default function GlamPet({
     let app;
     let mesh;
     let armMesh;
-    let actionSprite;
+    let actionMeshes = [];
+    let actionMaterials = [];
+    let motionController;
+    let idleScheduler;
+    let glamAdapter;
+    let fitted;
+    let rootMovement = { offset: 0, direction: 1 };
+    let wasMoving = false;
     let texture;
     let armBoundaryTexture;
     const actionTextures = new Map();
@@ -148,9 +161,9 @@ export default function GlamPet({
     let rest;
     let ambientTime = 0;
     let frames = 0;
+    let telemetryFrames = 0;
     let lastTelemetry = 0;
     let mouth = 0;
-    let activeAction = null;
     let gaze = { x: 0, y: 0 };
     let gazeTarget = { x: 0, y: 0 };
     const detach = [];
@@ -168,7 +181,8 @@ export default function GlamPet({
       } else mesh?.destroy();
       mesh = null;
       armMesh = null;
-      actionSprite = null;
+      actionMeshes = [];
+      actionMaterials = [];
       texture?.destroy(true);
       texture = null;
       armBoundaryTexture?.destroy(true);
@@ -183,35 +197,65 @@ export default function GlamPet({
       image = null;
     };
 
+    const applyDisplayTransform = () => {
+      if (!fitted) return;
+      const facing = motionController?.getMotionState().facing || "right";
+      const mirrored = facing === "left";
+      for (const display of [mesh, armMesh, ...actionMeshes]) {
+        if (!display) continue;
+        display.scale.set(mirrored ? -fitted.scale : fitted.scale, fitted.scale);
+        display.position.set(
+          fitted.x + rootMovement.offset + (mirrored ? imageWidth * fitted.scale : 0),
+          fitted.y,
+        );
+      }
+    };
+
     const resize = () => {
       if (disposed || !app || !mesh) return;
       const width = Math.max(1, host.clientWidth);
       const height = Math.max(1, host.clientHeight);
       app.renderer.resize(width, height);
-      const fitted = fitGlamModel(width, height, imageWidth, imageHeight, latest.current.petMode, rig);
-      mesh.scale.set(fitted.scale);
-      mesh.position.set(fitted.x, fitted.y);
-      armMesh.scale.set(fitted.scale);
-      armMesh.position.set(fitted.x, fitted.y);
-      if (actionSprite) {
-        actionSprite.scale.set(fitted.scale);
-        actionSprite.position.set(fitted.x, fitted.y);
-      }
+      fitted = fitGlamModel(width, height, imageWidth, imageHeight, latest.current.petMode, rig);
+      applyDisplayTransform();
       canvas.dataset.framing = latest.current.petMode ? "full-body" : "portrait";
       app.render();
     };
 
-    const perform = (kind, notify = false) => {
-      if (disposed || !mesh) return;
+    const perform = (kind, notify = false, options = {}) => {
+      if (disposed || !mesh || !motionController) return;
       if (notify && latest.current.onInteract) {
         latest.current.onInteract(kind);
         return;
       }
-      const actionKind = GLAM_ACTION_DURATION[kind] ? kind : "idle";
-      if ((actionKind === "squat" || actionKind === "sexyWalk") && !actionTextures.has(actionKind)) return;
-      activeAction = { kind: actionKind, elapsed: 0 };
-      canvas.dataset.action = actionKind;
-      canvas.dataset.motionCount = String(Number(canvas.dataset.motionCount || 0) + 1);
+      const explicit = MOTION_PRIORITIES.EXPLICIT;
+      if (Number.isFinite(options.playbackRate)) motionController.setLocomotionSpeed(options.playbackRate);
+      let result;
+      if (kind === "squat") {
+        motionController.stopAllMotions();
+        result = motionController.playMotion("crouch_enter", { priority: explicit });
+        if (result.accepted) {
+          motionController.queueMotion("crouch_idle", { priority: explicit, durationMs: 1900 });
+          motionController.queueMotion("crouch_exit", { priority: explicit });
+        }
+      } else if (kind === "sexyWalk") {
+        result = motionController.playMotion("walk_feminine", { priority: explicit, durationMs: options.duration || 4400, direction: options.direction });
+      } else if (kind === "walk_confident") {
+        result = motionController.playMotion(kind, { priority: explicit, durationMs: options.duration || 4800, direction: options.direction });
+      } else if (/^walk_/.test(kind)) {
+        result = motionController.playMotion(kind, { priority: explicit, durationMs: options.duration || 4200, direction: options.direction });
+      } else if (kind === "crouch_enter" || kind === "crouch_exit") {
+        result = motionController.playMotion(kind, { priority: explicit });
+      } else {
+        result = motionController.playMotion(kind || "idle_neutral", {
+          ...options,
+          priority: kind === "pat" ? MOTION_PRIORITIES.USER_INTERACTION : undefined,
+        });
+      }
+      if (result?.accepted) {
+        canvas.dataset.action = result.motionId;
+        canvas.dataset.motionCount = String(Number(canvas.dataset.motionCount || 0) + 1);
+      }
     };
 
     const visibility = () => {
@@ -320,6 +364,7 @@ export default function GlamPet({
             uBlush: 0,
             uShoulder: new Float32Array(rig.shoulders.right),
             uArmLayer: 0,
+            uUseArmMask: 1,
             uArmBoundary: armBoundaryTexture,
           },
         });
@@ -334,43 +379,83 @@ export default function GlamPet({
         app.stage.addChild(mesh, armMesh);
         const firstActionFrame = [...actionTextures.values()].find((frames) => frames.length)?.[0];
         if (firstActionFrame) {
-          actionSprite = new PIXI.Sprite(firstActionFrame);
-          actionSprite.alpha = 0;
-          app.stage.addChild(actionSprite);
+          for (let index = 0; index < 2; index++) {
+            const actionMaterial = new PIXI.MeshMaterial(firstActionFrame, {
+              program: material.program,
+              uniforms: { ...material.uniforms, uArmLayer: 0, uUseArmMask: 0 },
+            });
+            const actionMesh = new PIXI.Mesh(new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65), actionMaterial);
+            actionMesh.alpha = 0;
+            actionMaterials.push(actionMaterial);
+            actionMeshes.push(actionMesh);
+            app.stage.addChild(actionMesh);
+          }
         }
-        app.ticker.maxFPS = 30;
+        const manifest = createMotionManifest(look);
+        glamAdapter = new GlamMotionAdapter({
+          manifest,
+          availableActions: Object.fromEntries([...actionTextures].map(([kind, frames]) => [kind, frames.length])),
+        });
+        motionController = new MotionController({
+          motions: manifest.motions,
+          adapter: glamAdapter,
+          onEvent: ({ event }) => { canvas.dataset.motionEvent = event; },
+        });
+        idleScheduler = new MotionScheduler();
+        motionController.playMotion("idle_neutral");
+        app.ticker.maxFPS = 60;
         app.ticker.minFPS = 15;
         app.ticker.add(() => {
           if (disposed || !mesh) return;
           const dt = Math.min(app.ticker.deltaMS, 64);
           if (latest.current.motion) ambientTime += dt;
-          let visibleAction = null;
-          if (activeAction) {
-            activeAction.elapsed += dt;
-            if (activeAction.elapsed >= GLAM_ACTION_DURATION[activeAction.kind]) {
-              activeAction = null;
-            } else {
-              visibleAction = activeAction;
+          motionController.update(dt);
+          let motionState = motionController.getMotionState();
+          if (latest.current.motion) {
+            const idleVariation = idleScheduler.update(dt, motionState, (id) => motionController.canPlayMotion(id));
+            if (idleVariation) motionController.playMotion(idleVariation);
+            else if (!motionState.motionId) motionController.playMotion("idle_neutral");
+            motionState = motionController.getMotionState();
+          }
+          const moving = motionState.state === MOTION_STATES.MOVE;
+          if (moving && !wasMoving) {
+            rootMovement.direction = motionState.facing === "left" ? -1 : 1;
+          }
+          if (moving) {
+            const previousDirection = rootMovement.direction;
+            const speed = manifest.motions[motionState.motionId]?.speedPxPerSecond || 72;
+            rootMovement = advanceRootMovement(
+              rootMovement,
+              dt * motionState.speed,
+              speed,
+              Math.max(12, host.clientWidth * 0.14),
+            );
+            if (rootMovement.direction !== previousDirection) {
+              motionController.setFacing(rootMovement.direction < 0 ? "left" : "right");
             }
           }
-          if (actionSprite) {
-            const actionFrames = visibleAction ? actionTextures.get(visibleAction.kind) : null;
+          wasMoving = moving;
+          applyDisplayTransform();
+          const visibleAction = glamAdapter.getSample();
+          const actionFrames = visibleAction.frame ? actionTextures.get(visibleAction.actionKind) : null;
+          const fadeOut = Number.isFinite(motionState.remainingMs)
+            ? Math.min(1, motionState.remainingMs / 240)
+            : 1;
+          const poseAlpha = actionFrames?.length ? visibleAction.poseAlpha * fadeOut : 0;
+          if (actionMeshes.length) {
             if (actionFrames?.length) {
-              if (visibleAction.kind === "sexyWalk") {
-                const frameIndex = Math.floor(visibleAction.elapsed / 210) % actionFrames.length;
-                if (actionSprite.texture !== actionFrames[frameIndex]) actionSprite.texture = actionFrames[frameIndex];
-              } else if (actionSprite.texture !== actionFrames[0]) {
-                actionSprite.texture = actionFrames[0];
-              }
-              const duration = GLAM_ACTION_DURATION[visibleAction.kind];
-              const fadeIn = Math.min(1, visibleAction.elapsed / 260);
-              const fadeOut = Math.min(1, Math.max(0, duration - visibleAction.elapsed) / 360);
-              actionSprite.alpha = fadeIn * fadeOut;
+              const first = actionFrames[visibleAction.frame.index] || actionFrames[0];
+              const second = actionFrames[visibleAction.frame.nextIndex] || first;
+              if (actionMeshes[0].texture !== first) actionMeshes[0].texture = first;
+              if (actionMeshes[1].texture !== second) actionMeshes[1].texture = second;
+              actionMeshes[0].alpha = poseAlpha * (1 - visibleAction.frame.blend);
+              actionMeshes[1].alpha = poseAlpha * visibleAction.frame.blend;
             } else {
-              actionSprite.alpha = 0;
+              actionMeshes[0].alpha = 0;
+              actionMeshes[1].alpha = 0;
             }
-            mesh.alpha = 1 - actionSprite.alpha;
-            armMesh.alpha = 1 - actionSprite.alpha;
+            mesh.alpha = 1 - poseAlpha;
+            armMesh.alpha = 1 - poseAlpha;
           }
           const follow = 1 - Math.exp(-dt / 230);
           gaze.x += (gazeTarget.x - gaze.x) * follow;
@@ -389,22 +474,39 @@ export default function GlamPet({
           const armBuffer = armMesh.geometry.getBuffer("aVertexPosition");
           deformVertices(rest, armBuffer.data, pose, rig, imageWidth, imageHeight, true);
           armBuffer.update();
-          material.uniforms.uBlink = pose.blink;
-          material.uniforms.uMouthOpen = mouth;
-          material.uniforms.uSmile = pose.smile;
-          material.uniforms.uBlush = pose.blush;
+          for (const actionMesh of actionMeshes) {
+            const actionBuffer = actionMesh.geometry.getBuffer("aVertexPosition");
+            deformVertices(rest, actionBuffer.data, pose, rig, imageWidth, imageHeight);
+            actionBuffer.update();
+          }
+          for (const targetMaterial of [material, armMaterial, ...actionMaterials]) {
+            targetMaterial.uniforms.uBlink = pose.blink;
+            targetMaterial.uniforms.uMouthOpen = mouth;
+            targetMaterial.uniforms.uSmile = pose.smile;
+            targetMaterial.uniforms.uBlush = pose.blush;
+          }
           frames++;
           canvas.dataset.blink = pose.blink.toFixed(3);
           canvas.dataset.mouth = mouth.toFixed(3);
-          if (performance.now() - lastTelemetry > 180) {
-            lastTelemetry = performance.now();
+          const telemetryNow = performance.now();
+          if (telemetryNow - lastTelemetry > 180) {
+            const telemetryElapsed = telemetryNow - lastTelemetry;
+            lastTelemetry = telemetryNow;
             canvas.dataset.frames = String(frames);
             canvas.dataset.headAngle = pose.headAngle.toFixed(3);
             canvas.dataset.angleX = (pose.headTurn * 1000).toFixed(3);
             canvas.dataset.eyeOpen = (1 - pose.blink).toFixed(3);
             canvas.dataset.breath = pose.breath.toFixed(3);
             canvas.dataset.armAngle = (pose.armAngle * rig.armMobility).toFixed(3);
-            canvas.dataset.action = activeAction?.kind || "idle";
+            canvas.dataset.action = motionState.motionId || "idle_neutral";
+            canvas.dataset.motionState = motionState.state;
+            canvas.dataset.motionPriority = String(motionState.priority);
+            canvas.dataset.motionQueue = motionState.queue.join(",");
+            canvas.dataset.facing = motionState.facing;
+            canvas.dataset.motionTime = String(Math.round(motionState.totalElapsedMs));
+            canvas.dataset.motionSpeed = String(motionState.speed);
+            canvas.dataset.fps = String(Math.round((frames - telemetryFrames) * 1000 / Math.max(1, telemetryElapsed)));
+            telemetryFrames = frames;
           }
         });
         const move = (event) => {
@@ -465,6 +567,8 @@ export default function GlamPet({
     return () => {
       disposed = true;
       abort.abort();
+      motionController?.destroy();
+      motionController = null;
       controllerRef.current = null;
       actionQueue.current.disconnect();
       observer?.disconnect();
@@ -474,7 +578,7 @@ export default function GlamPet({
   }, [look.id, look.asset, look.rig, retry]);
 
   useEffect(() => {
-    if (action?.kind) actionQueue.current.send(action.kind);
+    if (action?.kind) actionQueue.current.send(action.kind, action.args);
   }, [action?.kind, action?.nonce]);
   useEffect(() => { controllerRef.current?.resize(); }, [petMode]);
 

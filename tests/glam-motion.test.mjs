@@ -22,6 +22,30 @@ test("ambient animation deforms the head and torso locally while planted feet st
   assert.deepEqual(foot, { x: 0.55, y: 0.97 });
 });
 
+test("V2 body layers counter-rotate chest and hips while keeping facial layers active", () => {
+  const rig = normalizeRig({});
+  const base = glamPose({
+    time: 1000,
+    gaze: { x: 0.4, y: -0.2 },
+    action: {
+      pose: {
+        hipX: 0.012,
+        hipRoll: 0.035,
+        chestRoll: -0.018,
+        shoulderRoll: -0.028,
+        hairLag: 0.004,
+      },
+    },
+  });
+  assert.equal(base.hipRoll, 0.035);
+  assert.equal(base.chestRoll, -0.018);
+  assert.ok(base.headTurn > 0);
+  assert.ok(base.blink >= 0);
+  const hip = deformPoint(0.5, 0.55, base, rig);
+  const shoulder = deformPoint(0.5, 0.28, base, rig);
+  assert.notEqual(hip.x, shoulder.x);
+});
+
 test("repeated mesh updates use the undeformed rest pose and never accumulate drift", () => {
   const original = new Float32Array([512, 200, 640, 500, 560, 1490]);
   const rest = new Float32Array(original);
