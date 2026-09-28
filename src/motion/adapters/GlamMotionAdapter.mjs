@@ -118,15 +118,29 @@ export function sampleFrameSequence(frames, elapsedMs) {
     cycleTime -= frameDuration;
   }
   const frame = profile[index];
+  const nextIndex = (index + 1) % profile.length;
+  const nextFrame = profile[nextIndex];
+  // Keep most of each authored pose fully readable, then ease through a brief
+  // overlap at the cut. This removes the bright one-frame "flash" of a hard
+  // texture swap without leaving doubled limbs visible through the whole pose.
+  const transitionMs = Math.max(1, Math.max(1, Number(frame.durationMs) || 1) * 0.42);
+  const blend = applyEasing(
+    "smoothstep",
+    clamp01((cycleTime - (Math.max(1, Number(frame.durationMs) || 1) - transitionMs)) / transitionMs),
+  );
+  const currentAnchor = Array.isArray(frame.groundAnchor) ? frame.groundAnchor : [0.5, 0.982];
+  const nextAnchor = Array.isArray(nextFrame?.groundAnchor) ? nextFrame.groundAnchor : currentAnchor;
   return {
     index,
-    nextIndex: (index + 1) % profile.length,
-    blend: 0,
+    nextIndex,
+    blend,
     frameElapsedMs: cycleTime,
     frameDurationMs: Math.max(1, Number(frame.durationMs) || 1),
     phase: frame.phase || `pose_${index + 1}`,
     contact: frame.contact || null,
-    groundAnchor: Array.isArray(frame.groundAnchor) ? frame.groundAnchor : [0.5, 0.982],
+    groundAnchor: currentAnchor.map((value, axis) => rounded(
+      Number(value) + (Number(nextAnchor[axis]) - Number(value)) * blend,
+    )),
   };
 }
 

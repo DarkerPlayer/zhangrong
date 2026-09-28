@@ -51,19 +51,24 @@ test("a look without pose PNGs keeps mesh idle and marks full-body motions unava
   assert.equal(adapter.canPlay("crouch_enter"), false);
 });
 
-test("walk frames honor authored durations and never alpha-blend adjacent silhouettes", () => {
+test("walk frames honor authored durations and soften only the end of each pose", () => {
   const frames = linwei.actions.sexyWalk;
   assert.deepEqual(sampleFrameSequence(frames, 0), {
     index: 0, nextIndex: 1, blend: 0, frameElapsedMs: 0, frameDurationMs: 75,
     phase: "right_contact", contact: "right", groundAnchor: [0.5, 0.98],
   });
-  assert.equal(sampleFrameSequence(frames, 74).index, 0);
+  assert.equal(sampleFrameSequence(frames, 35).blend, 0, "the readable part of a pose stays crisp");
+  const softened = sampleFrameSequence(frames, 60);
+  assert.equal(softened.index, 0);
+  assert.ok(softened.blend > 0 && softened.blend < 1, "the outgoing pose should ease into the next pose");
+  assert.ok(softened.groundAnchor[0] < 0.5 && softened.groundAnchor[0] > 0.49);
+  assert.ok(sampleFrameSequence(frames, 74).blend > 0.99);
   assert.equal(sampleFrameSequence(frames, 75).index, 1);
+  assert.equal(sampleFrameSequence(frames, 75).blend, 0);
   assert.equal(sampleFrameSequence(frames, 129).index, 1);
   assert.equal(sampleFrameSequence(frames, 130).index, 2);
   assert.equal(sampleFrameSequence(frames, 239).index, 3);
   assert.equal(sampleFrameSequence(frames, 240).index, 0, "the authored cycle should wrap exactly");
-  for (let time = 0; time < 480; time += 7) assert.equal(sampleFrameSequence(frames, time).blend, 0);
   const rightContact = sampleGlamMotion({ id: "walk_feminine", durationMs: 240, frames }, 0, frames.length);
   const passing = sampleGlamMotion({ id: "walk_feminine", durationMs: 240, frames }, 130, frames.length);
   assert.equal(rightContact.frame.index, 0);
