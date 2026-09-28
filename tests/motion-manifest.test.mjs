@@ -88,14 +88,35 @@ test("walk frame compositing keeps full opacity through every cross-fade", () =>
   }
 });
 
-test("crouch enter, hold and exit expose a smooth pose alpha", () => {
-  const enterMid = sampleGlamMotion({ id: "crouch_enter", durationMs: 800 }, 400, 1);
+test("crouch enter anticipates, brakes, overshoots and settles on the authored curve", () => {
+  const motion = { id: "crouch_enter", durationMs: 650 };
+  assert.equal(sampleGlamMotion(motion, 0, 1).pose.crouchAmount, 0);
+  assert.equal(sampleGlamMotion(motion, 65, 1).pose.crouchAmount, -0.02);
+  assert.equal(sampleGlamMotion(motion, 162.5, 1).pose.crouchAmount, 0.18);
+  assert.equal(sampleGlamMotion(motion, 325, 1).pose.crouchAmount, 0.68);
+  assert.equal(sampleGlamMotion(motion, 494, 1).pose.crouchAmount, 0.96);
+  assert.equal(sampleGlamMotion(motion, 572, 1).pose.crouchAmount, 1.03);
+  assert.equal(sampleGlamMotion(motion, 650, 1).pose.crouchAmount, 1);
+});
+
+test("crouch exit reverses the authored curve while body layers remain staggered", () => {
+  const enter = sampleGlamMotion({ id: "crouch_enter", durationMs: 650 }, 210, 1);
+  const exitStart = sampleGlamMotion({ id: "crouch_exit", durationMs: 650 }, 0, 1);
+  const exitMid = sampleGlamMotion({ id: "crouch_exit", durationMs: 650 }, 325, 1);
+  const exitEnd = sampleGlamMotion({ id: "crouch_exit", durationMs: 650 }, 650, 1);
+  assert.ok(new Set(Object.values(enter.pose.crouchLayers).map((value) => value.toFixed(4))).size >= 4);
+  assert.equal(exitStart.pose.crouchAmount, 1);
+  assert.equal(exitMid.pose.crouchAmount, 0.68);
+  assert.equal(exitEnd.pose.crouchAmount, 0);
+});
+
+test("crouch idle preserves facial animation and delayed secondary motion", () => {
   const hold = sampleGlamMotion({ id: "crouch_idle", durationMs: 2000 }, 500, 1);
-  const exitMid = sampleGlamMotion({ id: "crouch_exit", durationMs: 800 }, 400, 1);
-  assert.ok(enterMid.poseAlpha > 0.45 && enterMid.poseAlpha < 0.55);
   assert.equal(hold.poseAlpha, 1);
-  assert.ok(exitMid.poseAlpha > 0.45 && exitMid.poseAlpha < 0.55);
+  assert.equal(hold.pose.crouchAmount, 1);
   assert.ok(hold.pose.breath !== 0);
+  assert.ok(Math.abs(hold.pose.hairLag) > 0);
+  assert.ok(Math.abs(hold.pose.clothLag) > 0);
 });
 
 test("Glam adapter samples by elapsed milliseconds and resets on stop", () => {

@@ -77,9 +77,9 @@ export function createMotionManifest(look = {}) {
   if (Array.isArray(actions.squat) && actions.squat.length) {
     motions.crouch_enter = motion("crouch_enter", {
       category: "crouch", source: "frames", assets: "squat",
-      durationMs: 720, loop: false, priority: MOTION_PRIORITIES.LOCOMOTION,
+      durationMs: 650, loop: false, priority: MOTION_PRIORITIES.LOCOMOTION,
       blendInMs: 160, blendOutMs: 0, next: "crouch_idle",
-      events: [{ timeMs: 720, event: "crouch_complete" }],
+      events: [{ timeMs: 650, event: "crouch_complete" }],
     });
     motions.crouch_idle = motion("crouch_idle", {
       category: "crouch", source: "frames", assets: "squat",
@@ -88,9 +88,9 @@ export function createMotionManifest(look = {}) {
     });
     motions.crouch_exit = motion("crouch_exit", {
       category: "crouch", source: "frames", assets: "squat",
-      durationMs: 760, loop: false, priority: MOTION_PRIORITIES.LOCOMOTION,
+      durationMs: 700, loop: false, priority: MOTION_PRIORITIES.LOCOMOTION,
       blendInMs: 0, blendOutMs: 240, next: "idle_neutral",
-      events: [{ timeMs: 760, event: "stand_complete" }],
+      events: [{ timeMs: 700, event: "stand_complete" }],
     });
     motions.legacy_crouch = motion("legacy_crouch", {
       category: "crouch", source: "frames", assets: "squat",

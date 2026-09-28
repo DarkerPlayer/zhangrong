@@ -5,7 +5,19 @@ const zeroPose = () => ({
   hipX: 0, hipY: 0, hipRoll: 0, chestRoll: 0, shoulderRoll: 0,
   headAngle: 0, bodyX: 0, bodyY: 0, rootX: 0, breath: 0,
   hairLag: 0, clothLag: 0, armAngle: 0,
+  crouchAmount: 0,
+  crouchLayers: { head: 0, chest: 0, hip: 0, hair: 0, cloth: 0 },
 });
+
+const CROUCH_TIMELINE = Object.freeze([
+  { time: 0, easing: "smoothstep", value: { amount: 0 } },
+  { time: 0.10, easing: "smoothstep", value: { amount: -0.02 } },
+  { time: 0.25, easing: "smoothstep", value: { amount: 0.18 } },
+  { time: 0.50, easing: "smoothstep", value: { amount: 0.68 } },
+  { time: 0.76, easing: "smoothstep", value: { amount: 0.96 } },
+  { time: 0.88, easing: "smoothstep", value: { amount: 1.03 } },
+  { time: 1, easing: "smoothstep", value: { amount: 1 } },
+]);
 
 const WALK_FEMININE = Object.freeze([
   { time: 0, easing: "smoothstep", value: { ...zeroPose(), hipX: 0.006, hipRoll: 0.035, chestRoll: -0.018, shoulderRoll: -0.028, headAngle: -0.12, hairLag: -0.002 } },
@@ -44,6 +56,21 @@ export function locomotionEnvelope(state = {}, motion = {}) {
     ? applyEasing("smoothstep", Math.max(0, remainingMs) / decelerationMs)
     : 1;
   return Math.min(accelerate, decelerate);
+}
+
+const crouchTimelineAmount = (elapsedMs, durationMs) => rounded(sampleKeyframes(
+  CROUCH_TIMELINE,
+  Math.max(0, Math.min(durationMs, Number(elapsedMs) || 0)),
+  { durationMs, loop: false },
+).amount);
+
+function crouchLayerAmount(id, elapsedMs, durationMs, delayMs) {
+  if (id === "crouch_idle") return 1;
+  const localDuration = Math.max(1, durationMs - delayMs);
+  const localElapsed = Math.max(0, Math.min(localDuration, (Number(elapsedMs) || 0) - delayMs));
+  return id === "crouch_exit"
+    ? crouchTimelineAmount(localDuration - localElapsed, localDuration)
+    : crouchTimelineAmount(localElapsed, localDuration);
 }
 
 /**
@@ -115,14 +142,41 @@ export function sampleGlamMotion(motion = {}, elapsedMs = 0, frameCount = 0) {
     actionKind = "sexyWalk";
   } else if (/^crouch_|legacy_crouch/.test(id)) {
     const progress = clamp01(elapsedMs / durationMs);
-    if (id === "crouch_enter") poseAlpha = applyEasing("easeInOut", progress);
-    else if (id === "crouch_exit") poseAlpha = 1 - applyEasing("easeInOut", progress);
-    else if (id === "legacy_crouch") {
+    if (id === "legacy_crouch") {
       const enter = applyEasing("easeInOut", Math.min(1, progress / 0.22));
       const exit = 1 - applyEasing("easeInOut", Math.max(0, (progress - 0.78) / 0.22));
       poseAlpha = Math.min(enter, exit);
-    } else poseAlpha = 1;
-    pose = { ...zeroPose(), bodyY: 0.006, hipY: 0.008, breath: Math.sin(seconds * 1.6) * 0.16, hairLag: Math.sin(seconds * 1.05) * 0.0015 };
+      pose = { ...zeroPose(), crouchAmount: poseAlpha, bodyY: poseAlpha * 0.006, hipY: poseAlpha * 0.008 };
+    } else {
+      const crouchAmount = id === "crouch_idle"
+        ? 1
+        : id === "crouch_exit"
+          ? crouchTimelineAmount(durationMs - Math.min(durationMs, elapsedMs), durationMs)
+          : crouchTimelineAmount(elapsedMs, durationMs);
+      const layers = {
+        head: crouchLayerAmount(id, elapsedMs, durationMs, 30),
+        chest: crouchLayerAmount(id, elapsedMs, durationMs, 50),
+        hip: crouchLayerAmount(id, elapsedMs, durationMs, 70),
+        hair: crouchLayerAmount(id, elapsedMs, durationMs, 140),
+        cloth: crouchLayerAmount(id, elapsedMs, durationMs, 160),
+      };
+      const hairIdle = id === "crouch_idle" ? Math.sin(seconds * 1.05) * 0.0018 : 0;
+      const clothIdle = id === "crouch_idle" ? Math.sin(seconds * 0.9 + 0.5) * 0.0014 : 0;
+      poseAlpha = clamp01(crouchAmount);
+      pose = {
+        ...zeroPose(),
+        crouchAmount,
+        crouchLayers: layers,
+        bodyY: crouchAmount * 0.006,
+        hipY: layers.hip * 0.010,
+        hipRoll: layers.hip * 0.006,
+        chestRoll: layers.chest * -0.010,
+        headNod: layers.head * 0.0015,
+        breath: Math.sin(seconds * 1.6) * 0.16,
+        hairLag: (layers.head - layers.hair) * 0.010 + hairIdle,
+        clothLag: (layers.hip - layers.cloth) * 0.009 + clothIdle,
+      };
+    }
     frame = frameCount > 0 ? { index: 0, nextIndex: 0, blend: 0 } : null;
     actionKind = "squat";
   } else if (id === "idle_weight_shift") {
@@ -172,7 +226,10 @@ export class GlamMotionAdapter {
         (Number(context.totalElapsedMs) || 0) / Math.max(1, this.motion.blendInMs || 180),
       );
     }
-    stepSecondaryMotion(this.secondary, { hairLag: next.pose.hairLag, clothLag: next.pose.clothLag }, deltaMs, { stiffness: 64, damping: 12 });
+    const secondaryOptions = /^crouch_/.test(this.motion.id)
+      ? { stiffness: 46, damping: 9 }
+      : { stiffness: 64, damping: 12 };
+    stepSecondaryMotion(this.secondary, { hairLag: next.pose.hairLag, clothLag: next.pose.clothLag }, deltaMs, secondaryOptions);
     next.pose = { ...next.pose, hairLag: this.secondary.hairLag.value, clothLag: this.secondary.clothLag.value };
     const facing = context.facing || "right";
     if (next.frame) next.frame = { ...next.frame, anchorOffset: frameAnchorOffset(next.frame.groundAnchor, this.motion.groundAnchor, facing) };
