@@ -1,0 +1,111 @@
+{
+  "createdDate": "2026-09-26",
+  "tool": "builtin image_gen.imagegen",
+  "description": "Exact prompts submitted to the built-in generator. Source images remain at their original paths. Four independent adult identities, two outfits each.",
+  "assets": [
+    {
+      "id": "elise-paris",
+      "character": "艾莉丝",
+      "age": 28,
+      "prompt": "Use case: stylized-concept.\nAsset type: original full-body transparent character artwork for a local desktop companion application's 2D mesh animation.\nStyle/medium: beautiful polished soft painterly realism, refined realistic adult face, subtle painted skin and fabric texture, graceful fashion illustration with believable anatomy. Cute and welcoming in expression while clearly mature, never childlike or chibi.\nComposition/framing: exactly 1024 x 1536 portrait. One woman only, full body facing directly forward, eye-level camera, neutral upright pose. Closed-lip soft friendly smile. Both arms 15–20 degrees away from the torso, both complete hands naturally open and visible near the hips, fingers anatomically plausible, hands not holding anything. Legs uncrossed with a small natural separation. Full head and both feet completely inside frame, generous small transparent margin above head and below shoes. Symmetrical frontal pose suitable for animation.\nLighting: soft even studio illumination on the person only, no cast shadow on a surface.\nBackground: genuine fully transparent alpha everywhere outside the character; isolated cutout. No floor, environment, backdrop, rectangle, gradient, halo, glow or drop shadow.\nConstraints: original fictional adult identity, fully clothed tasteful fashion, no other people, no text, no letters, no logos, no watermark, no UI. Do not crop head, fingers or feet.\nSubject: Elise, an original fictional 28-year-old French-inspired adult woman, honey-blonde shoulder-to-chest-length soft waves, blue eyes, a refined mature face, elegant curvy adult proportions.\nOutfit: a pink tweed jacket over an opaque ivory blouse, an ivory knee-length pleated skirt, delicate ballet-inspired low heels. Tasteful small gold earrings. Sophisticated Paris-inspired fashion, visibly adult, no school-uniform styling.",
+      "mode": "generate",
+      "transparent_background": true,
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-4d25ca52-6b4f-4da1-baf7-40c0ec88a909.png",
+      "workspacePath": "public/looks/elise-paris/character.png"
+    },
+    {
+      "id": "mia-street",
+      "character": "米娅",
+      "age": 27,
+      "prompt": "Use case: stylized-concept.\nAsset type: original full-body transparent character artwork for a local desktop companion application's 2D mesh animation.\nStyle/medium: beautiful polished soft painterly realism, refined realistic adult face, subtle painted skin and fabric texture, graceful fashion illustration with believable anatomy. Cute and welcoming in expression while clearly mature, never childlike or chibi.\nComposition/framing: exactly 1024 x 1536 portrait. One woman only, full body facing directly forward, eye-level camera, neutral upright pose. Closed-lip soft friendly smile. Both arms 15–20 degrees away from the torso, both complete hands naturally open and visible near the hips, fingers anatomically plausible, hands not holding anything. Legs uncrossed with a small natural separation. Full head and both feet completely inside frame, generous small transparent margin above head and below shoes. Symmetrical frontal pose suitable for animation.\nLighting: soft even studio illumination on the person only, no cast shadow on a surface.\nBackground: genuine fully transparent alpha everywhere outside the character; isolated cutout. No floor, environment, backdrop, rectangle, gradient, halo, glow or drop shadow.\nConstraints: original fictional adult identity, fully clothed tasteful fashion, no other people, no text, no letters, no logos, no watermark, no UI. Do not crop head, fingers or feet.\nSubject: Mia, an original fictional 27-year-old Mexican-American adult woman, warm olive complexion, wavy shoulder-length chestnut hair, green eyes, subtle freckles, a mature beautiful face and curvy fit adult proportions.\nOutfit: a mint bomber jacket, opaque white fitted top, black high-waisted fashion shorts, and clean casual sneakers. Fully clothed, polished adult streetwear, no exposed midriff.",
+      "mode": "generate",
+      "transparent_background": true,
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-34761181-eb85-4bb7-9a37-89b8946ec4ca.png",
+      "workspacePath": "public/looks/mia-street/character.png"
+    },
+    {
+      "id": "amara-royal",
+      "character": "阿玛拉",
+      "age": 29,
+      "prompt": "Use case: stylized-concept.\nAsset type: original full-body transparent character artwork for a local desktop companion application's 2D mesh animation.\nStyle/medium: beautiful polished soft painterly realism, refined realistic adult face, subtle painted skin and fabric texture, graceful fashion illustration with believable anatomy. Cute and welcoming in expression while clearly mature, never childlike or chibi.\nComposition/framing: exactly 1024 x 1536 portrait. One woman only, full body facing directly forward, eye-level camera, neutral upright pose. Closed-lip soft friendly smile. Both arms 15–20 degrees away from the torso, both complete hands naturally open and visible near the hips, fingers anatomically plausible, hands not holding anything. Legs uncrossed with a small natural separation. Full head and both feet completely inside frame, generous small transparent margin above head and below shoes. Symmetrical frontal pose suitable for animation.\nLighting: soft even studio illumination on the person only, no cast shadow on a surface.\nBackground: genuine fully transparent alpha everywhere outside the character; isolated cutout. No floor, environment, backdrop, rectangle, gradient, halo, glow or drop shadow.\nConstraints: original fictional adult identity, fully clothed tasteful fashion, no other people, no text, no letters, no logos, no watermark, no UI. Do not crop head, fingers or feet.\nSubject: Amara, an original fictional 29-year-old Ghana-inspired African princess, rich deep-brown skin, elegant braided updo, warm expressive eyes, a refined mature face, graceful curvy adult proportions. A small refined gold crown sits naturally on her updo.\nOutfit: a fully clothed emerald and gold royal floor-length gown with refined kente-inspired woven geometric trim and restrained gold jewelry. Elegant contemporary fantasy royalty inspired by Ghanaian textiles, dignified and beautiful, no caricature or exaggerated tribal motifs. The gown's hem leaves the tips of both gold heels visible and the entire silhouette is contained within the frame.",
+      "mode": "generate",
+      "transparent_background": true,
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-da61cf41-f6a2-43bb-a8ac-98a944afd0fc.png",
+      "workspacePath": "public/looks/amara-royal/character.png"
+    },
+    {
+      "id": "zuri-sun",
+      "character": "祖莉",
+      "age": 30,
+      "prompt": "Use case: stylized-concept.\nAsset type: original full-body transparent character artwork for a local desktop companion application's 2D mesh animation.\nStyle/medium: beautiful polished soft painterly realism, refined realistic adult face, subtle painted skin and fabric texture, graceful fashion illustration with believable anatomy. Cute and welcoming in expression while clearly mature, never childlike or chibi.\nComposition/framing: exactly 1024 x 1536 portrait. One woman only, full body facing directly forward, eye-level camera, neutral upright pose. Closed-lip soft friendly smile. Both arms 15–20 degrees away from the torso, both complete hands naturally open and visible near the hips, fingers anatomically plausible, hands not holding anything. Legs uncrossed with a small natural separation. Full head and both feet completely inside frame, generous small transparent margin above head and below shoes. Symmetrical frontal pose suitable for animation.\nLighting: soft even studio illumination on the person only, no cast shadow on a surface.\nBackground: genuine fully transparent alpha everywhere outside the character; isolated cutout. No floor, environment, backdrop, rectangle, gradient, halo, glow or drop shadow.\nConstraints: original fictional adult identity, fully clothed tasteful fashion, no other people, no text, no letters, no logos, no watermark, no UI. Do not crop head, fingers or feet.\nSubject: Zuri, an original fictional 30-year-old Kenyan-inspired adult woman, medium-dark brown skin, natural shoulder-length coils, warm brown eyes, a refined mature face and graceful curvy adult proportions.\nOutfit: a coral-orange flowing maxi dress with a refined gold belt and elegant gold heels. Fully clothed tasteful contemporary fashion, opaque fabric, the entire hem and both shoe tips visible. Small understated gold earrings.",
+      "mode": "generate",
+      "transparent_background": true,
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-080ac2bd-724b-46f6-b005-bca3ab82551c.png",
+      "workspacePath": "public/looks/zuri-sun/character.png"
+    },
+    {
+      "id": "mia-denim",
+      "character": "米娅",
+      "age": 27,
+      "prompt": "Use case: identity-preserve.\nAsset type: second outfit for the same original adult desktop-companion character.\nInput image 1 is the edit target, not a style reference.\nStrict invariants: preserve the EXACT same woman's identity, age, face, eyes, skin tone, hair, closed-lip smile, head size and position, body proportions, frontal standing pose, hand positions and shapes, arm separation, leg positions, camera, framing, lighting and 1024 x 1536 portrait dimensions. Do not regenerate a different face or change her pose.\nChange only the outfit, shoes and specifically described accessories. Keep the whole head, hands and feet inside frame with the same margins. Fully clothed tasteful adult fashion.\nPreserve genuine transparent alpha outside the character. No background, floor, props, gradient, halo, glow, shadow, text, logo, watermark or UI. Keep soft painterly realism and the same original adult character style.\nReplace the mint bomber jacket, white top and black shorts with a soft cream sweater and light-blue high-waisted straight-leg denim jeans. Replace sneakers with tasteful brown ankle boots. Keep the waist fully covered and all fabric opaque. Preserve Mia's exact warm olive skin, chestnut waves, green eyes, freckles and face.",
+      "mode": "edit",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-34761181-eb85-4bb7-9a37-89b8946ec4ca.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-9dbf95e7-f017-4df2-b6db-3da064c14f7e.png",
+      "workspacePath": "public/looks/mia-denim/character.png"
+    },
+    {
+      "id": "amara-ankara",
+      "character": "阿玛拉",
+      "age": 29,
+      "prompt": "Use case: identity-preserve.\nAsset type: second outfit for the same original adult desktop-companion character.\nInput image 1 is the edit target, not a style reference.\nStrict invariants: preserve the EXACT same woman's identity, age, face, eyes, skin tone, hair, closed-lip smile, head size and position, body proportions, frontal standing pose, hand positions and shapes, arm separation, leg positions, camera, framing, lighting and 1024 x 1536 portrait dimensions. Do not regenerate a different face or change her pose.\nChange only the outfit, shoes and specifically described accessories. Keep the whole head, hands and feet inside frame with the same margins. Fully clothed tasteful adult fashion.\nPreserve genuine transparent alpha outside the character. No background, floor, props, gradient, halo, glow, shadow, text, logo, watermark or UI. Keep soft painterly realism and the same original adult character style.\nReplace the emerald royal gown with a cobalt-blue and coral Ankara-inspired tailored knee-length dress in opaque printed fabric, with elegant short sleeves and a refined waist. Use a coherent contemporary African fashion print, dignified and beautiful. Replace large royal jewelry and crown with small gold earrings and a slim gold bracelet, preserving the exact braided updo beneath. Keep elegant gold heels. Preserve Amara's exact rich deep-brown skin, mature face, eyes and expression.",
+      "mode": "edit",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-da61cf41-f6a2-43bb-a8ac-98a944afd0fc.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-4acc1e64-910e-4b6f-9d9c-39eeca9e6051.png",
+      "workspacePath": "public/looks/amara-ankara/character.png"
+    },
+    {
+      "id": "zuri-pearl",
+      "character": "祖莉",
+      "age": 30,
+      "prompt": "Use case: identity-preserve.\nAsset type: second outfit for the same original adult desktop-companion character.\nInput image 1 is the edit target, not a style reference.\nStrict invariants: preserve the EXACT same woman's identity, age, face, eyes, skin tone, hair, closed-lip smile, head size and position, body proportions, frontal standing pose, hand positions and shapes, arm separation, leg positions, camera, framing, lighting and 1024 x 1536 portrait dimensions. Do not regenerate a different face or change her pose.\nChange only the outfit, shoes and specifically described accessories. Keep the whole head, hands and feet inside frame with the same margins. Fully clothed tasteful adult fashion.\nPreserve genuine transparent alpha outside the character. No background, floor, props, gradient, halo, glow, shadow, text, logo, watermark or UI. Keep soft painterly realism and the same original adult character style.\nReplace the coral-orange maxi dress and belt with a fitted ivory jumpsuit in opaque tailored fabric and a soft gold cropped blazer. The jumpsuit has full-length straight trousers, a tasteful neckline and a completely covered waist. Use elegant gold heels and small understated gold earrings. Preserve Zuri's exact medium-dark brown skin, natural shoulder-length coils, brown eyes and mature face.",
+      "mode": "edit",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-080ac2bd-724b-46f6-b005-bca3ab82551c.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-73671cb2-5abf-4a27-aca4-d9eb3c576d24.png",
+      "workspacePath": "public/looks/zuri-pearl/character.png"
+    },
+    {
+      "id": "elise-gala",
+      "character": "艾莉丝",
+      "age": 28,
+      "prompt": "Use case: identity-preserve.\nInput image 1 is the edit target: an original fictional 28-year-old adult woman named Elise.\nMake a clothing-only edit for her second fashion outfit. Replace the pink tweed jacket, blouse and ivory skirt with a conservative navy-blue satin formal dress: long sleeves to the wrists, a closed high round neckline that covers the shoulders and upper chest, opaque fabric, a natural waist and a full-length straight flowing skirt ending above her shoes. The dress must completely cover her torso and legs. Use simple closed-toe navy heels and her existing small gold earrings.\nKeep exactly the same adult face, honey-blonde hair, blue eyes, skin tone, closed-mouth smile, body proportions, arm positions, hand positions, neutral frontal standing pose, camera, soft painted style, lighting and full-body composition. Preserve both visible complete hands outside the dress silhouette.\nOutput exactly 1024 x 1536 portrait RGBA with genuine transparency outside her silhouette. Preserve transparent alpha; no background, gradient, floor, glow, halo, props, shadows, text, logo or watermark. Keep the full head and shoes inside frame with the original margins. This is a fully clothed adult formal fashion illustration.",
+      "mode": "edit",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-4d25ca52-6b4f-4da1-baf7-40c0ec88a909.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-265b84aa-423a-4099-9e14-fa2a269064ba.png",
+      "workspacePath": "public/looks/elise-gala/character.png",
+      "earlierAttempts": [
+        {
+          "prompt": "Use case: identity-preserve.\nAsset type: second outfit for the same original adult desktop-companion character.\nInput image 1 is the edit target, not a style reference.\nStrict invariants: preserve the EXACT same woman's identity, age, face, eyes, skin tone, hair, closed-lip smile, head size and position, body proportions, frontal standing pose, hand positions and shapes, arm separation, leg positions, camera, framing, lighting and 1024 x 1536 portrait dimensions. Do not regenerate a different face or change her pose.\nChange only the outfit, shoes and specifically described accessories. Keep the whole head, hands and feet inside frame with the same margins. Fully clothed tasteful adult fashion.\nPreserve genuine transparent alpha outside the character. No background, floor, props, gradient, halo, glow, shadow, text, logo, watermark or UI. Keep soft painterly realism and the same original adult character style.\nReplace the pink tweed jacket, blouse and pleated skirt with an elegant navy satin evening gown. It is a refined floor-length gown with opaque fabric, tasteful neckline, and graceful fitted adult tailoring; leave both shoe tips visible. Replace ballet-style shoes with elegant navy evening heels. Keep only small refined gold earrings and a delicate small gold necklace. Preserve Elise's exact honey-blonde hair, blue eyes and face.",
+          "referenced_image_paths": [
+            "/Users/yunfeikong/.codex/generated_images/01a0dc2a-5dbf-7ab0-995f-1b3abd285d98/exec-4d25ca52-6b4f-4da1-baf7-40c0ec88a909.png"
+          ],
+          "transparent_background": true,
+          "status": "output_moderation_rejected",
+          "errorCategory": "sexual",
+          "requestId": "6ea267d5-59e8-4e3c-be02-acce22f5c384"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="lavender" x1=".15" y1="0" x2=".9" y2="1">
+      <stop stop-color="#eadff2"/>
+      <stop offset=".55" stop-color="#cbbbe0"/>
+      <stop offset="1" stop-color="#a99bc9"/>
+    </linearGradient>
+    <linearGradient id="moon" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#57516e"/>
+      <stop offset="1" stop-color="#403c57"/>
+    </linearGradient>
+    <mask id="crescent"><rect width="1024" height="1024" fill="white"/><circle cx="624" cy="390" r="194" fill="black"/></mask>
+  </defs>
+  <rect x="81" y="96" width="862" height="846" rx="208" fill="#766783" opacity=".15"/>
+  <rect x="81" y="81" width="862" height="862" rx="208" fill="url(#lavender)"/>
+  <rect x="90" y="90" width="844" height="844" rx="200" fill="none" stroke="#f9f0ff" stroke-opacity=".34" stroke-width="2"/>
+  <circle cx="502" cy="526" r="236" fill="url(#moon)" mask="url(#crescent)"/>
+  <path d="M697 285c0 38 18 58 56 58-38 0-56 20-56 58 0-38-19-58-56-58 37 0 56-20 56-58Z" fill="#fff6ff"/>
+  <circle cx="775" cy="248" r="12" fill="#fff6ff" opacity=".68"/>
+</svg>

@@ -1,0 +1,93 @@
+{
+  "generatedOn": "2026-09-28",
+  "tool": "built-in ImageGen",
+  "assets": [
+    {
+      "id": "xuanling-golden-crown",
+      "name": "美杜莎",
+      "outfit": "金枝王冠",
+      "prompt": "Edit the FIRST image. The SECOND image is a face reference only. The user prioritizes facial likeness: make the adult fictional woman in the first image resemble the woman in the second image as closely as possible in facial identity. Match the reference face's overall oval-to-soft-heart face shape, eye spacing and almond eye shape, upper eyelid and brow geometry, gentle cheek structure, nose bridge and tip, lip shape, jawline, fair warm complexion, and understated red-brown eye makeup and rose-red lips. Keep her calm, composed direct expression. Give the face accurate, high-resolution natural features, with careful symmetry and crisp eyes; preserve the current full-body centered composition and original 1024x1536 portrait canvas. Preserve the first image's exact pose, long dark hair, ornate branching gold crown with centered blue jewel, gold earrings and blue pendant, fully opaque high-neck white-and-gold embroidered gown, shoulder and forearm armor, long sleeves, skirt, gloves-free hands, and shoes. Keep every garment opaque and modest. Do not take the reference image's background, outfit, body, or pose. Do not add snakes, new accessories, scenery, gradients, glow, text, watermark, or extra people. Keep the original transparent background. Change only the face and facial makeup enough to improve the likeness; maintain premium soft painterly realism and the existing clean silhouette.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-7fb179f9-380c-4161-8ece-532da6d96f09.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/xuanling-golden-crown/character.png",
+      "mode": "edit",
+      "tool": "built-in ImageGen",
+      "initialPrompt": "Use case: stylized-concept\nAsset type: premium original adult character sprite for a local desktop companion\nPrimary request: Create one elegant full-body character illustration for the existing painterly realistic wardrobe style.\nSubject: Xuanling, a fictional 28-year-old adult Chinese fantasy queen. Long, straight, glossy near-black hair with a center part and soft face-framing strands; mature East Asian facial proportions, warm brown eyes, calm direct gaze and a small composed smile. An elaborate branching gold crown rises around the head, with a single vivid blue gemstone centered on the forehead and fine engraved gold filigree. Refined gold earrings and a small blue-gem pendant.\nOutfit: A fully opaque, elegant white high-neck fantasy gown with structured fitted bodice, long sleeves, layered ankle-length skirt and subtle white embroidery. Ornate sculpted gold shoulder accents, forearm bracers and embroidered gold leaf details frame the gown; small blue gemstone accents. Tasteful royal styling with a modest closed neckline; the entire torso and legs are covered by opaque fabric. The silhouette should read clearly as a dressed fantasy queen.\nComposition/framing: Exactly one person, centered, directly facing forward, upright neutral standing pose. Full head, crown tips, hair, both hands with complete fingers, legs and shoes all visible inside a 1024×1536 portrait canvas with safe margins. Arms rest slightly apart from the body, both hands visible at hip level. Feet parallel. Keep face large and unobstructed, eye line around the upper tenth of the image.\nStyle/medium: High-quality soft painterly realism with detailed adult facial features, natural skin shading, fine individual hair strands, polished engraved gold, subtle gemstone refraction and crisp embroidered cloth, consistent with a premium fantasy fashion illustration.\nLighting/mood: Soft flattering frontal studio lighting, gentle dimensional shadows on the subject, refined and serene.\nConstraints: genuinely transparent RGBA background, alpha zero outside the figure; no scenery, halo, background color, ground plane, cast shadow, props, text, lettering, watermark, extra figures or cropped details.\nAvoid: nudity, exposed breasts, transparent clothing, lingerie, sexual content, exaggerated anatomy, childlike proportions, chibi styling, malformed hands, extra fingers, crossed arms, merged sleeves and torso, cropped crown, cropped shoes, blur, painterly smears, harsh bloom, noisy ornamentation.",
+      "baseImagePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-7d70d7ab-0741-479c-8543-df4fef23a32d.png",
+      "referenceImagePath": "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-ceabdef2-8915-4553-b75c-987fd9b90727.png"
+    },
+    {
+      "id": "linwei-red-sole",
+      "name": "林薇",
+      "age": 28,
+      "outfit": "酒红职场",
+      "description": "栗棕长卷发、白色通勤衬衫与酒红一步裙，配工牌和黑色红底高跟鞋。",
+      "prompt": "Use case: stylized-concept\nAsset type: full-body transparent character illustration for a local animated wardrobe\nPrimary request: Create a brand-new original adult female character inspired by the office-woman character in these references. Image 1 is the main outfit and overall character reference; Image 2 is a face and hairstyle reference. Translate the manga design into the polished semi-realistic 3D character-render style used by a high-quality desktop avatar app.\nSubject: An original fictional East Asian office professional, clearly an adult woman about 28 years old. Soft oval face, expressive warm brown eyes, gently arched brows, petite nose, glossy rose lips, natural rosy cheeks. Long voluminous chestnut-brown waves with a side part, falling over her shoulders and back.\nClothing: Crisp fitted ivory-white blouse with tasteful neckline and fine fabric detail, a slim dark lanyard with a plain blank ID card, elegant small gold earrings and a delicate necklace, high-waisted rich burgundy-red pencil skirt ending just above the knees, a subtle wristwatch. Black pointed-toe stiletto pumps with unmistakably vivid red soles, both heels fully visible.\nStyle/medium: refined semi-realistic 3D character render, natural face, detailed hair strands, high-quality fabric and polished shoe materials, consistent with the existing wardrobe artwork.\nComposition/framing: One person only, centered upright full-body pose facing forward, relaxed shoulders, arms resting naturally at sides with both hands fully visible, legs and both shoes completely inside frame. Gentle confident expression. Keep normal adult proportions and clean silhouette.\nLighting/mood: soft flattering studio light with subtle highlights on hair and shoes.\nScene/backdrop: genuinely transparent background.\nConstraints: Draw a new face; do not reuse the face of other existing app characters. Keep the white blouse and burgundy skirt office outfit inspired by Image 1, and make the red shoe soles easy to see. The reference images are visual references only. Do not reproduce comic panels, speech bubbles, lettering, watermarks, other characters, touching, underwear, exposed body, or sexualized poses. Fully clothed, professional fashion portrait. No text or logos.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-63887f37-a18d-420c-9d0d-cb8ce89afab1.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen",
+      "referenceImagePaths": [
+        "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-030225fb-bcc2-448c-a2d6-6143f0b6a704.png",
+        "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-d5e37d32-35eb-4a2d-b939-fc8d4a085dc2.png"
+      ]
+    },
+    {
+      "id": "linwei-ivory-wrap",
+      "name": "林薇",
+      "age": 28,
+      "outfit": "象牙白通勤",
+      "prompt": "Use case: stylized-concept. Asset type: full-body transparent character illustration for the local animated wardrobe. Create one original fictional East Asian adult office professional, about 28 years old, with long glossy chestnut-brown waves, warm brown eyes, and a calm friendly expression. Outfit: an ivory-white long-sleeved wrap blouse with a high collar, a fitted charcoal-black high-waisted skirt, and black closed-toe heels; add understated black stud earrings and a delicate gold bracelet. Composition: centered, upright, front-facing full-body pose, both hands and both shoes visible. Style: polished semi-realistic character illustration with detailed hair, natural facial features, and refined fabric. Keep the background transparent. Do not include manga panels, speech bubbles, lettering, watermark, scenery, props, or other people. Clothing is fully opaque and the pose is neutral.",
+      "promptRecordType": "reconstructed from the generation brief",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-f96ef3aa-edb9-4d7c-bd95-e61564c12903.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen",
+      "referenceImagePaths": [
+        "/Users/yunfeikong/2026.9.picture/Screenshot-2026-09-28_14-38-11.png",
+        "/Users/yunfeikong/2026.9.picture/Screenshot-2026-09-28_14-42-39.png"
+      ],
+      "actionFrameGeneration": {
+        "mode": "edit",
+        "tool": "built-in ImageGen",
+        "appearanceReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/character.png",
+        "squat": {
+          "poseReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/actions/squat.png",
+          "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-3c98b783-cef4-40a6-b77b-76ce8c544c76.png",
+          "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/actions/squat.png",
+          "prompt": "Edit the FIRST image. It is the exact pose, body angle, framing, and action reference. Use the SECOND image only for the adult woman's face, hair, outfit, accessories, and illustration finish. Keep the same fictional adult East Asian woman as image 2: long glossy chestnut-brown waves with a side part, warm brown eyes, small black stud earrings, and a delicate gold bracelet. Preserve image 1's full-body low squat pose, arm placement, bent knees, foot placement, camera angle, portrait framing, and overall silhouette so it remains recognizable as the same squat action. Replace the old burgundy office outfit with the exact outfit from image 2: an ivory-white long-sleeved crossover wrap blouse with its high neck collar, a fitted charcoal-black high-waisted short skirt, and simple black closed-toe high heels. Keep the skirt opaque and covering the hips; keep all clothes fully opaque. Remove the lanyard, ID badge, wristwatch, and red shoe soles from image 1; use only the black stud earrings and gold bracelet from image 2. Preserve the clean transparent background and original 1024x1536 portrait canvas, with the entire head, hands, legs, and shoes inside frame. Match image 2's polished semi-realistic illustrated style. Do not add a chair, props, scenery, shadow, glow, text, panel, watermark, or other person; do not change the pose or crop."
+        },
+        "walkPromptTemplate": "Edit the FIRST image. It is one frame in a four-frame walking loop and is the exact pose and composition reference. {frameInstruction} Use the SECOND image only as the exact visual reference for the adult woman's identity, hair, clothes, accessories, and rendering style. Keep the same fictional adult East Asian woman from image 2: long chestnut-brown waves with a side part, warm brown eyes, small black stud earrings, and a gold bracelet. Replace the old burgundy work outfit with the exact outfit from image 2: ivory-white long-sleeved crossover wrap blouse with high neck collar, fitted charcoal-black high-waisted short skirt, and black closed-toe high heels. Keep each frame's clothing cut and palette consistent with the reference; skirt is charcoal black, not burgundy. Remove the lanyard, ID card, wristwatch, and red shoe soles from image 1. Preserve the exact walking body pose, step, hand placement, camera angle, full-body scale, and vertical 1024x1536 framing from image 1. Keep the complete hair, hands, legs, and both shoes inside the frame. Preserve a clean transparent background and polished semi-realistic illustrated style matching image 2. Keep clothes fully opaque and the gait poised and natural. No scenery, floor, cast shadow, glow, props, text, speech bubble, panel, watermark, or extra person. Do not change the walking pose or crop.",
+        "walkFrames": [
+          {
+            "id": "walk-01",
+            "poseReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/actions/walk-01.png",
+            "frameInstruction": "Use this as the first beat of the loop: preserve this frame's forward-facing mid-stride leg crossover, shoulder angle, and relaxed arm swing exactly.",
+            "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-0b20b1e3-75e2-46c3-8808-395cc46396a7.png",
+            "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/actions/walk-01.png"
+          },
+          {
+            "id": "walk-02",
+            "poseReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/actions/walk-02.png",
+            "frameInstruction": "Use this as the second beat of the loop: preserve this frame's distinct mid-stride leg positions, weight shift, shoulder angle, and relaxed arm swing exactly.",
+            "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-dbded797-9462-4bc3-8ef5-73ca327e9000.png",
+            "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/actions/walk-02.png"
+          },
+          {
+            "id": "walk-03",
+            "poseReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/actions/walk-03.png",
+            "frameInstruction": "Use this as the third beat of the loop: preserve this frame's distinct mid-stride leg positions, weight shift, shoulder angle, and relaxed arm swing exactly.",
+            "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-3f17f124-a8be-486a-ba91-72efd4838504.png",
+            "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/actions/walk-03.png"
+          },
+          {
+            "id": "walk-04",
+            "poseReferencePath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-red-sole/actions/walk-04.png",
+            "frameInstruction": "Use this as the fourth beat of the loop: preserve this frame's distinct mid-stride leg crossover, final weight shift, shoulder angle, and relaxed arm swing exactly.",
+            "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0e225-32e4-7c72-adc9-9b17afbf87d9/exec-1b28856d-6481-458d-8a1b-89b5374514f3.png",
+            "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/linwei-ivory-wrap/actions/walk-04.png"
+          }
+        ]
+      }
+    }
+  ]
+}

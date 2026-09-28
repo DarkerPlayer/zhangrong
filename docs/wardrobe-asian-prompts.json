@@ -1,0 +1,86 @@
+{
+  "generatedOn": "2026-09-26",
+  "tool": "built-in ImageGen",
+  "assets": [
+    {
+      "id": "sakura-cafe",
+      "name": "樱奈",
+      "prompt": "Use case: stylized-concept. Asset type: premium original adult character sprite for a local desktop companion. Create exactly ONE beautiful full-body adult woman, alone, centered and facing directly forward. Soft painterly realism with refined fashion-illustration finish, realistic adult facial proportions, beautiful detailed eyes, natural skin shading, delicate fabric texture, subtly romantic and charming. Clearly adult late twenties, mature torso and face, naturally curvy adult proportions, not a child, not chibi, not a schoolgirl. Closed lips with a gentle friendly smile, level upright head. Pose: both arms relaxed 15–20 degrees away from torso, hands near hips/upper thighs, fingers complete and visible, no hand covering clothing, no crossed arms. Legs straight, parallel and uncrossed. Full head, all hair, both hands, both shoes entirely visible with clear margins. Portrait canvas 1024×1536 pixels, head top around y=0.02 and shoes end around y=0.98; eyes near y=0.085–0.12. Crisp genuinely transparent RGBA background, alpha zero outside the person. No colored backdrop, no vignette, no halo, no rim glow spilling outside hair, no floor, no ground shadow, no props, no text, no watermark. Soft neutral frontal studio lighting only on the figure.\nSubject: Sakurana, a Japanese adult woman age 26. Warm chestnut-auburn chin-length bob with soft side bangs, warm brown eyes, softly curvy figure, sweet yet recognizably mature face, warm approachable charm. Outfit: a fitted strawberry-pink knit cardigan worn neatly over an ivory knee-length softly flared dress, small pearl buttons, restrained delicate lace at neckline, cream low-heeled shoes. Fully clothed tasteful adult cafe-date fashion; no school motifs. Make this a distinctly Japanese mature fashion character, not a generic redheaded fantasy woman.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-dc450f97-7f34-45d6-a292-85c5b932cdaf.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/sakura-cafe/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "yuki-lolita",
+      "name": "雪乃",
+      "prompt": "Use case: stylized-concept. Asset type: premium original adult character sprite for a local desktop companion. Create exactly ONE beautiful full-body adult woman, alone, centered and facing directly forward. Soft painterly realism with refined fashion-illustration finish, realistic adult facial proportions, beautiful detailed eyes, natural skin shading, delicate fabric texture, subtly romantic and charming. Clearly adult late twenties, mature torso and face, naturally curvy adult proportions, not a child, not chibi, not a schoolgirl. Closed lips with a gentle friendly smile, level upright head. Pose: both arms relaxed 15–20 degrees away from torso, hands near hips/upper thighs, fingers complete and visible, no hand covering clothing, no crossed arms. Legs straight, parallel and uncrossed. Full head, all hair, both hands, both shoes entirely visible with clear margins. Portrait canvas 1024×1536 pixels, head top around y=0.02 and shoes end around y=0.98; eyes near y=0.085–0.12. Crisp genuinely transparent RGBA background, alpha zero outside the person. No colored backdrop, no vignette, no halo, no rim glow spilling outside hair, no floor, no ground shadow, no props, no text, no watermark. Soft neutral frontal studio lighting only on the figure.\nSubject: Yukino, a Japanese adult woman age 27. Long platinum-blonde hair half-up with a small lavender satin ribbon, cool gray-blue eyes, delicate but clearly mature facial structure and adult proportions, poised gentle expression. Outfit: elegant lavender adult Lolita-fashion knee-length dress with high closed collar, refined lace bib and cuffs, fitted bodice, layered bell skirt, opaque ivory tights and lavender Mary Jane shoes with low heels. The fashion is romantic and modest, clearly adult luxury street fashion. No school uniform, no childish accessories, no huge doll eyes, no stuffed toys. Her hands and forearms must remain clearly visible beside the skirt.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-434b97a8-d212-4c11-82bf-93c5aa7f5b25.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/yuki-lolita/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "zhixia-qipao",
+      "name": "知夏",
+      "prompt": "Use case: stylized-concept. Asset type: premium original adult character sprite for a local desktop companion. Create exactly ONE beautiful full-body adult woman, alone, centered and facing directly forward. Soft painterly realism with refined fashion-illustration finish, realistic adult facial proportions, beautiful detailed eyes, natural skin shading, delicate fabric texture, subtly romantic and charming. Clearly adult late twenties, mature torso and face, naturally curvy adult proportions, not a child, not chibi, not a schoolgirl. Closed lips with a gentle friendly smile, level upright head. Pose: both arms relaxed 15–20 degrees away from torso, hands near hips/upper thighs, fingers complete and visible, no hand covering clothing, no crossed arms. Legs straight, parallel and uncrossed. Full head, all hair, both hands, both shoes entirely visible with clear margins. Portrait canvas 1024×1536 pixels, head top around y=0.02 and shoes end around y=0.98; eyes near y=0.085–0.12. Crisp genuinely transparent RGBA background, alpha zero outside the person. No colored backdrop, no vignette, no halo, no rim glow spilling outside hair, no floor, no ground shadow, no props, no text, no watermark. Soft neutral frontal studio lighting only on the figure.\nSubject: Zhixia, a Chinese adult woman age 28. Jet-black hair in an elegant side bun with a subtle jade hairpin, warm dark-brown eyes, graceful mature face, naturally curvy elegant figure. Outfit: jade-green embroidered mid-calf qipao with refined stand collar, short fitted sleeves, delicate ivory botanical embroidery, a restrained low side-hem opening only below the knees, jade-and-ivory low heels. Sophisticated contemporary Chinese adult fashion, dignified and warmly beautiful. Both calves and all shoes visible below the mid-calf hem. No fan, purse, lantern or other prop.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-64c58c05-dfa9-493e-83ec-b1f6669695b9.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/zhixia-qipao/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "lingyue-hanfu",
+      "name": "灵玥",
+      "prompt": "Use case: stylized-concept. Asset type: premium original adult character sprite for a local desktop companion. Create exactly ONE beautiful full-body adult woman, alone, centered and facing directly forward. Soft painterly realism with refined fashion-illustration finish, realistic adult facial proportions, beautiful detailed eyes, natural skin shading, delicate fabric texture, subtly romantic and charming. Clearly adult late twenties, mature torso and face, naturally curvy adult proportions, not a child, not chibi, not a schoolgirl. Closed lips with a gentle friendly smile, level upright head. Pose: both arms relaxed 15–20 degrees away from torso, hands near hips/upper thighs, fingers complete and visible, no hand covering clothing, no crossed arms. Legs straight, parallel and uncrossed. Full head, all hair, both hands, both shoes entirely visible with clear margins. Portrait canvas 1024×1536 pixels, head top around y=0.02 and shoes end around y=0.98; eyes near y=0.085–0.12. Crisp genuinely transparent RGBA background, alpha zero outside the person. No colored backdrop, no vignette, no halo, no rim glow spilling outside hair, no floor, no ground shadow, no props, no text, no watermark. Soft neutral frontal studio lighting only on the figure.\nSubject: Lingyue, a Chinese adult woman age 27. Very long black hair in a half-up style secured with a refined small gold hairpin, warm brown eyes, graceful mature Chinese facial structure, naturally feminine adult figure and calm smile. Outfit: teal-and-ivory flowing hanfu-inspired long dress, layered ivory inner skirt and teal outer panels, subtle gold botanical trim, elegant waist sash, narrow graceful sleeves that keep both arms separated from the body and show both hands. Long skirt stops just above the shoes so both ivory embroidered shoes remain visible. Modern original Chinese-inspired fashion illustration, not a historical costume photograph, no props or floating ribbons. Maintain narrow arm silhouette suitable for animation.",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-08f8e6aa-abdd-4d8b-bcb0-e9fd6712b11c.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/lingyue-hanfu/character.png",
+      "mode": "generate",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "sakura-kimono",
+      "baseId": "sakura-cafe",
+      "name": "樱奈",
+      "prompt": "Use case: identity-preserve. Input image is the EDIT TARGET. Create a second outfit for exactly the same clearly adult woman. Preserve her identity, facial features, apparent age, hairstyle, hair color, eye color, closed-lip smile, makeup, body proportions, height, head angle, exact front-facing pose, both hand positions and gestures, leg positions, framing, image size and soft painterly realism. Change ONLY her clothing and shoes as specified. Keep her fully clothed and gracefully mature. One person alone, full body including complete head and both shoes. Both hands visible and unobstructed with arms apart from torso. Preserve genuinely transparent RGBA background with alpha zero outside the figure; no backdrop, halo, glow, floor, shadow, props or text. Output 1024×1536.\nReplace her pink cardigan and ivory dress with a refined cherry-blossom-pink Japanese kimono, subtle ivory sakura embroidery, elegant ivory-and-deep-rose obi at the waist, narrower graceful sleeves that do not cover the hands or join the torso, and modest ivory traditional-inspired low shoes visible below the long hem. Keep the same adult Sakurana (26), warm auburn bob, brown eyes and mature friendly face exactly. Preserve her hands near hips and neutral arm pose. No fan, umbrella, bag, hair changes or added accessories.",
+      "referencePath": "/Users/yunfeikong/Codex/女友/public/looks/sakura-cafe/character.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-8035b032-44b0-41db-8355-d56debf53a9f.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/sakura-kimono/character.png",
+      "mode": "identity-preserving edit",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "yuki-snow",
+      "baseId": "yuki-lolita",
+      "name": "雪乃",
+      "prompt": "Use case: identity-preserve. Input image is the EDIT TARGET. Create a second outfit for exactly the same clearly adult woman. Preserve her identity, facial features, apparent age, hairstyle, hair color, eye color, closed-lip smile, makeup, body proportions, height, head angle, exact front-facing pose, both hand positions and gestures, leg positions, framing, image size and soft painterly realism. Change ONLY her clothing and shoes as specified. Keep her fully clothed and gracefully mature. One person alone, full body including complete head and both shoes. Both hands visible and unobstructed with arms apart from torso. Preserve genuinely transparent RGBA background with alpha zero outside the figure; no backdrop, halo, glow, floor, shadow, props or text. Output 1024×1536.\nReplace the lavender lace dress and Mary Janes with an elegant ivory winter capelet ending above the elbows, worn over a pale icy-blue belted knee-length wool dress with refined fitted long sleeves, opaque ivory tights, and cream ankle boots with low heels. The capelet must not cover or hide her lower arms or hands. Keep the same adult Yukino (27), long platinum half-up hair and gray-blue eyes, exact mature facial identity, body and pose. Restrained winter fashion, no snowflakes in the air, no hat, gloves, scarf, purse or props.",
+      "referencePath": "/Users/yunfeikong/Codex/女友/public/looks/yuki-lolita/character.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-7570e1d8-3727-4d68-b660-b7bd7c68f762.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/yuki-snow/character.png",
+      "mode": "identity-preserving edit",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "zhixia-city",
+      "baseId": "zhixia-qipao",
+      "name": "知夏",
+      "prompt": "Use case: identity-preserve. Input image is the EDIT TARGET. Create a second outfit for exactly the same clearly adult woman. Preserve her identity, facial features, apparent age, hairstyle, hair color, eye color, closed-lip smile, makeup, body proportions, height, head angle, exact front-facing pose, both hand positions and gestures, leg positions, framing, image size and soft painterly realism. Change ONLY her clothing and shoes as specified. Keep her fully clothed and gracefully mature. One person alone, full body including complete head and both shoes. Both hands visible and unobstructed with arms apart from torso. Preserve genuinely transparent RGBA background with alpha zero outside the figure; no backdrop, halo, glow, floor, shadow, props or text. Output 1024×1536.\nReplace the jade qipao with a beautifully tailored cream blazer over an ivory silk blouse, navy high-waisted straight-leg trousers, a discreet thin belt, and cream low-heeled pumps. The blazer sleeves follow her original arm pose and leave both hands clearly visible. Keep the same adult Zhixia (28), black side-bun hairstyle, dark brown eyes and mature elegant Chinese face exactly. Sophisticated contemporary city fashion, no bag or other prop. Keep trousers separate with the original straight uncrossed legs.",
+      "referencePath": "/Users/yunfeikong/Codex/女友/public/looks/zhixia-qipao/character.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-197422e1-be57-4bc2-a635-022465d1f06c.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/zhixia-city/character.png",
+      "mode": "identity-preserving edit",
+      "tool": "built-in ImageGen"
+    },
+    {
+      "id": "lingyue-moon",
+      "baseId": "lingyue-hanfu",
+      "name": "灵玥",
+      "prompt": "Use case: identity-preserve. Input image is the EDIT TARGET. Create a second outfit for exactly the same clearly adult woman. Preserve her identity, facial features, apparent age, hairstyle, hair color, eye color, closed-lip smile, makeup, body proportions, height, head angle, exact front-facing pose, both hand positions and gestures, leg positions, framing, image size and soft painterly realism. Change ONLY her clothing and shoes as specified. Keep her fully clothed and gracefully mature. One person alone, full body including complete head and both shoes. Both hands visible and unobstructed with arms apart from torso. Preserve genuinely transparent RGBA background with alpha zero outside the figure; no backdrop, halo, glow, floor, shadow, props or text. Output 1024×1536.\nReplace the teal hanfu-inspired outfit with a pale moon-blue embroidered modern ankle-length evening dress with a modest softly curved neckline, fitted waist, refined silver-and-ivory floral embroidery, and very light fitted draped shoulder panels. The shoulder drapes must stay narrow and end above the elbows, with bare lower arms and both hands completely visible apart from the body. Ivory low heels visible below the hem. Keep the same adult Lingyue (27), long black half-up hair with its small gold pin, brown eyes, elegant mature Chinese facial identity and exact pose. No floating ribbons, scenery or props.",
+      "referencePath": "/Users/yunfeikong/Codex/女友/public/looks/lingyue-hanfu/character.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0dc4b-9c79-7c80-993d-09c51f4cf01f/exec-a2ec1bd1-ccf6-4e10-ac8c-3528a7f7df30.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/lingyue-moon/character.png",
+      "mode": "identity-preserving edit",
+      "tool": "built-in ImageGen"
+    }
+  ]
+}

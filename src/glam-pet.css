@@ -1,0 +1,23 @@
+.glam-pet {
+  isolation: isolate;
+}
+
+.glam-pet-canvas {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glam-pet-canvas:focus-visible {
+  outline: 1px solid rgb(236 216 244 / 65%);
+  outline-offset: -4px;
+  border-radius: 24px;
+}
+
+.glam-pet .live-pet-loading,
+.glam-pet .live-pet-error {
+  pointer-events: none;
+}
+
+.glam-pet .live-pet-error button {
+  pointer-events: auto;
+}

@@ -1,0 +1,21 @@
+// Keep browser and packaged local dialogue on the same appearance catalog.
+export {
+  LOOKS,
+  ORIGINAL_LOOK,
+  DEFAULT_LOOK_ID,
+  getLook,
+  isLookId,
+  cleanRemovedLookIds,
+  getAvailableLooks,
+  getRemovedLooks,
+  getAvailableLookId,
+  isLookAvailable,
+  summarizeLooks,
+  LOOK_FILTERS,
+  LOOK_COUNT,
+  CHARACTER_NAMES,
+  CHARACTER_COUNT,
+  WARDROBE_SUMMARY,
+  filterLooks,
+  matchLookAlias,
+} from "../server/looks.mjs";
