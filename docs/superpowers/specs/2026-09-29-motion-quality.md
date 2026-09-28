@@ -15,10 +15,10 @@ Make Linwei's `walk_feminine` and crouch sequence visibly stable and natural in 
 
 ### Walk assets and timing
 
-- Each Linwei look ships a 16-pose cycle made from real raster poses, not runtime alpha cross-fades between walking silhouettes.
+- Each Linwei look ships a 16-pose cycle made from real raster poses; interpolation never substitutes for a missing authored pose.
 - Poses use non-uniform durations matching contact/settle/down/compression/passing/rise/up/pre-contact phases on both sides.
 - Each pose has normalized ground-anchor metadata and left/right contact metadata.
-- The runtime holds a pose for its authored duration and switches directly at the boundary; cross-fade remains available only for idle-to-walk and walk-to-idle transitions.
+- The runtime keeps the first 58% of each authored pose crisp, then uses a short smoothstep overlap across the final 42% to remove the visible brightness flash of a hard texture swap. Ground anchors interpolate through the same window.
 
 ### Grounding and locomotion
 
@@ -44,10 +44,9 @@ Make Linwei's `walk_feminine` and crouch sequence visibly stable and natural in 
 
 ## Acceptance
 
-- A 10-second walk has no alpha double-limb blend, large brightness flash, periodic head bounce, or obvious ground-anchor jump.
+- A 10-second walk has no persistent double-limb ghosting, large brightness flash, periodic head bounce, or obvious ground-anchor jump; the brief boundary overlap must read as motion blur rather than a second pose.
 - Both directions work and finite walks stop at contact.
 - Stand → crouch → hold → stand contains anticipation, braking, a subtle rebound, and no hard drop/stop.
 - Blink, gaze, mouth motion, voice, chat, and outfit selection still work.
 - Automated tests, production web build, and desktop package all succeed.
 - The packaged application is launched and the walk/crouch sequence is visually checked before delivery.
-

@@ -12,6 +12,7 @@ import {
   advanceRootMovement,
   frameCompositeWeights,
   locomotionEnvelope,
+  resolveActionPoseAlpha,
   resolveLocomotionSpeed,
 } from "./motion/adapters/GlamMotionAdapter.mjs";
 import {
@@ -502,10 +503,7 @@ export default function GlamPet({
           applyDisplayTransform();
           const visibleAction = glamAdapter.getSample();
           const actionFrames = visibleAction.frame ? actionTextures.get(visibleAction.actionKind) : null;
-          const fadeOut = Number.isFinite(motionState.remainingMs)
-            ? Math.min(1, motionState.remainingMs / 240)
-            : 1;
-          const poseAlpha = actionFrames?.length ? visibleAction.poseAlpha * fadeOut : 0;
+          const poseAlpha = resolveActionPoseAlpha(visibleAction, motionState, Boolean(actionFrames?.length));
           if (actionMeshes.length) {
             if (actionFrames?.length) {
               const first = actionFrames[visibleAction.frame.index] || actionFrames[0];

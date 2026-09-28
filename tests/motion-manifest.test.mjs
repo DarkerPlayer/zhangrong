@@ -9,6 +9,7 @@ import {
   advanceRootMovement,
   frameAnchorOffset,
   locomotionEnvelope,
+  resolveActionPoseAlpha,
   resolveLocomotionSpeed,
   sampleFrameSequence,
   sampleGlamMotion,
@@ -142,9 +143,30 @@ test("Glam adapter can hold an exact authored frame for Motion Lab", () => {
   const manifest = createMotionManifest(linwei);
   const adapter = new GlamMotionAdapter({ manifest, availableActions: { sexyWalk: 4, squat: 1 } });
   const motion = manifest.motions.walk_feminine;
-  adapter.play(motion, { debugFrameIndex: 2, debugHold: true, facing: "right" });
-  assert.equal(adapter.getSample().frame.index, 2);
+  adapter.play(motion, { debugFrameIndex: 0, debugHold: true, facing: "right" });
+  assert.equal(adapter.getSample().frame.index, 0);
   assert.equal(adapter.getSample().frame.frameElapsedMs, 0);
+  assert.equal(adapter.getSample().poseAlpha, 1, "even the first held frame must remain visible");
+  for (let tick = 0; tick < 4; tick++) {
+    adapter.update({ debugFrameIndex: 0, debugHold: true, elapsedMs: 0, totalElapsedMs: 0, facing: "right" }, 16);
+    assert.equal(adapter.getSample().frame.index, 0);
+    assert.equal(adapter.getSample().poseAlpha, 1, "a held frame must survive renderer ticks");
+  }
+});
+
+test("crouch compositing stays continuous across enter, hold and exit", () => {
+  const enter = sampleGlamMotion({ id: "crouch_enter", durationMs: 650 }, 649, 1);
+  const hold = sampleGlamMotion({ id: "crouch_idle", durationMs: 1900 }, 0, 1);
+  const exit = sampleGlamMotion({ id: "crouch_exit", durationMs: 700 }, 699, 1);
+  const enterAlpha = resolveActionPoseAlpha(enter, { motionId: "crouch_enter", remainingMs: 1 }, true);
+  const holdAlpha = resolveActionPoseAlpha(hold, { motionId: "crouch_idle", remainingMs: Infinity }, true);
+  const exitAlpha = resolveActionPoseAlpha(exit, { motionId: "crouch_exit", remainingMs: 1 }, true);
+  assert.equal(enterAlpha, enter.poseAlpha, "enter must not fade back to standing before the hold");
+  assert.equal(holdAlpha, 1);
+  assert.equal(exitAlpha, exit.poseAlpha, "the authored exit curve owns the stand-up fade");
+  assert.ok(enterAlpha > 0.99);
+  assert.ok(exitAlpha < 0.01);
+  assert.equal(GlamMotion.frameCompositeWeights(0, enterAlpha).current, enterAlpha);
 });
 
 test("screen root movement is frame-rate independent and reverses at safe bounds", () => {

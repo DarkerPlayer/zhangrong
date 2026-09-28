@@ -94,6 +94,20 @@ export function frameCompositeWeights(frameBlend = 0, poseAlpha = 1) {
   };
 }
 
+export function resolveActionPoseAlpha(visibleAction = {}, motionState = {}, hasFrames = false) {
+  if (!hasFrames) return 0;
+  const alpha = clamp01(visibleAction.poseAlpha);
+  const motionId = motionState.motionId || visibleAction.motionId || "";
+  // Crouch enter/idle/exit form one continuous authored transition. Applying
+  // the generic finite-motion fade here would briefly return to the standing
+  // portrait between enter and hold, then snap back to the crouched artwork.
+  if (/^crouch_/.test(motionId)) return alpha;
+  const fadeOut = Number.isFinite(motionState.remainingMs)
+    ? Math.min(1, Math.max(0, motionState.remainingMs) / 240)
+    : 1;
+  return alpha * fadeOut;
+}
+
 export function advanceRootMovement(state = {}, deltaMs = 0, speedPxPerSecond = 0, boundPx = 0) {
   const bound = Math.max(0, Number(boundPx) || 0);
   const direction = state.direction === -1 ? -1 : 1;
@@ -234,6 +248,7 @@ export class GlamMotionAdapter {
     const facing = context.facing || "right";
     const debugElapsed = debugFrameElapsed(motion.frames, context.debugFrameIndex);
     const next = sampleGlamMotion(motion, debugElapsed ?? context.elapsedMs ?? 0, this.availableActions[motion.assets] || 0);
+    if (debugElapsed !== null && next.frame) next.poseAlpha = 1;
     if (next.frame) next.frame = { ...next.frame, anchorOffset: frameAnchorOffset(next.frame.groundAnchor, motion.groundAnchor, facing) };
     this.sample = { ...next, facing };
   }
@@ -243,10 +258,12 @@ export class GlamMotionAdapter {
     const debugElapsed = debugFrameElapsed(this.motion.frames, context.debugFrameIndex);
     const next = sampleGlamMotion(this.motion, debugElapsed ?? context.elapsedMs ?? 0, this.availableActions[this.motion.assets] || 0);
     if (/^walk_|legacy_walk/.test(this.motion.id) && next.frame) {
-      next.poseAlpha = Math.min(
-        1,
-        (Number(context.totalElapsedMs) || 0) / Math.max(1, this.motion.blendInMs || 180),
-      );
+      next.poseAlpha = debugElapsed !== null
+        ? 1
+        : Math.min(
+          1,
+          (Number(context.totalElapsedMs) || 0) / Math.max(1, this.motion.blendInMs || 180),
+        );
     }
     const secondaryOptions = /^crouch_/.test(this.motion.id)
       ? { stiffness: 46, damping: 9 }

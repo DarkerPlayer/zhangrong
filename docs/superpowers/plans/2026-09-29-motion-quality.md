@@ -8,7 +8,7 @@
 
 - Do not introduce runtime network dependencies.
 - Do not regress blink, gaze, lip sync, TTS, chat, wardrobe, or desktop-pet behavior.
-- Walking poses never alpha-cross-fade into one another.
+- Walking uses all 16 authored poses and permits only a short eased boundary overlap when visual QA shows that a hard swap flashes; it must not produce persistent double limbs.
 - Runtime code must tolerate looks that have no motion profiles.
 - Generated bitmap assets must remain 1024×1536 RGBA PNGs and preserve each look's identity/outfit.
 
@@ -16,13 +16,13 @@
 
 **Files:** `tests/look-catalog.test.mjs`, `tests/motion-manifest.test.mjs`, `server/looks.mjs`, `src/motion/MotionManifest.mjs`, `src/motion/adapters/GlamMotionAdapter.mjs`, `public/looks/linwei-*/actions/*.png`
 
-1. Change catalog and sampling tests to require 16 existing poses, unequal frame durations, phase/contact metadata, and zero intra-walk blend. Run the focused tests and confirm they fail on the current eight equal-time blended cycle.
+1. Change catalog and sampling tests to require 16 existing poses, unequal frame durations, phase/contact metadata, and a bounded end-of-pose transition. Run the focused tests and confirm they fail on the current eight equal-time blended cycle.
 2. Generate eight identity-preserving in-between pose assets per Linwei look with transparent background, inspect them, and save them beside the existing poses.
 3. Add per-look ordered pose descriptors with duration, phase, ground anchor, and foot-contact metadata.
 4. Pass the descriptors into the manifest/adapter and replace equal-time sampling with authored-duration sampling.
 5. Run focused tests and the full suite.
 
-Expected: 16 real files per look; frame selection follows cumulative durations; `blend` is always zero during the cycle.
+Expected: 16 real files per look; frame selection follows cumulative durations; each pose stays crisp for most of its hold and eases only at the boundary.
 
 ## Task 2: Ground anchoring, stride coupling, and safe walk exits
 
