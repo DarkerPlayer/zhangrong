@@ -156,6 +156,15 @@ test("development motion gallery exposes telemetry and P0 preview controls only 
     assert.ok(ui.getByRole("button", { name: "停止并待机" }));
     assert.ok(ui.getByRole("button", { name: "0.5×" }));
     assert.ok(ui.getByText("当前动作"));
+    assert.ok(ui.getByText("当前帧"));
+    assert.ok(ui.getByText("帧时长"));
+    assert.ok(ui.getByText("动作相位"));
+    assert.ok(ui.getByText("脚接触"));
+    assert.ok(ui.getByText("Ground Anchor"));
+    assert.ok(ui.getByText("安全退出"));
+    assert.ok(ui.getByRole("button", { name: "上一帧" }));
+    assert.ok(ui.getByRole("button", { name: "下一帧" }));
+    assert.ok(ui.getByLabelText("Motion Ground Overlay"));
   } finally {
     cleanup();
     dom.window.history.pushState({}, "", "/");

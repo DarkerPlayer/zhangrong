@@ -6,14 +6,16 @@ const MOTIONS = Object.freeze([
   { id: "idle_hair_touch", label: "整理头发", group: "Idle", duration: 3600 },
   { id: "walk_feminine", label: "轻盈走路", group: "Walk", duration: 10000 },
   { id: "walk_confident", label: "自信走路", group: "Walk", duration: 10000 },
-  { id: "crouch_enter", label: "自然蹲下", group: "Crouch", duration: 720 },
-  { id: "crouch_exit", label: "慢慢起身", group: "Crouch", duration: 760 },
+  { id: "crouch_enter", label: "自然蹲下", group: "Crouch", duration: 650 },
+  { id: "crouch_exit", label: "慢慢起身", group: "Crouch", duration: 700 },
   { id: "look_back", label: "回头看看", group: "Gesture", duration: 2600 },
 ]);
 
 const EMPTY = Object.freeze({
   model: "等待角色", action: "—", motionState: "—", motionTime: "0",
   motionPriority: "0", motionQueue: "", motionEvent: "—", facing: "right", motionSpeed: "1", fps: "0",
+  motionFrame: "0", frameCount: "0", frameDuration: "0", framePhase: "—",
+  footContact: "none", groundAnchor: "—", safeExit: "ready", groundScreenX: "50", groundScreenY: "90",
 });
 
 export default function MotionDebugPanel({ onPlay }) {
@@ -51,8 +53,29 @@ export default function MotionDebugPanel({ onPlay }) {
     onPlay(motion.id, { duration, direction, playbackRate: rate, silent: true });
   };
 
+  const stepFrame = (directionStep) => {
+    const count = Math.max(1, Number(telemetry.frameCount) || 16);
+    const current = Math.max(0, (Number(telemetry.motionFrame) || 1) - 1);
+    const debugFrameIndex = (current + directionStep + count) % count;
+    const motionId = /^walk_/.test(telemetry.action) ? telemetry.action : "walk_feminine";
+    onPlay(motionId, { debugFrameIndex, debugHold: true, direction, playbackRate: rate, silent: true });
+  };
+
+  const overlayStyle = {
+    "--motion-ground-x": `${Math.max(0, Number(telemetry.groundScreenX) || 50)}px`,
+    "--motion-ground-y": `${Math.max(0, Number(telemetry.groundScreenY) || 90)}px`,
+  };
+
   return (
-    <aside className="motion-debug-panel" aria-label="Motion Debug Panel">
+    <>
+      <div className="motion-debug-overlay" aria-label="Motion Ground Overlay" style={overlayStyle}>
+        <span className="motion-debug-ground-line" />
+        <span className="motion-debug-anchor-marker" title={`Ground Anchor ${telemetry.groundAnchor}`} />
+        <span className={`motion-debug-foot-marker ${telemetry.footContact}`}>
+          {telemetry.footContact === "left" ? "L" : telemetry.footContact === "right" ? "R" : "·"}
+        </span>
+      </div>
+      <aside className="motion-debug-panel" aria-label="Motion Debug Panel">
       <div className="motion-debug-heading">
         <div>
           <small>DEVELOPMENT ONLY</small>
@@ -70,10 +93,18 @@ export default function MotionDebugPanel({ onPlay }) {
         <div><dt>事件</dt><dd>{telemetry.motionEvent || "—"}</dd></div>
         <div><dt>方向</dt><dd>{telemetry.facing}</dd></div>
         <div><dt>速度</dt><dd>{telemetry.motionSpeed}×</dd></div>
+        <div><dt>当前帧</dt><dd>{telemetry.motionFrame} / {telemetry.frameCount}</dd></div>
+        <div><dt>帧时长</dt><dd>{telemetry.frameDuration} ms</dd></div>
+        <div><dt>动作相位</dt><dd>{telemetry.framePhase}</dd></div>
+        <div><dt>脚接触</dt><dd>{telemetry.footContact}</dd></div>
+        <div><dt>Ground Anchor</dt><dd>{telemetry.groundAnchor}</dd></div>
+        <div><dt>安全退出</dt><dd>{telemetry.safeExit}</dd></div>
       </dl>
       <div className="motion-debug-tools">
         <button type="button" onClick={() => onPlay("idle_neutral", { playbackRate: rate, silent: true })}>停止并待机</button>
         <button type="button" onClick={() => play(MOTIONS[(currentIndex + 1) % MOTIONS.length])}>下一个动作</button>
+        <button type="button" onClick={() => stepFrame(-1)}>上一帧</button>
+        <button type="button" onClick={() => stepFrame(1)}>下一帧</button>
         <button type="button" onClick={() => {
           const next = direction === "right" ? "left" : "right";
           setDirection(next);
@@ -94,6 +125,7 @@ export default function MotionDebugPanel({ onPlay }) {
           </section>
         ))}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

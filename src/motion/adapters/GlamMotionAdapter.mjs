@@ -73,6 +73,12 @@ function crouchLayerAmount(id, elapsedMs, durationMs, delayMs) {
     : crouchTimelineAmount(localElapsed, localDuration);
 }
 
+function debugFrameElapsed(frames, index) {
+  if (!Array.isArray(frames) || !frames.length || !Number.isInteger(index)) return null;
+  const normalized = ((index % frames.length) + frames.length) % frames.length;
+  return frames.slice(0, normalized).reduce((total, frame) => total + Math.max(1, Number(frame.durationMs) || 1), 0);
+}
+
 /**
  * Blend the resting portrait and two authored poses in one shader pass.
  * The weights always add to one, avoiding the 25% opacity dip produced by
@@ -212,14 +218,16 @@ export class GlamMotionAdapter {
   play(motion, context = {}) {
     this.motion = motion;
     const facing = context.facing || "right";
-    const next = sampleGlamMotion(motion, context.elapsedMs || 0, this.availableActions[motion.assets] || 0);
+    const debugElapsed = debugFrameElapsed(motion.frames, context.debugFrameIndex);
+    const next = sampleGlamMotion(motion, debugElapsed ?? context.elapsedMs ?? 0, this.availableActions[motion.assets] || 0);
     if (next.frame) next.frame = { ...next.frame, anchorOffset: frameAnchorOffset(next.frame.groundAnchor, motion.groundAnchor, facing) };
     this.sample = { ...next, facing };
   }
 
   update(context = {}, deltaMs = 0) {
     if (!this.motion) return;
-    const next = sampleGlamMotion(this.motion, context.elapsedMs || 0, this.availableActions[this.motion.assets] || 0);
+    const debugElapsed = debugFrameElapsed(this.motion.frames, context.debugFrameIndex);
+    const next = sampleGlamMotion(this.motion, debugElapsed ?? context.elapsedMs ?? 0, this.availableActions[this.motion.assets] || 0);
     if (/^walk_|legacy_walk/.test(this.motion.id) && next.frame) {
       next.poseAlpha = Math.min(
         1,

@@ -104,6 +104,10 @@ export class MotionController {
 
   update(deltaMs = 0) {
     if (this.destroyed || !this.current) return this.getMotionState();
+    if (this.current.options.debugHold === true) {
+      this.adapter.update?.(this.getMotionState(), 0);
+      return this.getMotionState();
+    }
     const dt = Math.max(0, Number(deltaMs) || 0) * this.speed;
     const entry = this.current;
     const previousTotalMs = entry.totalElapsedMs;
@@ -210,6 +214,10 @@ export class MotionController {
         ? Math.max(0, this.current.durationLimitMs - this.current.totalElapsedMs)
         : Infinity,
       safeExitPending: Boolean(this.current?.safeExitAtMs && this.current.totalElapsedMs < this.current.safeExitAtMs),
+      debugFrameIndex: Number.isInteger(this.current?.options.debugFrameIndex)
+        ? this.current.options.debugFrameIndex
+        : null,
+      debugHold: this.current?.options.debugHold === true,
       facing: this.facing,
       speed: this.speed,
       queue: this.queue.map((entry) => entry.requestedId),

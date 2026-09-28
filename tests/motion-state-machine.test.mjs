@@ -120,3 +120,12 @@ test("finite walking extends to the next contact-safe event before completing", 
   controller.playMotion("walk_feminine", { durationMs: 1250 });
   assert.equal(controller.getMotionState().durationLimitMs, 1250, "an exact contact should not add another half-cycle");
 });
+
+test("debug frame hold exposes the selected frame and freezes the motion clock", () => {
+  const { controller } = fixture();
+  controller.playMotion("walk_feminine", { debugFrameIndex: 3, debugHold: true });
+  assert.equal(controller.getMotionState().debugFrameIndex, 3);
+  controller.update(500);
+  assert.equal(controller.getMotionState().totalElapsedMs, 0);
+  assert.equal(controller.getMotionState().motionId, "walk_feminine");
+});

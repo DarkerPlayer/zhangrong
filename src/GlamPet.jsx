@@ -269,11 +269,26 @@ export default function GlamPet({
           motionController.queueMotion("crouch_exit", { priority: explicit });
         }
       } else if (kind === "sexyWalk") {
-        result = motionController.playMotion("walk_feminine", { priority: explicit, durationMs: options.duration || 4400, direction: options.direction });
+        result = motionController.playMotion("walk_feminine", {
+          ...options,
+          priority: explicit,
+          durationMs: options.debugHold ? undefined : (options.duration || 4400),
+          direction: options.direction,
+        });
       } else if (kind === "walk_confident") {
-        result = motionController.playMotion(kind, { priority: explicit, durationMs: options.duration || 4800, direction: options.direction });
+        result = motionController.playMotion(kind, {
+          ...options,
+          priority: explicit,
+          durationMs: options.debugHold ? undefined : (options.duration || 4800),
+          direction: options.direction,
+        });
       } else if (/^walk_/.test(kind)) {
-        result = motionController.playMotion(kind, { priority: explicit, durationMs: options.duration || 4200, direction: options.direction });
+        result = motionController.playMotion(kind, {
+          ...options,
+          priority: explicit,
+          durationMs: options.debugHold ? undefined : (options.duration || 4200),
+          direction: options.direction,
+        });
       } else if (kind === "crouch_enter" || kind === "crouch_exit") {
         result = motionController.playMotion(kind, { priority: explicit });
       } else {
@@ -558,6 +573,26 @@ export default function GlamPet({
             canvas.dataset.facing = motionState.facing;
             canvas.dataset.motionTime = String(Math.round(motionState.totalElapsedMs));
             canvas.dataset.motionSpeed = String(motionState.speed);
+            const debugFrame = visibleAction.frame;
+            canvas.dataset.motionFrame = debugFrame ? String(debugFrame.index + 1) : "0";
+            canvas.dataset.frameCount = String(actionFrames?.length || 0);
+            canvas.dataset.frameDuration = debugFrame ? String(debugFrame.frameDurationMs || 0) : "0";
+            canvas.dataset.framePhase = debugFrame?.phase || "—";
+            canvas.dataset.footContact = debugFrame?.contact || "none";
+            canvas.dataset.groundAnchor = debugFrame?.groundAnchor
+              ? debugFrame.groundAnchor.map((value) => Number(value).toFixed(3)).join(", ")
+              : "—";
+            canvas.dataset.safeExit = motionState.safeExitPending ? "waiting-contact" : "ready";
+            if (debugFrame?.groundAnchor && actionMeshes[0] && fitted) {
+              const mirrored = motionState.facing === "left";
+              const [anchorX, anchorY] = debugFrame.groundAnchor;
+              canvas.dataset.groundScreenX = String(Math.round(
+                actionMeshes[0].position.x + (mirrored ? -anchorX : anchorX) * imageWidth * fitted.scale,
+              ));
+              canvas.dataset.groundScreenY = String(Math.round(
+                actionMeshes[0].position.y + anchorY * imageHeight * fitted.scale,
+              ));
+            }
             canvas.dataset.fps = String(Math.round((frames - telemetryFrames) * 1000 / Math.max(1, telemetryElapsed)));
             telemetryFrames = frames;
           }

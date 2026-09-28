@@ -133,6 +133,15 @@ test("Glam adapter samples by elapsed milliseconds and resets on stop", () => {
   assert.equal(adapter.getSample().poseAlpha, 0);
 });
 
+test("Glam adapter can hold an exact authored frame for Motion Lab", () => {
+  const manifest = createMotionManifest(linwei);
+  const adapter = new GlamMotionAdapter({ manifest, availableActions: { sexyWalk: 4, squat: 1 } });
+  const motion = manifest.motions.walk_feminine;
+  adapter.play(motion, { debugFrameIndex: 2, debugHold: true, facing: "right" });
+  assert.equal(adapter.getSample().frame.index, 2);
+  assert.equal(adapter.getSample().frame.frameElapsedMs, 0);
+});
+
 test("screen root movement is frame-rate independent and reverses at safe bounds", () => {
   let at60 = { offset: 0, direction: 1 };
   let at30 = { offset: 0, direction: 1 };
