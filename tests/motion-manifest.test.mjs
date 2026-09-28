@@ -7,6 +7,9 @@ import {
 import {
   GlamMotionAdapter,
   advanceRootMovement,
+  frameAnchorOffset,
+  locomotionEnvelope,
+  resolveLocomotionSpeed,
   sampleFrameSequence,
   sampleGlamMotion,
 } from "../src/motion/adapters/GlamMotionAdapter.mjs";
@@ -118,4 +121,22 @@ test("screen root movement is frame-rate independent and reverses at safe bounds
   const bounced = advanceRootMovement({ offset: 23, direction: 1 }, 100, 48, 24);
   assert.equal(bounced.offset, 24);
   assert.equal(bounced.direction, -1);
+});
+
+test("walk grounding mirrors horizontal correction while keeping the ground Y fixed", () => {
+  assert.deepEqual(frameAnchorOffset([0.48, 0.975], [0.5, 0.982], "right"), { x: 0.02, y: 0.007 });
+  assert.deepEqual(frameAnchorOffset([0.48, 0.975], [0.5, 0.982], "left"), { x: -0.02, y: 0.007 });
+  assert.deepEqual(frameAnchorOffset([0.1, 0.8], [0.5, 0.982], "right"), { x: 0.03, y: 0.02 });
+});
+
+test("walk translation uses the authored stride and eases into and out of locomotion", () => {
+  const manifest = createMotionManifest(linwei);
+  const motion = manifest.motions.walk_feminine;
+  assert.equal(resolveLocomotionSpeed(motion), 72);
+  assert.equal(motion.stridePx, 17.28);
+  assert.equal(locomotionEnvelope({ totalElapsedMs: 0, remainingMs: Infinity }, { accelerationMs: 280, decelerationMs: 320 }), 0);
+  assert.equal(locomotionEnvelope({ totalElapsedMs: 140, remainingMs: Infinity }, { accelerationMs: 280, decelerationMs: 320 }), 0.5);
+  assert.equal(locomotionEnvelope({ totalElapsedMs: 280, remainingMs: 1000 }, { accelerationMs: 280, decelerationMs: 320 }), 1);
+  assert.equal(locomotionEnvelope({ totalElapsedMs: 1000, remainingMs: 160 }, { accelerationMs: 280, decelerationMs: 320 }), 0.5);
+  assert.equal(locomotionEnvelope({ totalElapsedMs: 1000, remainingMs: 0 }, { accelerationMs: 280, decelerationMs: 320 }), 0);
 });

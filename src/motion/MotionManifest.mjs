@@ -54,13 +54,19 @@ export function createMotionManifest(look = {}) {
     motions.walk_feminine = motion("walk_feminine", {
       category: "locomotion", source: "frames", assets: "sexyWalk",
       frames: feminineFrames, durationMs: profileDuration(feminineFrames), loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
-      blendInMs: 180, blendOutMs: 220, speedPxPerSecond: 72, stridePx: 63.36,
+      blendInMs: 180, blendOutMs: 220, accelerationMs: 280, decelerationMs: 320,
+      speedPxPerSecond: 72, stridePx: Number((72 * profileDuration(feminineFrames) / 1000).toFixed(2)),
+      groundAnchor: Object.freeze([0.5, 0.982]),
+      safeExitEvents: Object.freeze(["foot_right_contact", "foot_left_contact"]),
       events: [{ timeMs: 0, event: "foot_right_contact" }, { timeMs: 440, event: "foot_left_contact" }],
     });
     motions.walk_confident = motion("walk_confident", {
       category: "locomotion", source: "frames", assets: "sexyWalk",
       frames: confidentFrames, durationMs: profileDuration(confidentFrames), loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
-      blendInMs: 200, blendOutMs: 240, speedPxPerSecond: 68, stridePx: 67.32,
+      blendInMs: 200, blendOutMs: 240, accelerationMs: 300, decelerationMs: 340,
+      speedPxPerSecond: 68, stridePx: Number((68 * profileDuration(confidentFrames) / 1000).toFixed(2)),
+      groundAnchor: Object.freeze([0.5, 0.982]),
+      safeExitEvents: Object.freeze(["foot_right_contact", "foot_left_contact"]),
       events: [{ timeMs: 0, event: "foot_right_contact" }, { timeMs: 495, event: "foot_left_contact" }],
     });
     motions.legacy_walk = motion("legacy_walk", {

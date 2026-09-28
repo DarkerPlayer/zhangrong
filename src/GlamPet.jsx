@@ -11,6 +11,8 @@ import {
   GlamMotionAdapter,
   advanceRootMovement,
   frameCompositeWeights,
+  locomotionEnvelope,
+  resolveLocomotionSpeed,
 } from "./motion/adapters/GlamMotionAdapter.mjs";
 import {
   createGlamActionQueue,
@@ -221,12 +223,20 @@ export default function GlamPet({
       if (!fitted) return;
       const facing = motionController?.getMotionState().facing || "right";
       const mirrored = facing === "left";
-      for (const display of [mesh, armMesh, ...actionMeshes]) {
+      for (const display of [mesh, armMesh]) {
         if (!display) continue;
         display.scale.set(mirrored ? -fitted.scale : fitted.scale, fitted.scale);
         display.position.set(
           fitted.x + rootMovement.offset + (mirrored ? imageWidth * fitted.scale : 0),
           fitted.y,
+        );
+      }
+      const anchorOffset = glamAdapter?.getSample()?.frame?.anchorOffset || { x: 0, y: 0 };
+      for (const display of actionMeshes) {
+        display.scale.set(mirrored ? -fitted.scale : fitted.scale, fitted.scale);
+        display.position.set(
+          fitted.x + rootMovement.offset + (mirrored ? imageWidth * fitted.scale : 0) + anchorOffset.x * imageWidth * fitted.scale,
+          fitted.y + anchorOffset.y * imageHeight * fitted.scale,
         );
       }
     };
@@ -461,7 +471,8 @@ export default function GlamPet({
           }
           if (moving) {
             const previousDirection = rootMovement.direction;
-            const speed = manifest.motions[motionState.motionId]?.speedPxPerSecond || 72;
+            const locomotion = manifest.motions[motionState.motionId] || {};
+            const speed = resolveLocomotionSpeed(locomotion) * locomotionEnvelope(motionState, locomotion);
             rootMovement = advanceRootMovement(
               rootMovement,
               dt * motionState.speed,

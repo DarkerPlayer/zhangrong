@@ -19,6 +19,32 @@ const WALK_FEMININE = Object.freeze([
 ]);
 
 const clamp01 = (value) => Math.min(1, Math.max(0, Number(value) || 0));
+const rounded = (value) => Math.round(value * 1e6) / 1e6;
+
+export function frameAnchorOffset(anchor, reference = [0.5, 0.982], facing = "right") {
+  const point = Array.isArray(anchor) ? anchor : reference;
+  const x = Math.max(-0.03, Math.min(0.03, (Number(reference[0]) || 0.5) - (Number(point[0]) || 0.5)));
+  const y = Math.max(-0.02, Math.min(0.02, (Number(reference[1]) || 0.982) - (Number(point[1]) || 0.982)));
+  return { x: rounded(facing === "left" ? -x : x), y: rounded(y) };
+}
+
+export function resolveLocomotionSpeed(motion = {}) {
+  const durationMs = Number(motion.durationMs);
+  const stridePx = Number(motion.stridePx);
+  if (durationMs > 0 && stridePx >= 0) return stridePx * 1000 / durationMs;
+  return Math.max(0, Number(motion.speedPxPerSecond) || 0);
+}
+
+export function locomotionEnvelope(state = {}, motion = {}) {
+  const accelerationMs = Math.max(1, Number(motion.accelerationMs) || 1);
+  const decelerationMs = Math.max(1, Number(motion.decelerationMs) || 1);
+  const accelerate = applyEasing("smoothstep", Math.max(0, Number(state.totalElapsedMs) || 0) / accelerationMs);
+  const remainingMs = Number(state.remainingMs);
+  const decelerate = Number.isFinite(remainingMs)
+    ? applyEasing("smoothstep", Math.max(0, remainingMs) / decelerationMs)
+    : 1;
+  return Math.min(accelerate, decelerate);
+}
 
 /**
  * Blend the resting portrait and two authored poses in one shader pass.
@@ -131,7 +157,10 @@ export class GlamMotionAdapter {
 
   play(motion, context = {}) {
     this.motion = motion;
-    this.sample = { ...sampleGlamMotion(motion, context.elapsedMs || 0, this.availableActions[motion.assets] || 0), facing: context.facing || "right" };
+    const facing = context.facing || "right";
+    const next = sampleGlamMotion(motion, context.elapsedMs || 0, this.availableActions[motion.assets] || 0);
+    if (next.frame) next.frame = { ...next.frame, anchorOffset: frameAnchorOffset(next.frame.groundAnchor, motion.groundAnchor, facing) };
+    this.sample = { ...next, facing };
   }
 
   update(context = {}, deltaMs = 0) {
@@ -145,7 +174,9 @@ export class GlamMotionAdapter {
     }
     stepSecondaryMotion(this.secondary, { hairLag: next.pose.hairLag, clothLag: next.pose.clothLag }, deltaMs, { stiffness: 64, damping: 12 });
     next.pose = { ...next.pose, hairLag: this.secondary.hairLag.value, clothLag: this.secondary.clothLag.value };
-    this.sample = { ...next, facing: context.facing || "right" };
+    const facing = context.facing || "right";
+    if (next.frame) next.frame = { ...next.frame, anchorOffset: frameAnchorOffset(next.frame.groundAnchor, this.motion.groundAnchor, facing) };
+    this.sample = { ...next, facing };
   }
 
   stop(_motion, reason) {

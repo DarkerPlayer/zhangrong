@@ -10,6 +10,7 @@ const motions = {
   walk_feminine: {
     id: "walk_feminine", category: "locomotion", durationMs: 1000, loop: true, priority: 2,
     events: [{ timeMs: 250, event: "foot_left_contact" }, { timeMs: 750, event: "foot_right_contact" }],
+    safeExitEvents: ["foot_left_contact", "foot_right_contact"],
   },
   crouch_enter: { id: "crouch_enter", category: "crouch", durationMs: 600, loop: false, priority: 5, next: "crouch_idle" },
   crouch_idle: { id: "crouch_idle", category: "crouch", durationMs: 1000, loop: true, priority: 5 },
@@ -103,4 +104,19 @@ test("motion events survive large frame steps and repeat once per loop crossing"
     ["foot_right_contact", 1750],
     ["foot_left_contact", 2250],
   ]);
+});
+
+test("finite walking extends to the next contact-safe event before completing", () => {
+  const { controller, calls } = fixture();
+  controller.playMotion("walk_feminine", { durationMs: 1300 });
+  assert.equal(controller.getMotionState().durationLimitMs, 1750);
+  assert.equal(controller.getMotionState().safeExitPending, true);
+  controller.update(1749);
+  assert.equal(controller.getMotionState().motionId, "walk_feminine");
+  controller.update(1);
+  assert.equal(controller.getMotionState().motionId, null);
+  assert.deepEqual(calls.at(-1).slice(0, 3), ["stop", "walk_feminine", "complete"]);
+
+  controller.playMotion("walk_feminine", { durationMs: 1250 });
+  assert.equal(controller.getMotionState().durationLimitMs, 1250, "an exact contact should not add another half-cycle");
 });

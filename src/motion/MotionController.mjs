@@ -2,6 +2,24 @@ import { LEGACY_MOTION_ALIASES, MOTION_STATES } from "./constants.mjs";
 import { resolveMotionId } from "./MotionFallback.mjs";
 import { MotionStateMachine } from "./MotionStateMachine.mjs";
 
+function nextSafeExitMs(motion, requestedMs) {
+  const requested = Math.max(0, Number(requestedMs) || 0);
+  if (!motion.loop || !Array.isArray(motion.safeExitEvents) || !motion.safeExitEvents.length) return requested;
+  const durationMs = Math.max(1, Number(motion.durationMs) || 1);
+  const safeEvents = new Set(motion.safeExitEvents);
+  const times = (motion.events || [])
+    .filter(({ event }) => safeEvents.has(event))
+    .map(({ timeMs }) => Math.min(durationMs, Math.max(0, Number(timeMs) || 0)));
+  if (!times.length) return requested;
+  let next = Infinity;
+  for (const timeMs of times) {
+    let occurrence = Math.floor((requested - timeMs) / durationMs) * durationMs + timeMs;
+    if (occurrence < requested - 1e-9) occurrence += durationMs;
+    if (occurrence < next) next = occurrence;
+  }
+  return Number.isFinite(next) ? next : requested;
+}
+
 export class MotionController {
   constructor({ motions = {}, adapter = {}, fallbacks, aliases = LEGACY_MOTION_ALIASES, onEvent } = {}) {
     this.motions = motions;
@@ -49,19 +67,22 @@ export class MotionController {
   start(motion, requestedId, options = {}) {
     const priority = Number.isFinite(options.priority) ? options.priority : (motion.priority ?? 0);
     const repeat = Number.isFinite(options.repeat) ? Math.max(1, Math.floor(options.repeat)) : null;
-    const limit = Number.isFinite(options.durationMs)
+    const requestedLimit = Number.isFinite(options.durationMs)
       ? Math.max(0, options.durationMs)
       : repeat
         ? motion.durationMs * repeat
         : motion.loop
           ? Infinity
           : motion.durationMs;
+    const limit = Number.isFinite(requestedLimit) ? nextSafeExitMs(motion, requestedLimit) : requestedLimit;
     this.current = {
       motion,
       requestedId,
       elapsedMs: 0,
       totalElapsedMs: 0,
       durationLimitMs: limit,
+      requestedDurationMs: requestedLimit,
+      safeExitAtMs: limit > requestedLimit ? limit : null,
       priority,
       options,
     };
@@ -188,6 +209,7 @@ export class MotionController {
       remainingMs: this.current && Number.isFinite(this.current.durationLimitMs)
         ? Math.max(0, this.current.durationLimitMs - this.current.totalElapsedMs)
         : Infinity,
+      safeExitPending: Boolean(this.current?.safeExitAtMs && this.current.totalElapsedMs < this.current.safeExitAtMs),
       facing: this.facing,
       speed: this.speed,
       queue: this.queue.map((entry) => entry.requestedId),
