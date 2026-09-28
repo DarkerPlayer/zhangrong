@@ -17,7 +17,12 @@ const linwei = {
   character: "林薇",
   actions: {
     squat: ["squat.png"],
-    sexyWalk: ["01.png", "02.png", "03.png", "04.png"],
+    sexyWalk: [
+      { src: "01.png", durationMs: 75, phase: "right_contact", groundAnchor: [0.5, 0.98], contact: "right" },
+      { src: "02.png", durationMs: 55, phase: "right_settle", groundAnchor: [0.49, 0.98] },
+      { src: "03.png", durationMs: 45, phase: "right_down", groundAnchor: [0.48, 0.98] },
+      { src: "04.png", durationMs: 65, phase: "left_pre_contact", groundAnchor: [0.47, 0.98] },
+    ],
   },
 };
 
@@ -27,6 +32,9 @@ test("a Linwei look exposes all eight P0 motions without changing legacy assets"
   assert.equal(manifest.character, "林薇");
   assert.deepEqual(P0_MOTION_IDS.filter((id) => !(id in manifest.motions)), []);
   assert.equal(manifest.motions.walk_feminine.assets, "sexyWalk");
+  assert.equal(manifest.motions.walk_feminine.frames.length, 4);
+  assert.equal(manifest.motions.walk_feminine.frames[0].phase, "right_contact");
+  assert.equal(manifest.motions.walk_feminine.durationMs, 240);
   assert.equal(manifest.motions.crouch_idle.assets, "squat");
   assert.equal(manifest.motions.crouch_enter.next, "crouch_idle");
 });
@@ -40,17 +48,23 @@ test("a look without pose PNGs keeps mesh idle and marks full-body motions unava
   assert.equal(adapter.canPlay("crouch_enter"), false);
 });
 
-test("four authored walk frames use a short seam cross-fade while the body follows eight phases", () => {
-  assert.deepEqual(sampleFrameSequence(4, 0, 1000), { index: 0, nextIndex: 1, blend: 0 });
-  assert.deepEqual(sampleFrameSequence(4, 125, 1000), { index: 0, nextIndex: 1, blend: 0 });
-  assert.deepEqual(sampleFrameSequence(4, 875, 1000), { index: 3, nextIndex: 0, blend: 0 });
-  const seam = sampleFrameSequence(4, 240, 1000);
-  assert.equal(seam.index, 0);
-  assert.ok(seam.blend > 0.9, "the next pose should fade in only near the frame seam");
-  const rightContact = sampleGlamMotion({ id: "walk_feminine", durationMs: 1000 }, 0, 4);
-  const passing = sampleGlamMotion({ id: "walk_feminine", durationMs: 1000 }, 250, 4);
+test("walk frames honor authored durations and never alpha-blend adjacent silhouettes", () => {
+  const frames = linwei.actions.sexyWalk;
+  assert.deepEqual(sampleFrameSequence(frames, 0), {
+    index: 0, nextIndex: 1, blend: 0, frameElapsedMs: 0, frameDurationMs: 75,
+    phase: "right_contact", contact: "right", groundAnchor: [0.5, 0.98],
+  });
+  assert.equal(sampleFrameSequence(frames, 74).index, 0);
+  assert.equal(sampleFrameSequence(frames, 75).index, 1);
+  assert.equal(sampleFrameSequence(frames, 129).index, 1);
+  assert.equal(sampleFrameSequence(frames, 130).index, 2);
+  assert.equal(sampleFrameSequence(frames, 239).index, 3);
+  assert.equal(sampleFrameSequence(frames, 240).index, 0, "the authored cycle should wrap exactly");
+  for (let time = 0; time < 480; time += 7) assert.equal(sampleFrameSequence(frames, time).blend, 0);
+  const rightContact = sampleGlamMotion({ id: "walk_feminine", durationMs: 240, frames }, 0, frames.length);
+  const passing = sampleGlamMotion({ id: "walk_feminine", durationMs: 240, frames }, 130, frames.length);
   assert.equal(rightContact.frame.index, 0);
-  assert.equal(passing.frame.index, 1);
+  assert.equal(passing.frame.index, 2);
   assert.notEqual(rightContact.pose.hipRoll, passing.pose.hipRoll);
   assert.ok(Math.abs(rightContact.pose.headAngle) < Math.abs(rightContact.pose.hipRoll * 100));
 });
@@ -88,7 +102,7 @@ test("Glam adapter samples by elapsed milliseconds and resets on stop", () => {
   adapter.play(motion, { elapsedMs: 0, facing: "left" });
   adapter.update({ elapsedMs: motion.durationMs / 2, facing: "left" }, motion.durationMs / 2);
   assert.equal(adapter.getSample().facing, "left");
-  assert.equal(adapter.getSample().frame.index, 2);
+  assert.equal(adapter.getSample().frame.phase, "right_settle");
   adapter.update({ elapsedMs: 0, totalElapsedMs: motion.durationMs, facing: "left" }, motion.durationMs / 2);
   assert.equal(adapter.getSample().poseAlpha, 1, "loop seams must not fade the artwork every cycle");
   adapter.stop(motion, "stopped");

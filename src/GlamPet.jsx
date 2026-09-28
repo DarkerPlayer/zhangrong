@@ -318,8 +318,9 @@ export default function GlamPet({
           Object.entries(look.actions || {}).map(async ([kind, sources]) => {
             const results = await Promise.allSettled(
               sources.map(async (source) => {
-                const response = await fetch(source, { signal: abort.signal });
-                if (!response.ok) throw new Error(`Action artwork ${source}: HTTP ${response.status}`);
+                const assetSource = typeof source === "string" ? source : source.src;
+                const response = await fetch(assetSource, { signal: abort.signal });
+                if (!response.ok) throw new Error(`Action artwork ${assetSource}: HTTP ${response.status}`);
                 const url = URL.createObjectURL(await response.blob());
                 actionImageUrls.push(url);
                 const frameImage = new Image();

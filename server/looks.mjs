@@ -41,6 +41,40 @@ const recent = (region, styles = []) => ({
   greetingMotion: "nod",
 });
 
+const WALK_POSES = Object.freeze([
+  ["walk-01.png", 75, "right_contact", "right"],
+  ["walk-01-a.png", 55, "right_settle"],
+  ["walk-01-02.png", 45, "right_down"],
+  ["walk-01-b.png", 45, "right_compression"],
+  ["walk-02.png", 50, "left_passing"],
+  ["walk-02-a.png", 50, "right_rise"],
+  ["walk-02-03.png", 55, "right_up"],
+  ["walk-02-b.png", 65, "left_pre_contact"],
+  ["walk-03.png", 75, "left_contact", "left"],
+  ["walk-03-a.png", 55, "left_settle"],
+  ["walk-03-04.png", 45, "left_down"],
+  ["walk-03-b.png", 45, "left_compression"],
+  ["walk-04.png", 50, "right_passing"],
+  ["walk-04-a.png", 50, "left_rise"],
+  ["walk-04-01.png", 55, "left_up"],
+  ["walk-04-b.png", 65, "right_pre_contact"],
+]);
+
+const WALK_ANCHORS = Object.freeze([
+  [0.500, 0.982], [0.497, 0.982], [0.493, 0.979], [0.489, 0.978],
+  [0.486, 0.976], [0.488, 0.978], [0.493, 0.980], [0.497, 0.981],
+  [0.500, 0.982], [0.503, 0.982], [0.507, 0.979], [0.511, 0.978],
+  [0.514, 0.976], [0.512, 0.978], [0.507, 0.980], [0.503, 0.981],
+]);
+
+const linweiWalk = (lookId) => WALK_POSES.map(([file, durationMs, phase, contact], index) => ({
+  src: `/looks/${lookId}/actions/${file}`,
+  durationMs,
+  phase,
+  groundAnchor: WALK_ANCHORS[index],
+  ...(contact ? { contact } : {}),
+}));
+
 export const LOOKS = [
   makeLook(
     "linwei-ivory-wrap",
@@ -61,16 +95,7 @@ export const LOOKS = [
       ],
       actions: {
         squat: ["/looks/linwei-ivory-wrap/actions/squat.png"],
-        sexyWalk: [
-          "/looks/linwei-ivory-wrap/actions/walk-01.png",
-          "/looks/linwei-ivory-wrap/actions/walk-01-02.png",
-          "/looks/linwei-ivory-wrap/actions/walk-02.png",
-          "/looks/linwei-ivory-wrap/actions/walk-02-03.png",
-          "/looks/linwei-ivory-wrap/actions/walk-03.png",
-          "/looks/linwei-ivory-wrap/actions/walk-03-04.png",
-          "/looks/linwei-ivory-wrap/actions/walk-04.png",
-          "/looks/linwei-ivory-wrap/actions/walk-04-01.png",
-        ],
+        sexyWalk: linweiWalk("linwei-ivory-wrap"),
       },
     },
   ),
@@ -87,16 +112,7 @@ export const LOOKS = [
       aliases: ["酒红通勤", "红底高跟鞋", "红底鞋", "白衬衫红裙"],
       actions: {
         squat: ["/looks/linwei-red-sole/actions/squat.png"],
-        sexyWalk: [
-          "/looks/linwei-red-sole/actions/walk-01.png",
-          "/looks/linwei-red-sole/actions/walk-01-02.png",
-          "/looks/linwei-red-sole/actions/walk-02.png",
-          "/looks/linwei-red-sole/actions/walk-02-03.png",
-          "/looks/linwei-red-sole/actions/walk-03.png",
-          "/looks/linwei-red-sole/actions/walk-03-04.png",
-          "/looks/linwei-red-sole/actions/walk-04.png",
-          "/looks/linwei-red-sole/actions/walk-04-01.png",
-        ],
+        sexyWalk: linweiWalk("linwei-red-sole"),
       },
     },
   ),

@@ -84,12 +84,22 @@ test("the Medusa fantasy avatar is selectable and searchable by its character or
   assert.equal(catalog.matchLookAlias("请换上金枝王冠"), id);
 });
 
-test("Linwei walk cycles ship eight coherent key poses instead of four cross-faded silhouettes", () => {
+test("Linwei walk cycles ship sixteen timed poses with grounded contact metadata", () => {
   for (const id of ["linwei-ivory-wrap", "linwei-red-sole"]) {
     const frames = catalog.getLook(id).actions.sexyWalk;
-    assert.equal(frames.length, 8, `${id} should provide a full eight-pose walk cycle`);
+    assert.equal(frames.length, 16, `${id} should provide a full sixteen-pose walk cycle`);
+    assert.ok(new Set(frames.map(({ durationMs }) => durationMs)).size > 1, `${id} should not use equal frame timing`);
+    assert.deepEqual(
+      frames.filter(({ contact }) => contact).map(({ contact }) => contact),
+      ["right", "left"],
+      `${id} should mark the two contact poses`,
+    );
     for (const frame of frames) {
-      assert.equal(existsSync(resolve("public", frame.replace(/^\//, ""))), true, frame);
+      assert.equal(typeof frame.phase, "string");
+      assert.equal(Number.isFinite(frame.durationMs), true);
+      assert.equal(Array.isArray(frame.groundAnchor), true);
+      assert.equal(frame.groundAnchor.length, 2);
+      assert.equal(existsSync(resolve("public", frame.src.replace(/^\//, ""))), true, frame.src);
     }
   }
 });

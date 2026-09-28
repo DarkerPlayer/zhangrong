@@ -46,17 +46,29 @@ export function advanceRootMovement(state = {}, deltaMs = 0, speedPxPerSecond = 
   return { offset: next, direction };
 }
 
-export function sampleFrameSequence(frameCount, elapsedMs, durationMs) {
-  const count = Math.max(1, Math.floor(Number(frameCount) || 1));
-  const duration = Math.max(1, Number(durationMs) || 1);
-  const phase = ((((Number(elapsedMs) || 0) % duration) + duration) % duration) / duration * count;
-  const index = Math.floor(phase) % count;
-  const localPhase = phase - Math.floor(phase);
-  // Full-frame dissolves make separated arms and legs appear twice. Hold the
-  // authored pose, then use a short eased seam to hide the four-frame cut;
-  // the eight-phase mesh curve supplies continuity between those seams.
-  const blend = applyEasing("smoothstep", clamp01((localPhase - 0.62) / 0.38));
-  return { index, nextIndex: (index + 1) % count, blend };
+export function sampleFrameSequence(frames, elapsedMs) {
+  const profile = Array.isArray(frames) && frames.length
+    ? frames
+    : [{ durationMs: 1, phase: "pose_1", groundAnchor: [0.5, 0.982], contact: null }];
+  const duration = profile.reduce((total, frame) => total + Math.max(1, Number(frame.durationMs) || 1), 0);
+  let cycleTime = (((Number(elapsedMs) || 0) % duration) + duration) % duration;
+  let index = 0;
+  for (; index < profile.length - 1; index++) {
+    const frameDuration = Math.max(1, Number(profile[index].durationMs) || 1);
+    if (cycleTime < frameDuration) break;
+    cycleTime -= frameDuration;
+  }
+  const frame = profile[index];
+  return {
+    index,
+    nextIndex: (index + 1) % profile.length,
+    blend: 0,
+    frameElapsedMs: cycleTime,
+    frameDurationMs: Math.max(1, Number(frame.durationMs) || 1),
+    phase: frame.phase || `pose_${index + 1}`,
+    contact: frame.contact || null,
+    groundAnchor: Array.isArray(frame.groundAnchor) ? frame.groundAnchor : [0.5, 0.982],
+  };
 }
 
 export function sampleGlamMotion(motion = {}, elapsedMs = 0, frameCount = 0) {
@@ -72,7 +84,7 @@ export function sampleGlamMotion(motion = {}, elapsedMs = 0, frameCount = 0) {
     if (id === "walk_confident") {
       pose = { ...pose, hipX: pose.hipX * 0.86, hipRoll: pose.hipRoll * 0.88, shoulderRoll: pose.shoulderRoll * 0.9, bodyY: pose.bodyY * 0.65 };
     }
-    frame = sampleFrameSequence(frameCount, elapsedMs, durationMs);
+    frame = sampleFrameSequence(motion.frames, elapsedMs);
     poseAlpha = frameCount > 0 ? Math.min(1, elapsedMs / Math.max(1, motion.blendInMs || 180)) : 0;
     actionKind = "sexyWalk";
   } else if (/^crouch_|legacy_crouch/.test(id)) {

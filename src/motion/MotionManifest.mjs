@@ -13,6 +13,19 @@ export const P0_MOTION_IDS = Object.freeze([
 
 const motion = (id, values) => Object.freeze({ id, version: 1, ...values });
 
+const frameProfile = (frames = [], scale = 1) => Object.freeze(frames.map((frame, index) => {
+  const source = typeof frame === "string" ? { src: frame } : frame;
+  return Object.freeze({
+    src: source.src,
+    durationMs: Math.max(1, Math.round((Number(source.durationMs) || 60) * scale)),
+    phase: source.phase || `pose_${index + 1}`,
+    groundAnchor: Object.freeze(Array.isArray(source.groundAnchor) ? source.groundAnchor.slice(0, 2) : [0.5, 0.982]),
+    contact: source.contact || null,
+  });
+}));
+
+const profileDuration = (frames) => frames.reduce((total, frame) => total + frame.durationMs, 0);
+
 export function createMotionManifest(look = {}) {
   const actions = look.actions || {};
   const motions = {
@@ -36,21 +49,23 @@ export function createMotionManifest(look = {}) {
     look_back: motion("look_back", { category: "gesture", source: "mesh", durationMs: 2600, loop: false, priority: MOTION_PRIORITIES.GESTURE }),
   };
   if (Array.isArray(actions.sexyWalk) && actions.sexyWalk.length) {
+    const feminineFrames = frameProfile(actions.sexyWalk);
+    const confidentFrames = frameProfile(actions.sexyWalk, 1.125);
     motions.walk_feminine = motion("walk_feminine", {
       category: "locomotion", source: "frames", assets: "sexyWalk",
-      durationMs: 960, loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
-      blendInMs: 180, blendOutMs: 220, speedPxPerSecond: 72, stridePx: 69,
-      events: [{ timeMs: 1, event: "foot_left_contact" }, { timeMs: 480, event: "foot_right_contact" }],
+      frames: feminineFrames, durationMs: profileDuration(feminineFrames), loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
+      blendInMs: 180, blendOutMs: 220, speedPxPerSecond: 72, stridePx: 63.36,
+      events: [{ timeMs: 0, event: "foot_right_contact" }, { timeMs: 440, event: "foot_left_contact" }],
     });
     motions.walk_confident = motion("walk_confident", {
       category: "locomotion", source: "frames", assets: "sexyWalk",
-      durationMs: 1080, loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
-      blendInMs: 200, blendOutMs: 240, speedPxPerSecond: 68, stridePx: 73,
-      events: [{ timeMs: 1, event: "foot_left_contact" }, { timeMs: 540, event: "foot_right_contact" }],
+      frames: confidentFrames, durationMs: profileDuration(confidentFrames), loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
+      blendInMs: 200, blendOutMs: 240, speedPxPerSecond: 68, stridePx: 67.32,
+      events: [{ timeMs: 0, event: "foot_right_contact" }, { timeMs: 495, event: "foot_left_contact" }],
     });
     motions.legacy_walk = motion("legacy_walk", {
       category: "locomotion", source: "frames", assets: "sexyWalk",
-      durationMs: 840, loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
+      frames: feminineFrames, durationMs: profileDuration(feminineFrames), loop: true, priority: MOTION_PRIORITIES.LOCOMOTION,
     });
   }
   if (Array.isArray(actions.squat) && actions.squat.length) {
