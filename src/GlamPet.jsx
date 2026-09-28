@@ -7,7 +7,11 @@ import { MotionController } from "./motion/MotionController.mjs";
 import { MotionScheduler } from "./motion/MotionScheduler.mjs";
 import { createMotionManifest } from "./motion/MotionManifest.mjs";
 import { MOTION_PRIORITIES, MOTION_STATES } from "./motion/constants.mjs";
-import { GlamMotionAdapter, advanceRootMovement } from "./motion/adapters/GlamMotionAdapter.mjs";
+import {
+  GlamMotionAdapter,
+  advanceRootMovement,
+  frameCompositeWeights,
+} from "./motion/adapters/GlamMotionAdapter.mjs";
 import {
   createGlamActionQueue,
   armSplitRows,
@@ -52,10 +56,26 @@ uniform vec2 uShoulder;
 uniform float uArmLayer;
 uniform float uUseArmMask;
 uniform sampler2D uArmBoundary;
+uniform sampler2D uBaseSampler;
+uniform sampler2D uNextSampler;
+uniform float uBaseWeight;
+uniform float uCurrentWeight;
+uniform float uNextWeight;
+uniform float uStabilizeFace;
+uniform vec4 uHead;
 
 float oval(vec2 point, vec2 center, vec2 radius, float feather) {
   float distance = length((point - center) / radius);
   return 1.0 - smoothstep(1.0 - feather, 1.0 + feather, distance);
+}
+
+vec4 portraitSample(vec2 uv) {
+  vec4 base = texture2D(uBaseSampler, uv);
+  vec4 source = base * uBaseWeight +
+    texture2D(uSampler, uv) * uCurrentWeight +
+    texture2D(uNextSampler, uv) * uNextWeight;
+  float stableFace = oval(uv, uHead.xy, uHead.zw * vec2(0.62, 0.76), 0.26) * uStabilizeFace;
+  return mix(source, base, stableFace);
 }
 
 vec3 eye(vec3 source, vec4 shape, vec3 skin, vec3 lid) {
@@ -63,7 +83,7 @@ vec3 eye(vec3 source, vec4 shape, vec3 skin, vec3 lid) {
   float cover = oval(vTextureCoord, shape.xy, shape.zw * vec2(1.12, 1.43), 0.16);
   // The eyebrow sits just above the eye. Borrow clean under-eye skin instead
   // of stretching that eyebrow into a second dark line across the eyelid.
-  vec3 lowerSkin = texture2D(uSampler, vec2(vTextureCoord.x, shape.y + shape.w * 2.2)).rgb;
+  vec3 lowerSkin = portraitSample(vec2(vTextureCoord.x, shape.y + shape.w * 2.2)).rgb;
   vec3 upperSkin = lowerSkin * vec3(0.87, 0.80, 0.78);
   vec3 eyelid = mix(upperSkin, lowerSkin * 0.96, smoothstep(-1.0, 1.0, q.y));
   // Fade the complete eye into its shaded lid, avoiding a moving rectangular
@@ -86,7 +106,7 @@ void main(void) {
   q.x /= 1.0 - opening * 0.025;
   q.y = (q.y - opening * 0.12) / (1.0 + opening * 0.42);
   if (opening > 0.0001) mouthUV = uMouth.xy + q * uMouth.zw;
-  vec4 source = texture2D(uSampler, mouthUV);
+  vec4 source = portraitSample(mouthUV);
   vec3 result = source.rgb;
   if (uBlink > 0.001) {
     result = eye(result, uEyeL, uEyeSkinL, uLidL);
@@ -366,6 +386,13 @@ export default function GlamPet({
             uArmLayer: 0,
             uUseArmMask: 1,
             uArmBoundary: armBoundaryTexture,
+            uBaseSampler: texture,
+            uNextSampler: texture,
+            uBaseWeight: 0,
+            uCurrentWeight: 1,
+            uNextWeight: 0,
+            uStabilizeFace: 0,
+            uHead: new Float32Array([rig.head.x, rig.head.y, rig.head.radiusX, rig.head.radiusY]),
           },
         });
         const geometry = new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65);
@@ -379,10 +406,20 @@ export default function GlamPet({
         app.stage.addChild(mesh, armMesh);
         const firstActionFrame = [...actionTextures.values()].find((frames) => frames.length)?.[0];
         if (firstActionFrame) {
-          for (let index = 0; index < 2; index++) {
+          for (let index = 0; index < 1; index++) {
             const actionMaterial = new PIXI.MeshMaterial(firstActionFrame, {
               program: material.program,
-              uniforms: { ...material.uniforms, uArmLayer: 0, uUseArmMask: 0 },
+              uniforms: {
+                ...material.uniforms,
+                uArmLayer: 0,
+                uUseArmMask: 0,
+                uBaseSampler: texture,
+                uNextSampler: firstActionFrame,
+                uBaseWeight: 0,
+                uCurrentWeight: 1,
+                uNextWeight: 0,
+                uStabilizeFace: 1,
+              },
             });
             const actionMesh = new PIXI.Mesh(new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65), actionMaterial);
             actionMesh.alpha = 0;
@@ -447,15 +484,19 @@ export default function GlamPet({
               const first = actionFrames[visibleAction.frame.index] || actionFrames[0];
               const second = actionFrames[visibleAction.frame.nextIndex] || first;
               if (actionMeshes[0].texture !== first) actionMeshes[0].texture = first;
-              if (actionMeshes[1].texture !== second) actionMeshes[1].texture = second;
-              actionMeshes[0].alpha = poseAlpha * (1 - visibleAction.frame.blend);
-              actionMeshes[1].alpha = poseAlpha * visibleAction.frame.blend;
+              const weights = frameCompositeWeights(visibleAction.frame.blend, poseAlpha);
+              actionMaterials[0].uniforms.uNextSampler = second;
+              actionMaterials[0].uniforms.uBaseWeight = weights.base;
+              actionMaterials[0].uniforms.uCurrentWeight = weights.current;
+              actionMaterials[0].uniforms.uNextWeight = weights.next;
+              actionMeshes[0].alpha = 1;
+              mesh.alpha = 0;
+              armMesh.alpha = 0;
             } else {
               actionMeshes[0].alpha = 0;
-              actionMeshes[1].alpha = 0;
+              mesh.alpha = 1;
+              armMesh.alpha = 1;
             }
-            mesh.alpha = 1 - poseAlpha;
-            armMesh.alpha = 1 - poseAlpha;
           }
           const follow = 1 - Math.exp(-dt / 230);
           gaze.x += (gazeTarget.x - gaze.x) * follow;

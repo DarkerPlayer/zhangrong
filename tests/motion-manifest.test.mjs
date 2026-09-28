@@ -10,6 +10,7 @@ import {
   sampleFrameSequence,
   sampleGlamMotion,
 } from "../src/motion/adapters/GlamMotionAdapter.mjs";
+import * as GlamMotion from "../src/motion/adapters/GlamMotionAdapter.mjs";
 
 const linwei = {
   id: "linwei-red-sole",
@@ -52,6 +53,22 @@ test("four authored walk frames use a short seam cross-fade while the body follo
   assert.equal(passing.frame.index, 1);
   assert.notEqual(rightContact.pose.hipRoll, passing.pose.hipRoll);
   assert.ok(Math.abs(rightContact.pose.headAngle) < Math.abs(rightContact.pose.hipRoll * 100));
+});
+
+test("walk frame compositing keeps full opacity through every cross-fade", () => {
+  assert.equal(typeof GlamMotion.frameCompositeWeights, "function");
+  const samples = [
+    [0, 0, { base: 1, current: 0, next: 0 }],
+    [0, 1, { base: 0, current: 1, next: 0 }],
+    [0.5, 1, { base: 0, current: 0.5, next: 0.5 }],
+    [1, 1, { base: 0, current: 0, next: 1 }],
+    [0.5, 0.5, { base: 0.5, current: 0.25, next: 0.25 }],
+  ];
+  for (const [blend, poseAlpha, expected] of samples) {
+    const weights = GlamMotion.frameCompositeWeights(blend, poseAlpha);
+    assert.deepEqual(weights, expected);
+    assert.ok(Math.abs(weights.base + weights.current + weights.next - 1) < 1e-9);
+  }
 });
 
 test("crouch enter, hold and exit expose a smooth pose alpha", () => {

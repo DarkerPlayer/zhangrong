@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import * as catalog from "../src/looks.mjs";
 
 test("expanded wardrobe keeps existing IDs and the saved default alongside thirteen adult companions", () => {
@@ -80,4 +82,14 @@ test("the Medusa fantasy avatar is selectable and searchable by its character or
   assert.equal(catalog.isLookId(id), true);
   assert.ok(catalog.filterLooks({ query: "金枝王冠" }).some((item) => item.id === id));
   assert.equal(catalog.matchLookAlias("请换上金枝王冠"), id);
+});
+
+test("Linwei walk cycles ship eight coherent key poses instead of four cross-faded silhouettes", () => {
+  for (const id of ["linwei-ivory-wrap", "linwei-red-sole"]) {
+    const frames = catalog.getLook(id).actions.sexyWalk;
+    assert.equal(frames.length, 8, `${id} should provide a full eight-pose walk cycle`);
+    for (const frame of frames) {
+      assert.equal(existsSync(resolve("public", frame.replace(/^\//, ""))), true, frame);
+    }
+  }
 });

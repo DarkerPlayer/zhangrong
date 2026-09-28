@@ -20,6 +20,21 @@ const WALK_FEMININE = Object.freeze([
 
 const clamp01 = (value) => Math.min(1, Math.max(0, Number(value) || 0));
 
+/**
+ * Blend the resting portrait and two authored poses in one shader pass.
+ * The weights always add to one, avoiding the 25% opacity dip produced by
+ * stacking two independently faded sprites with source-over compositing.
+ */
+export function frameCompositeWeights(frameBlend = 0, poseAlpha = 1) {
+  const blend = clamp01(frameBlend);
+  const action = clamp01(poseAlpha);
+  return {
+    base: 1 - action,
+    current: action * (1 - blend),
+    next: action * blend,
+  };
+}
+
 export function advanceRootMovement(state = {}, deltaMs = 0, speedPxPerSecond = 0, boundPx = 0) {
   const bound = Math.max(0, Number(boundPx) || 0);
   const direction = state.direction === -1 ? -1 : 1;
