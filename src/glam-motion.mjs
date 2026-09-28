@@ -290,3 +290,20 @@ export function fitGlamModel(viewWidth, viewHeight, imageWidth, imageHeight, pet
     y: vh * pad - bounds.top * ih * scale,
   };
 }
+
+export function resolveActionFit(portraitFit, fullBodyFit, action = {}) {
+  if (!portraitFit) return fullBodyFit;
+  if (!fullBodyFit) return portraitFit;
+  const motionId = action.motionId || action.kind || action.actionKind || "";
+  if (!/^crouch_/.test(motionId) && motionId !== "legacy_crouch" && motionId !== "squat") {
+    return portraitFit;
+  }
+  const amount = Math.min(1, Math.max(0, Number(action.pose?.crouchAmount) || 0));
+  if (amount === 0) return portraitFit;
+  if (amount === 1) return fullBodyFit;
+  return {
+    scale: portraitFit.scale + (fullBodyFit.scale - portraitFit.scale) * amount,
+    x: portraitFit.x + (fullBodyFit.x - portraitFit.x) * amount,
+    y: portraitFit.y + (fullBodyFit.y - portraitFit.y) * amount,
+  };
+}

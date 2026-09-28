@@ -22,6 +22,7 @@ import {
   glamPose,
   deformVertices,
   fitGlamModel,
+  resolveActionFit,
 } from "./glam-motion.mjs";
 import "./glam-pet.css";
 
@@ -169,6 +170,7 @@ export default function GlamPet({
     let idleScheduler;
     let glamAdapter;
     let fitted;
+    let fullBodyFitted;
     let rootMovement = { offset: 0, direction: 1 };
     let wasMoving = false;
     let texture;
@@ -232,12 +234,14 @@ export default function GlamPet({
           fitted.y,
         );
       }
-      const anchorOffset = glamAdapter?.getSample()?.frame?.anchorOffset || { x: 0, y: 0 };
+      const visibleAction = glamAdapter?.getSample();
+      const actionFit = resolveActionFit(fitted, fullBodyFitted, visibleAction);
+      const anchorOffset = visibleAction?.frame?.anchorOffset || { x: 0, y: 0 };
       for (const display of actionMeshes) {
-        display.scale.set(mirrored ? -fitted.scale : fitted.scale, fitted.scale);
+        display.scale.set(mirrored ? -actionFit.scale : actionFit.scale, actionFit.scale);
         display.position.set(
-          fitted.x + rootMovement.offset + (mirrored ? imageWidth * fitted.scale : 0) + anchorOffset.x * imageWidth * fitted.scale,
-          fitted.y + anchorOffset.y * imageHeight * fitted.scale,
+          actionFit.x + rootMovement.offset + (mirrored ? imageWidth * actionFit.scale : 0) + anchorOffset.x * imageWidth * actionFit.scale,
+          actionFit.y + anchorOffset.y * imageHeight * actionFit.scale,
         );
       }
     };
@@ -248,6 +252,7 @@ export default function GlamPet({
       const height = Math.max(1, host.clientHeight);
       app.renderer.resize(width, height);
       fitted = fitGlamModel(width, height, imageWidth, imageHeight, latest.current.petMode, rig);
+      fullBodyFitted = fitGlamModel(width, height, imageWidth, imageHeight, true, rig);
       applyDisplayTransform();
       canvas.dataset.framing = latest.current.petMode ? "full-body" : "portrait";
       app.render();

@@ -142,6 +142,35 @@ test("full-body fitting keeps opaque art and gesture margins inside small and la
   assert.ok(Number.isFinite(fitGlamModel(0, 0, 0, 0, true, rig).scale));
 });
 
+test("crouch framing reveals the complete pose in a short portrait viewport", () => {
+  const width = 270;
+  const height = 251;
+  const imageWidth = 1024;
+  const imageHeight = 1536;
+  const rig = normalizeRig({ bounds: { left: 0.25, top: 0.005, right: 0.75, bottom: 0.99 } });
+  const portrait = fitGlamModel(width, height, imageWidth, imageHeight, false, rig);
+  const fullBody = fitGlamModel(width, height, imageWidth, imageHeight, true, rig);
+
+  const crouched = glamMotion.resolveActionFit(portrait, fullBody, {
+    motionId: "crouch_idle",
+    pose: { crouchAmount: 1 },
+  });
+  assert.ok(crouched.y >= 0);
+  assert.ok(crouched.y + imageHeight * crouched.scale <= height);
+  assert.ok(crouched.x >= 0);
+  assert.ok(crouched.x + imageWidth * crouched.scale <= width);
+
+  const halfway = glamMotion.resolveActionFit(portrait, fullBody, {
+    motionId: "crouch_enter",
+    pose: { crouchAmount: 0.5 },
+  });
+  assert.ok(halfway.scale < portrait.scale && halfway.scale > fullBody.scale);
+  assert.deepEqual(
+    glamMotion.resolveActionFit(portrait, fullBody, { motionId: "walk_feminine", pose: {} }),
+    portrait,
+  );
+});
+
 test("malformed facial coordinates cannot poison shader uniforms or mesh positions", () => {
   const rig = normalizeRig({ head: { x: NaN }, eyes: [{ x: 9, y: -2, rx: 0, skin: [255, NaN, 0] }] });
   assert.ok(Number.isFinite(rig.head.x));
