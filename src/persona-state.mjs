@@ -319,7 +319,7 @@ export function exportablePersonaMessages(state) {
   ].sort((a, b) => a.createdAt - b.createdAt);
 }
 
-export function addPersonaCorpus(state, personaId, text, title = "") {
+export function addPersonaCorpus(state, personaId, text, title = "", category = "fallback", level = "mature") {
   const content = cleanText(text, 240);
   if (!content) return state;
   const profile = state.personas?.[personaId];
@@ -328,8 +328,8 @@ export function addPersonaCorpus(state, personaId, text, title = "") {
     id: makeId(),
     title: cleanText(title, 60) || content.split(/\r?\n/, 1)[0].slice(0, 36),
     text: content,
-    category: "fallback",
-    level: "mature",
+    category: ["greeting", "daily", "affection", "teasing", "seduction", "comfort", "jealousy", "praise", "goodnight", "fallback"].includes(category) ? category : "fallback",
+    level: INTIMACY_LEVELS.includes(level) ? level : "mature",
     enabled: true,
     createdAt: Date.now(),
   };

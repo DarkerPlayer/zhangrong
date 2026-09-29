@@ -55,11 +55,14 @@ import {
   addPersonaCorpus,
   appendPersonaMessage,
   clearPersonaThread,
+  clonePersona as clonePersonaState,
   deletePersonaCorpus,
   exportablePersonaMessages,
   getActivePersona,
   getPersonaThread,
+  removePersona as removePersonaState,
   setActivePersona,
+  togglePersonaCorpus,
   togglePersonaFavorite,
   updatePersonaMemories,
   updatePersonaProfile,
@@ -79,7 +82,6 @@ import {
   isLookId,
   summarizeLooks,
 } from "./looks.mjs";
-import VoiceLibrary from "./VoiceLibrary.jsx";
 import WardrobeFilters, { WardrobeEmpty } from "./WardrobeFilters.jsx";
 import {
   getCharacter,
@@ -96,6 +98,7 @@ import PetShell from "./PetShell.jsx";
 import LookActionMenu from "./LookActionMenu.jsx";
 import MotionDebugPanel from "./MotionDebugPanel.jsx";
 import WardrobePage from "./WardrobePage.jsx";
+import PersonaPage from "./PersonaPage.jsx";
 
 function load() {
   try {
@@ -950,6 +953,37 @@ export default function App() {
     setState((s) => deletePersonaCorpus(s, s.activePersonaId, id));
     notify("这条语料已删除。");
   }
+  function setPersonaIntimacy(intimacyLevel, adultAcknowledged = false) {
+    setState((current) =>
+      updatePersonaProfile(current, current.activePersonaId, {
+        intimacyLevel,
+        adultAcknowledged,
+      }),
+    );
+  }
+  function renameActivePersona(displayName) {
+    setState((current) =>
+      updatePersonaProfile(current, current.activePersonaId, { displayName }),
+    );
+  }
+  function setActivePersonaAge(age) {
+    setState((current) =>
+      updatePersonaProfile(current, current.activePersonaId, { age }),
+    );
+  }
+  function cloneActivePersona() {
+    requestEpoch.current += 1;
+    requestRef.current?.abort();
+    sendLock.current = false;
+    setBusy(false);
+    setState((current) => clonePersonaState(current, current.activePersonaId));
+    notify("已复制为完全独立的人格副本。");
+  }
+  function removeActivePersona() {
+    const name = activePersonaName;
+    setState((current) => removePersonaState(current, current.activePersonaId));
+    notify(`已删除「${name}」的人格副本。`);
+  }
   function clearHistory() {
     requestEpoch.current++;
     requestRef.current?.abort();
@@ -1114,6 +1148,7 @@ export default function App() {
         <div className="nav-main">
           {[
             { id: null, icon: ChatCircleDots, label: "陪伴" },
+            { id: "personas", icon: Heart, label: "女友" },
             { id: "wardrobe", icon: CoatHanger, label: "衣橱" },
             { id: "focus", icon: Timer, label: "专注" },
             { id: "memories", icon: BookOpen, label: "回忆" },
@@ -1378,7 +1413,7 @@ export default function App() {
             <button
               type="button"
               className="corpus-open-button"
-              onClick={() => nav("corpora")}
+              onClick={() => nav("personas")}
               aria-label={`打开语料库，共 ${personaCorpora.length} 条`}
               title="语料库"
             >
@@ -1514,6 +1549,48 @@ export default function App() {
               onReady: onPetReady,
               onError: onPetError,
             }}
+          />
+        )}
+        {panel === "personas" && (
+          <PersonaPage
+            state={state}
+            activePersona={activePersona}
+            activeSnapshot={activePersonaSnapshot}
+            appearanceCaption={currentLook.outfit || currentLook.name}
+            selectPersona={choosePersona}
+            setIntimacy={setPersonaIntimacy}
+            renamePersona={renameActivePersona}
+            setPersonaAge={setActivePersonaAge}
+            clonePersona={cloneActivePersona}
+            removePersona={removeActivePersona}
+            addCorpus={(text, title, category, level) =>
+              setState((current) =>
+                addPersonaCorpus(current, current.activePersonaId, text, title, category, level),
+              )
+            }
+            toggleCorpus={(id) =>
+              setState((current) => togglePersonaCorpus(current, current.activePersonaId, id))
+            }
+            deleteCorpus={(id) =>
+              setState((current) => deletePersonaCorpus(current, current.activePersonaId, id))
+            }
+            voiceProps={{
+              speaking,
+              onStop: () => {
+                stopSpeech();
+                setSpeaking(false);
+                setSpeechPreparing(false);
+              },
+              onPreview: () =>
+                readAloud(`你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`),
+              onSelectedVoice: (voiceProfileId) =>
+                setState((current) =>
+                  updatePersonaProfile(current, current.activePersonaId, { voiceProfileId }),
+                ),
+              onChange: () =>
+                fetch("/api/health").then((response) => response.json()).then(setHealth).catch(() => {}),
+            }}
+            onClose={() => setPanel(null)}
           />
         )}
         {panel === "wardrobe-legacy" && (
@@ -2062,32 +2139,6 @@ export default function App() {
                     onChange={(voice) => changeSettings({ voice })}
                   />
                 </div>
-                <VoiceLibrary
-                  speaking={speaking}
-                  personaName={activePersonaName}
-                  preferredVoiceId={activePersona.voiceProfileId}
-                  onSelectedVoice={(voiceProfileId) =>
-                    setState((current) =>
-                      updatePersonaProfile(current, current.activePersonaId, { voiceProfileId }),
-                    )
-                  }
-                  onStop={() => {
-                    stopSpeech();
-                    setSpeaking(false);
-                    setSpeechPreparing(false);
-                  }}
-                  onPreview={() =>
-                    readAloud(
-                      `你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`,
-                    )
-                  }
-                  onChange={() =>
-                    fetch("/api/health")
-                      .then((r) => r.json())
-                      .then(setHealth)
-                      .catch(() => {})
-                  }
-                />
                 <div className="setting-row">
                   <div>
                     <strong>角色自动动作</strong>

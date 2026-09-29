@@ -365,6 +365,58 @@ test("favoriting and clearing affect only the active girlfriend thread", async (
   assert.equal(saved.personaThreads["older-sister"].messages[0].content, "只属于姐姐");
 });
 
+test("女友本体页管理三个人格、亲密度、复制与独立语料", async () => {
+ try {
+  const base = restoreState(null);
+  base.lookId = "ruby-velvet";
+  const ui = await mountV2(base);
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  const page = ui.getByRole("region", { name: "女友本体" });
+  assert.equal(ui.getAllByRole("button", { name: /^选择女友：/ }).length, 3);
+  assert.ok(ui.getByText(/当前外观.*只是一层形象|外观.*不改变人格/));
+
+  fireEvent.click(ui.getByRole("button", { name: "选择女友：林岚" }));
+  fireEvent.change(ui.getByRole("textbox", { name: "人格名称" }), {
+    target: { value: "岚总" },
+  });
+  fireEvent.click(ui.getByRole("button", { name: "亲密度：甜蜜" }));
+  fireEvent.click(ui.getByRole("button", { name: "亲密度：成人" }));
+  assert.ok(ui.getByRole("dialog", { name: "确认成人亲密模式" }));
+  fireEvent.click(ui.getByRole("button", { name: "取消成人模式" }));
+  let saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.equal(saved.personas["boss-girlfriend"].intimacyLevel, "sweet");
+  assert.equal(saved.personas["boss-girlfriend"].adultAcknowledged, false);
+
+  fireEvent.click(ui.getByRole("button", { name: "亲密度：成人" }));
+  fireEvent.click(ui.getByRole("button", { name: "确认已成年并启用" }));
+  saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.equal(saved.personas["boss-girlfriend"].intimacyLevel, "adult");
+  assert.equal(saved.personas["boss-girlfriend"].adultAcknowledged, true);
+
+  fireEvent.click(ui.getByRole("button", { name: "复制当前人格" }));
+  fireEvent.change(ui.getByRole("spinbutton", { name: "人格年龄" }), {
+    target: { value: "36" },
+  });
+  fireEvent.change(ui.getByRole("textbox", { name: "人格语料内容" }), {
+    target: { value: "下班后先让我抱抱你。" },
+  });
+  fireEvent.click(ui.getByRole("button", { name: "添加人格语料" }));
+  assert.ok(ui.getAllByText("下班后先让我抱抱你。").length >= 1);
+  fireEvent.click(ui.getByRole("switch", { name: /启用语料/ }));
+  fireEvent.click(ui.getByRole("button", { name: /删除人格语料/ }));
+
+  saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  const copy = saved.personas[saved.activePersonaId];
+  assert.equal(copy.custom, true);
+  assert.equal(copy.age, 36);
+  assert.equal(copy.customCorpora.length, 0);
+  assert.equal(saved.lookId, "ruby-velvet");
+  assert.equal(page.isConnected, true);
+ } catch (error) {
+  throw new Error(String(error?.message || error).replace(/\u001b\[[0-9;]*m/g, ""));
+ }
+});
+
 test("development motion gallery exposes telemetry and P0 preview controls only on its route", async () => {
   dom.window.history.pushState({}, "", "/dev/motions");
   try {
@@ -706,8 +758,8 @@ test("pet wardrobe filtering returns to the results without taking search focus"
 test('reference voice settings identify local synthesis and preview the selected voice',async()=>{
  const original=globalThis.fetch;
  globalThis.fetch=async(url,options)=>url==='/api/health'?{json:async()=>({ok:true,voice:true,voiceProfile:{mode:'reference',name:'参考音色',available:true,local:true}})}:original(url,options);
- const ui=await mount();fireEvent.click(ui.getByRole('button',{name:'设置',exact:true}));
- assert.ok(ui.getByText('参考音色 · 本机流式朗读'));
+ const ui=await mount();fireEvent.click(ui.getByRole('button',{name:'女友',exact:true}));
+ assert.ok(ui.getByRole('heading',{name:'沈知意的音色库'}));
  fireEvent.click(ui.getByRole('button',{name:'试听当前音色',exact:true}));
  assert.match(globalThis.__speechCalls.at(-1),/你好，我是沈知意/);
 });
@@ -721,7 +773,7 @@ test('saved voice cards can switch the active voice and rename without changing 
   if(url==='/api/voices/rename'){renamed=JSON.parse(options.body).name;return {ok:true,json:async()=>snapshot()}}
   return base(url,options);
  };
- const ui=render(React.createElement(App));fireEvent.click(ui.getByRole('button',{name:'设置',exact:true}));
+ const ui=render(React.createElement(App));fireEvent.click(ui.getByRole('button',{name:'女友',exact:true}));
  await waitFor(()=>assert.ok(ui.getByText('温柔声音')));
  fireEvent.click(ui.getByRole('button',{name:'使用音色',exact:true}));await waitFor(()=>assert.equal(selected,'custom'));
  await waitFor(()=>assert.equal(JSON.parse(localStorage.getItem('muyu-state-v2')).personas['older-sister'].voiceProfileId,'custom'));
