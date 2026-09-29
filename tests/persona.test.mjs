@@ -9,6 +9,11 @@ import {
   resolvePersonaProfile,
   validatePersonaDefinition,
 } from "../server/personas.mjs";
+import {
+  choosePersonaLine,
+  detectDialogueIntent,
+  selectPersonaReferences,
+} from "../server/persona-dialogue.mjs";
 
 const COMMON_CATEGORIES = [
   "greeting",
@@ -96,4 +101,42 @@ test("invalid persona snapshots reject underage, oversized, and appearance-bound
     }),
     /240/,
   );
+});
+
+test("dialogue intents select only bounded references from the active intimacy level", () => {
+  const profile = {
+    id: "boss-girlfriend",
+    templateId: "boss-girlfriend",
+    intimacyLevel: "adult",
+    adultAcknowledged: true,
+    customCorpora: [],
+  };
+  const persona = resolvePersonaProfile(profile);
+  assert.equal(detectDialogueIntent("你好呀"), "greeting");
+  assert.equal(detectDialogueIntent("今天真的很累"), "comfort");
+  assert.equal(detectDialogueIntent("逗逗我"), "teasing");
+  assert.equal(detectDialogueIntent("晚安"), "goodnight");
+  const references = selectPersonaReferences(persona, "teasing", 4);
+  assert.equal(references.length, 4);
+  assert.ok(references.every((line) => persona.corpora.teasing.adult.includes(line)));
+  assert.ok(references.every((line) => !persona.corpora.teasing.sweet.includes(line)));
+});
+
+test("persona line choice avoids the last three assistant replies", () => {
+  const persona = resolvePersonaProfile({
+    id: "adult-younger",
+    templateId: "adult-younger",
+    intimacyLevel: "sweet",
+    adultAcknowledged: false,
+    customCorpora: [],
+  });
+  const blocked = persona.corpora.greeting.slice(0, 3);
+  const line = choosePersonaLine(
+    persona,
+    "greeting",
+    blocked.map((content) => ({ role: "assistant", content })),
+    "你好",
+    { userName: "阿远", personaName: persona.name },
+  );
+  assert.equal(blocked.includes(line), false);
 });
