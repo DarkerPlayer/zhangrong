@@ -2,8 +2,27 @@ import {
   DEFAULT_LOOK_ID,
   cleanRemovedLookIds,
   getAvailableLookId,
+  getLook,
   isLookId,
 } from "./looks.mjs";
+import {
+  CHARACTERS,
+  getCharacterForLook,
+  getDefaultBackgroundId,
+  isBackgroundId,
+} from "./wardrobe.mjs";
+import {
+  createBuiltinPersonaProfiles,
+  createEmptyPersonaThread,
+  normalizePersonaCorpora,
+  normalizePersonaMessages,
+  normalizePersonaProfile,
+  syncPersonaAliases,
+} from "./persona-state.mjs";
+import { DEFAULT_PERSONA_TEMPLATE_ID } from "./personas.mjs";
+
+export const STORAGE_KEY = "muyu-state-v2";
+export const LEGACY_STORAGE_KEY = "muyu-state-v1";
 
 const makeId = () =>
   globalThis.crypto?.randomUUID?.() ||
@@ -51,6 +70,22 @@ export const DEFAULT_SETTINGS = {
   model: "",
   fontSize: "normal",
 };
+
+function restoreSettings(value) {
+  const x = value && typeof value === "object" ? value : {};
+  const settings = { ...DEFAULT_SETTINGS };
+  for (const key of ["voice", "motion"])
+    if (typeof x[key] === "boolean") settings[key] = x[key];
+  if (typeof x.name === "string") settings.name = x.name.slice(0, 24);
+  if (typeof x.volume === "number" && x.volume >= 0 && x.volume <= 1)
+    settings.volume = x.volume;
+  if (["auto", "offline", "ollama"].includes(x.provider))
+    settings.provider = x.provider;
+  if (typeof x.model === "string") settings.model = x.model.slice(0, 100);
+  if (x.fontSize === "large") settings.fontSize = "large";
+  return settings;
+}
+
 export function restoreState(raw) {
   let p;
   try {
@@ -59,71 +94,147 @@ export function restoreState(raw) {
     p = {};
   }
   if (!p || typeof p !== "object") p = {};
-  const x = p.settings || {},
-    settings = { ...DEFAULT_SETTINGS };
-  for (const k of ["voice", "motion"])
-    if (typeof x[k] === "boolean") settings[k] = x[k];
-  if (typeof x.name === "string") settings.name = x.name.slice(0, 24);
-  if (typeof x.volume === "number" && x.volume >= 0 && x.volume <= 1)
-    settings.volume = x.volume;
-  if (["auto", "offline", "ollama"].includes(x.provider))
-    settings.provider = x.provider;
-  if (typeof x.model === "string") settings.model = x.model.slice(0, 100);
-  if (x.fontSize === "large") settings.fontSize = "large";
-  const normalizeMessages = (items) =>
-    (Array.isArray(items) ? items : [])
-      .filter(
-        (m) =>
-          m &&
-          ["user", "assistant"].includes(m.role) &&
-          typeof m.content === "string" &&
-          m.content.trim(),
-      )
-      .map((m) => ({
-        id: typeof m.id === "string" ? m.id : makeId(),
-        role: m.role,
-        content: m.content.slice(0, 4000),
-        createdAt: Number(m.createdAt) || Date.now(),
-        provider: m.provider,
-      }));
-  const messages = normalizeMessages(p.messages).slice(-200);
-  const oldFavorites = Array.isArray(p.favorites) ? p.favorites : [];
-  const savedMessages = normalizeMessages(
-    Array.isArray(p.savedMessages)
-      ? p.savedMessages
-      : messages.filter((m) => oldFavorites.includes(m.id)),
-  );
-  const corpora = (Array.isArray(p.corpora) ? p.corpora : [])
-    .filter((item) => item && typeof item.text === "string" && item.text.trim())
-    .map((item) => {
-      const text = item.text.trim().slice(0, 1500);
-      const title =
-        typeof item.title === "string" && item.title.trim()
-          ? item.title.trim().slice(0, 60)
-          : text.split(/\r?\n/, 1)[0].slice(0, 36);
-      return {
-        id: typeof item.id === "string" ? item.id : makeId(),
-        title,
-        text,
-        createdAt: Number(item.createdAt) || Date.now(),
-      };
-    })
-    .slice(0, 100);
+  const settings = restoreSettings(p.settings);
   const removedLookIds = cleanRemovedLookIds(p.removedLookIds);
   const savedLookId = isLookId(p.lookId) ? p.lookId : DEFAULT_LOOK_ID;
-  return {
+  const lookId = getAvailableLookId(removedLookIds, savedLookId);
+  const activeCharacterId = getCharacterForLook(lookId).id;
+  const rawProfiles =
+    p.characterProfiles && typeof p.characterProfiles === "object"
+      ? p.characterProfiles
+      : {};
+  const characterProfiles = Object.fromEntries(
+    CHARACTERS.flatMap((character) => {
+      const rawProfile = rawProfiles[character.id];
+      if (!rawProfile || typeof rawProfile !== "object") return [];
+      const displayName =
+        typeof rawProfile.displayName === "string"
+          ? rawProfile.displayName.trim().slice(0, 24)
+          : "";
+      const profileCorpora = normalizePersonaCorpora(rawProfile.corpora, 40);
+      if (!displayName && !profileCorpora.length) return [];
+      return [
+        [
+          character.id,
+          {
+            ...(displayName ? { displayName } : {}),
+            corpora: profileCorpora,
+          },
+        ],
+      ];
+    }),
+  );
+  const lastLookByCharacter = Object.fromEntries(
+    Object.entries(
+      p.lastLookByCharacter && typeof p.lastLookByCharacter === "object"
+        ? p.lastLookByCharacter
+        : {},
+    ).filter(([characterId, candidateLookId]) => {
+      if (!CHARACTERS.some((item) => item.id === characterId)) return false;
+      if (!isLookId(candidateLookId) || candidateLookId === "haru-original") return false;
+      return getLook(candidateLookId).characterId === characterId;
+    }),
+  );
+  if (lookId !== "haru-original") lastLookByCharacter[activeCharacterId] = lookId;
+  const builtins = createBuiltinPersonaProfiles();
+  let personas = { ...builtins };
+  let personaThreads = Object.fromEntries(
+    Object.keys(builtins).map((id) => [id, createEmptyPersonaThread()]),
+  );
+  let activePersonaId = DEFAULT_PERSONA_TEMPLATE_ID;
+
+  if (p.schemaVersion === 2 && p.personas && typeof p.personas === "object") {
+    for (const [id, value] of Object.entries(p.personas)) {
+      if (!/^[a-z0-9][a-z0-9-]{1,63}$/.test(id)) continue;
+      const profile = normalizePersonaProfile({ ...value, id }, id);
+      personas[id] = profile;
+      personaThreads[id] = createEmptyPersonaThread(p.personaThreads?.[id]);
+    }
+    if (typeof p.activePersonaId === "string" && personas[p.activePersonaId])
+      activePersonaId = p.activePersonaId;
+  } else {
+    const messages = normalizePersonaMessages(p.messages).slice(-200);
+    const oldFavorites = Array.isArray(p.favorites) ? p.favorites : [];
+    const savedMessages = normalizePersonaMessages(
+      Array.isArray(p.savedMessages)
+        ? p.savedMessages
+        : messages.filter((message) => oldFavorites.includes(message.id)),
+    );
+    const corpora = normalizePersonaCorpora(p.corpora, 40);
+    const hasGlobalPersonaData = Boolean(
+      messages.length || savedMessages.length || corpora.length || settings.name,
+    );
+    if (hasGlobalPersonaData) {
+      const id = "legacy-zhangrong";
+      personas[id] = normalizePersonaProfile(
+        {
+          id,
+          templateId: DEFAULT_PERSONA_TEMPLATE_ID,
+          displayName: "张容",
+          age: 29,
+          intimacyLevel: "mature",
+          voiceProfileId: "builtin",
+          customCorpora: corpora,
+          custom: true,
+        },
+        id,
+      );
+      personaThreads[id] = createEmptyPersonaThread({
+        messages,
+        savedMessages,
+        memories: { userName: settings.name },
+      });
+      activePersonaId = id;
+    }
+    let legacyIndex = 0;
+    for (const character of CHARACTERS) {
+      const rawProfile = rawProfiles[character.id];
+      if (!rawProfile || typeof rawProfile !== "object") continue;
+      const displayName =
+        typeof rawProfile.displayName === "string"
+          ? rawProfile.displayName.trim().slice(0, 24)
+          : "";
+      const customCorpora = normalizePersonaCorpora(rawProfile.corpora, 40);
+      if (!displayName && !customCorpora.length) continue;
+      legacyIndex += 1;
+      const id = `legacy-persona-${legacyIndex}`;
+      personas[id] = normalizePersonaProfile(
+        {
+          id,
+          templateId: DEFAULT_PERSONA_TEMPLATE_ID,
+          displayName: displayName || character.defaultName,
+          age: character.age,
+          customCorpora,
+          custom: true,
+        },
+        id,
+      );
+      personaThreads[id] = createEmptyPersonaThread();
+    }
+  }
+
+  if (!personas[activePersonaId]) activePersonaId = DEFAULT_PERSONA_TEMPLATE_ID;
+  for (const id of Object.keys(personas))
+    if (!personaThreads[id]) personaThreads[id] = createEmptyPersonaThread();
+
+  return syncPersonaAliases({
+    schemaVersion: 2,
+    activePersonaId,
+    personas,
+    personaThreads,
     avatarMode: p.avatarMode === "photo" ? "photo" : "live2d",
-    lookId: getAvailableLookId(removedLookIds, savedLookId),
+    lookId,
     removedLookIds,
+    backgroundId: isBackgroundId(p.backgroundId)
+      ? p.backgroundId
+      : getDefaultBackgroundId(),
+    characterProfiles,
+    lastLookByCharacter,
     customEnabled: p.customEnabled === true,
     scene: SCENES.some((s) => s.id === p.scene) ? p.scene : "home",
     settings,
-    messages,
-    savedMessages,
-    corpora,
-    favorites: savedMessages.map((m) => m.id),
     startedAt: Number(p.startedAt) || Date.now(),
-  };
+  });
 }
 export function createCorpus(text, title = "") {
   const content = text.trim().slice(0, 1500);
