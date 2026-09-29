@@ -288,6 +288,13 @@ export function clearPersonaThread(state) {
   return updateThread(state, state.activePersonaId, () => createEmptyPersonaThread());
 }
 
+export function updatePersonaMemories(state, personaId, patch) {
+  return updateThread(state, personaId, (thread) => ({
+    ...thread,
+    memories: normalizeMemories({ ...thread.memories, ...patch }),
+  }));
+}
+
 export function togglePersonaFavorite(state, messageId) {
   return updateThread(state, state.activePersonaId, (thread) => {
     const exists = thread.savedMessages.some((item) => item.id === messageId);

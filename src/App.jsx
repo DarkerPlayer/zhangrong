@@ -45,13 +45,26 @@ import {
 } from "@phosphor-icons/react";
 import {
   SCENES,
+  STORAGE_KEY,
+  LEGACY_STORAGE_KEY,
   restoreState,
   createCorpus,
-  appendMessage,
   formatRemaining,
-  toggleFavorite,
-  exportableMessages,
 } from "./state.mjs";
+import {
+  addPersonaCorpus,
+  appendPersonaMessage,
+  clearPersonaThread,
+  deletePersonaCorpus,
+  exportablePersonaMessages,
+  getActivePersona,
+  getPersonaThread,
+  setActivePersona,
+  togglePersonaFavorite,
+  updatePersonaMemories,
+  updatePersonaProfile,
+} from "./persona-state.mjs";
+import { resolvePersonaProfile } from "./personas.mjs";
 import { readMedia, saveMedia } from "./media.mjs";
 import { setRain, speak, stopSpeech } from "./audio.js";
 import {
@@ -68,6 +81,13 @@ import {
 } from "./looks.mjs";
 import VoiceLibrary from "./VoiceLibrary.jsx";
 import WardrobeFilters, { WardrobeEmpty } from "./WardrobeFilters.jsx";
+import {
+  getCharacter,
+  getCharacterDisplayName,
+  getCharacterForLook,
+  isBackgroundId,
+  resolveEmptyOutfit,
+} from "./wardrobe.mjs";
 import { version as appVersion } from "../package.json";
 import "./wardrobe.css";
 
@@ -75,11 +95,13 @@ import LivePet from "./LivePet.jsx";
 import PetShell from "./PetShell.jsx";
 import LookActionMenu from "./LookActionMenu.jsx";
 import MotionDebugPanel from "./MotionDebugPanel.jsx";
+import WardrobePage from "./WardrobePage.jsx";
 
-const STORAGE = "muyu-state-v1";
 function load() {
   try {
-    return restoreState(localStorage.getItem(STORAGE));
+    return restoreState(
+      localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY),
+    );
   } catch {
     return restoreState(null);
   }
@@ -213,9 +235,22 @@ export default function App() {
     [wardrobeQuery, setWardrobeQuery] = useState(""),
     [wardrobeCategory, setWardrobeCategory] = useState("全部"),
     [wardrobeView, setWardrobeView] = useState("active");
-  const { scene, settings, messages } = state;
+  const { scene, settings } = state;
+  const activePersona = getActivePersona(state);
+  const activePersonaSnapshot = resolvePersonaProfile(activePersona);
+  const activePersonaName = activePersonaSnapshot.name;
+  const activeThread = getPersonaThread(state, state.activePersonaId);
+  const messages = activeThread.messages;
+  const savedMessages = activeThread.savedMessages;
+  const favorites = savedMessages.map((item) => item.id);
+  const personaCorpora = activePersona.customCorpora || [];
   const animated = state.avatarMode !== "photo";
   const currentLook = getLook(state.lookId);
+  const activeCharacter = getCharacterForLook(state.lookId);
+  const appearanceCharacterName = getCharacterDisplayName(
+    state.characterProfiles,
+    activeCharacter.id,
+  );
   const removedLookIds = state.removedLookIds || [];
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
@@ -268,11 +303,6 @@ export default function App() {
   );
   const changeSettings = (patch) =>
     setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
-  const setMessages = (updater) =>
-    setState((s) => ({
-      ...s,
-      messages: typeof updater === "function" ? updater(s.messages) : updater,
-    }));
   const currentScene = SCENES.find((s) => s.id === scene) || SCENES[0];
   const actualProvider =
     settings.provider === "offline"
@@ -280,13 +310,62 @@ export default function App() {
       : models.length
         ? "ollama"
         : "offline";
+  function choosePersona(personaId) {
+    if (!state.personas?.[personaId] || personaId === state.activePersonaId) return;
+    requestEpoch.current += 1;
+    requestRef.current?.abort();
+    requestRef.current = null;
+    sendLock.current = false;
+    setBusy(false);
+    stopSpeech();
+    setSpeaking(false);
+    setSpeechPreparing(false);
+    const next = resolvePersonaProfile(state.personas[personaId]);
+    const greeting = next.corpora.greeting[0]
+      .replaceAll("{personaName}", next.name)
+      .replaceAll("{userName}", getPersonaThread(state, personaId).memories.userName || "你");
+    setSceneLine(greeting);
+    setLineKind("welcome");
+    setState((current) => setActivePersona(current, personaId));
+  }
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE, JSON.stringify(state));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
       notify("本地存储空间不足，新的记录暂时无法保存。");
     }
   }, [state, notify]);
+  useEffect(() => {
+    const personaId = state.activePersonaId;
+    const preferredVoiceId = activePersona.voiceProfileId || "builtin";
+    const controller = new AbortController();
+    const select = async (id) => {
+      const response = await fetch("/api/voices/select", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({ id }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw Error(data.error || "音色切换失败");
+      return data;
+    };
+    select(preferredVoiceId).catch(async (error) => {
+      if (controller.signal.aborted || preferredVoiceId === "builtin") return;
+      try {
+        await select("builtin");
+        setState((current) =>
+          current.activePersonaId === personaId
+            ? updatePersonaProfile(current, personaId, { voiceProfileId: "builtin" })
+            : current,
+        );
+        notify(`${activePersonaName}原来的音色不可用，已恢复内置音色。`);
+      } catch {
+        if (!controller.signal.aborted) notify(error.message);
+      }
+    });
+    return () => controller.abort();
+  }, [state.activePersonaId, activePersona.voiceProfileId, activePersonaName, notify]);
   useEffect(() => {
     let live = true;
     fetch("/api/health")
@@ -457,7 +536,11 @@ export default function App() {
     setInput("");
     stopSpeech();
     setSpeaking(false);
-    setMessages((old) => appendMessage(old, "user", value));
+    const sourcePersonaId = state.activePersonaId;
+    const sourceHistory = activeThread.messages.slice(-24).map(({ role, content }) => ({ role, content }));
+    const sourceMemory = activeThread.memories;
+    const sourcePersona = activePersonaSnapshot;
+    setState((current) => appendPersonaMessage(current, "user", value));
     const epoch = ++requestEpoch.current;
     const controller = new AbortController();
     requestRef.current = controller;
@@ -469,10 +552,9 @@ export default function App() {
         signal: controller.signal,
         body: JSON.stringify({
           message: value,
-          history: messages
-            .slice(-24)
-            .map(({ role, content }) => ({ role, content })),
-          name: settings.name,
+          history: sourceHistory,
+          persona: sourcePersona,
+          personaMemory: sourceMemory,
           scene: sceneRef.current,
           avatarMode: animated || petMode ? "live2d" : "photo",
           lookId: state.lookId,
@@ -482,7 +564,7 @@ export default function App() {
         }),
       });
       const data = await r.json();
-      if (epoch !== requestEpoch.current) return;
+      if (epoch !== requestEpoch.current || state.activePersonaId !== sourcePersonaId) return;
       if (!r.ok || typeof data.reply !== "string")
         throw Error(data.error || "连接暂时中断");
       if (isLookAvailable(data.lookAction, removedLookIdsRef.current)) {
@@ -499,10 +581,10 @@ export default function App() {
       );
       if (data.petAction)
         setPetAction({ kind: data.petAction, args: data.motionCommand?.args, nonce: Date.now() });
-      setMessages((old) =>
-        appendMessage(old, "assistant", data.reply, {
-          provider: data.provider,
-        }),
+      setState((current) =>
+        current.activePersonaId === sourcePersonaId
+          ? appendPersonaMessage(current, "assistant", data.reply, { provider: data.provider })
+          : current,
       );
       say(data.reply);
       if (data.error) notify("本地模型暂不可用，已切换为内置互动。");
@@ -518,10 +600,12 @@ export default function App() {
       setLineKind("status");
     } finally {
       clearTimeout(timeout);
-      setBusy(false);
-      sendLock.current = false;
-      requestRef.current = null;
-      inputRef.current?.focus();
+      if (epoch === requestEpoch.current) {
+        setBusy(false);
+        sendLock.current = false;
+        if (requestRef.current === controller) requestRef.current = null;
+        inputRef.current?.focus();
+      }
     }
   }
   async function importMedia(e) {
@@ -570,10 +654,107 @@ export default function App() {
     if (!isLookAvailable(id, removedLookIdsRef.current)) return;
     const look = getLook(id);
     if (id !== state.lookId || !animated) setPetReady(false);
-    setState((s) => ({ ...s, lookId: id, avatarMode: "live2d" }));
+    setState((s) => ({
+      ...s,
+      lookId: id,
+      avatarMode: "live2d",
+      lastLookByCharacter:
+        id === ORIGINAL_LOOK.id || !look.characterId
+          ? s.lastLookByCharacter
+          : { ...(s.lastLookByCharacter || {}), [look.characterId]: id },
+    }));
     setPetAction({ kind: "wave", nonce: Date.now() });
     setSceneLine(`换好${look.outfit}了。今晚，继续陪在你身边。`);
     setLineKind("outfit");
+  }
+  function chooseCharacter(characterId) {
+    const character = getCharacter(characterId);
+    const remembered = state.lastLookByCharacter?.[character.id];
+    const nextLook = [remembered, character.defaultLookId, ...character.lookIds].find(
+      (id) => isLookAvailable(id, removedLookIdsRef.current),
+    );
+    if (nextLook) chooseLook(nextLook);
+  }
+  function renameCharacter(characterId, value) {
+    const displayName = value.trim().slice(0, 24);
+    setState((s) => {
+      const oldProfile = s.characterProfiles?.[characterId] || {};
+      return {
+        ...s,
+        characterProfiles: {
+          ...(s.characterProfiles || {}),
+          [characterId]: {
+            ...oldProfile,
+            ...(displayName ? { displayName } : { displayName: undefined }),
+            corpora: oldProfile.corpora || [],
+          },
+        },
+      };
+    });
+    notify(displayName ? `已改名为「${displayName}」。` : "已恢复默认名称。");
+  }
+  function addCharacterCorpus(characterId, text, title) {
+    const corpus = createCorpus(text, title);
+    setState((s) => {
+      const oldProfile = s.characterProfiles?.[characterId] || {};
+      return {
+        ...s,
+        characterProfiles: {
+          ...(s.characterProfiles || {}),
+          [characterId]: {
+            ...oldProfile,
+            corpora: [{ ...corpus, enabled: true }, ...(oldProfile.corpora || [])].slice(0, 40),
+          },
+        },
+      };
+    });
+    notify("已保存到这个角色。");
+  }
+  function toggleCharacterCorpus(characterId, corpusId) {
+    setState((s) => {
+      const oldProfile = s.characterProfiles?.[characterId] || {};
+      return {
+        ...s,
+        characterProfiles: {
+          ...(s.characterProfiles || {}),
+          [characterId]: {
+            ...oldProfile,
+            corpora: (oldProfile.corpora || []).map((item) =>
+              item.id === corpusId ? { ...item, enabled: item.enabled === false } : item,
+            ),
+          },
+        },
+      };
+    });
+  }
+  function deleteCharacterCorpus(characterId, corpusId) {
+    setState((s) => {
+      const oldProfile = s.characterProfiles?.[characterId] || {};
+      return {
+        ...s,
+        characterProfiles: {
+          ...(s.characterProfiles || {}),
+          [characterId]: {
+            ...oldProfile,
+            corpora: (oldProfile.corpora || []).filter((item) => item.id !== corpusId),
+          },
+        },
+      };
+    });
+    notify("角色语料已删除。");
+  }
+  function setWardrobeBackground(backgroundId) {
+    if (!isBackgroundId(backgroundId)) return;
+    setState((s) => ({ ...s, backgroundId }));
+  }
+  function requestEmptyOutfit() {
+    const result = resolveEmptyOutfit(activeCharacter.id, state.lookId);
+    if (result.status === "ready" && result.lookId !== state.lookId) {
+      chooseLook(result.lookId);
+    } else if (result.status === "pending") {
+      notify("当前人物的白色比基尼底装还未生成，已安全保留原造型。");
+    }
+    return result;
   }
   function removeLook(id) {
     if (!isLookId(id) || id === ORIGINAL_LOOK.id) return;
@@ -651,7 +832,10 @@ export default function App() {
       idle_hair_touch: ["好呀，我轻轻整理一下头发。"],
       look_back: ["好呀，我回过头看看你。"],
     };
-    const choices = lines[kind] || lines.pat;
+    const personaAction = ["pat", "wave"].includes(kind)
+      ? activePersonaSnapshot.corpora.action[kind]
+      : null;
+    const choices = personaAction?.length ? personaAction : lines[kind] || lines.pat;
     setPetAction({ kind, args, nonce: Date.now() });
     if (args.silent) return;
     setMood(kind === "shy" ? "shy" : "happy");
@@ -724,10 +908,10 @@ export default function App() {
     }
   }
   function exportHistory() {
-    const text = exportableMessages(state)
+    const text = exportablePersonaMessages(state)
       .map(
         (m) =>
-          `${new Date(m.createdAt).toLocaleString("zh-CN")} ${m.role === "user" ? "我" : "张容"}\n${m.content}\n`,
+          `${new Date(m.createdAt).toLocaleString("zh-CN")} ${m.role === "user" ? "我" : activePersonaName}\n${m.content}\n`,
       )
       .join("\n");
     const url = URL.createObjectURL(
@@ -737,26 +921,22 @@ export default function App() {
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = `张容-回忆-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.download = `${activePersonaName}-回忆-${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     notify("回忆已导出。");
   }
   function favorite(id) {
-    setState((s) => toggleFavorite(s, id));
+    setState((s) => togglePersonaFavorite(s, id));
   }
   function saveCorpus(event) {
     event.preventDefault();
     const text = corpusDraft.trim();
     if (!text) {
-      notify("先写下想让张容读的内容。");
+      notify(`先写下想让${activePersonaName}读的内容。`);
       return;
     }
-    const corpus = createCorpus(text, corpusTitle);
-    setState((s) => ({
-      ...s,
-      corpora: [corpus, ...(s.corpora || [])].slice(0, 100),
-    }));
+    setState((s) => addPersonaCorpus(s, s.activePersonaId, text, corpusTitle));
     setCorpusDraft("");
     setCorpusTitle("");
     notify("语料已保存在本机。");
@@ -767,10 +947,7 @@ export default function App() {
     readAloud(text);
   }
   function deleteCorpus(id) {
-    setState((s) => ({
-      ...s,
-      corpora: (s.corpora || []).filter((item) => item.id !== id),
-    }));
+    setState((s) => deletePersonaCorpus(s, s.activePersonaId, id));
     notify("这条语料已删除。");
   }
   function clearHistory() {
@@ -778,7 +955,7 @@ export default function App() {
     requestRef.current?.abort();
     stopSpeech();
     setSpeaking(false);
-    setState((s) => ({ ...s, messages: [], favorites: [], savedMessages: [] }));
+    setState((s) => clearPersonaThread(s));
     setSceneLine("新的一页，也想陪你一起写。");
     notify("聊天记录已清空。");
   }
@@ -808,11 +985,11 @@ export default function App() {
     1,
     Math.ceil((Date.now() - state.startedAt) / 86400000),
   );
-  const visibleMemories =
-    memoryTab === "saved" ? state.savedMessages : messages;
+  const visibleMemories = memoryTab === "saved" ? savedMessages : messages;
   if (petMode)
     return (
       <PetShell
+        characterName={activePersonaName}
         lookId={state.lookId}
         removedLookIds={removedLookIds}
         chooseLook={chooseLook}
@@ -840,7 +1017,7 @@ export default function App() {
     );
   return (
     <div
-      className={`app ${animated ? "animated-world" : "photo-world"} ${compact ? "compact" : ""} ${immersive ? "immersive" : ""} ${panel ? "panel-open" : ""} ${settings.motion ? "motion-on" : ""} ${settings.fontSize === "large" ? "large-text" : ""} ${window.desktop ? "native" : ""}`}
+      className={`app ${animated ? "animated-world" : "photo-world"} ${compact ? "compact" : ""} ${immersive ? "immersive" : ""} ${panel ? "panel-open" : ""} ${panel === "wardrobe" ? "wardrobe-open" : ""} ${settings.motion ? "motion-on" : ""} ${settings.fontSize === "large" ? "large-text" : ""} ${window.desktop ? "native" : ""}`}
     >
       <div className="scene-backdrop" aria-hidden="true">
         {!animated &&
@@ -904,7 +1081,7 @@ export default function App() {
           </div>
         )}
       </div>
-      {animated && (
+      {animated && panel !== "wardrobe" && (
         <div className="live-stage">
           <LivePet
             lookId={state.lookId}
@@ -928,8 +1105,8 @@ export default function App() {
             setPanel(null);
             setImmersive(false);
           }}
-          title="张容首页"
-          aria-label="张容首页"
+          title={`${activePersonaName}首页`}
+          aria-label={`${activePersonaName}首页`}
         >
           <Moon size={25} weight="fill" />
           <span className="mark-star" />
@@ -977,6 +1154,20 @@ export default function App() {
               <i />
               {actualProvider === "ollama" ? "本地 AI 陪伴" : "本地陪伴"}
             </span>
+            <label className="persona-quick-switch">
+              <span>女友</span>
+              <select
+                aria-label="当前女友"
+                value={state.activePersonaId}
+                onChange={(event) => choosePersona(event.target.value)}
+              >
+                {Object.values(state.personas).map((profile) => (
+                  <option key={profile.id} value={profile.id}>
+                    {profile.displayName}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="top-actions">
             <button
@@ -1067,7 +1258,7 @@ export default function App() {
           <div className="pet-interaction-bar" aria-label="角色互动">
             <span className="live-status">
               <i />
-              {petReady ? `张容 · 正在你身边` : `张容 · 正在换好衣服`}
+              {petReady ? `${activePersonaName} · 正在你身边` : `${activePersonaName} · 正在换好衣服`}
             </span>
             <div>
               <button onClick={() => interact("pat")}>
@@ -1090,7 +1281,7 @@ export default function App() {
         <div className="character-note">
           <span className="little-star">✧</span>
           <div>
-            <span>张容</span>
+            <span>{activePersonaName}</span>
             <small>
               {speaking
                 ? "正在轻声回应"
@@ -1106,7 +1297,7 @@ export default function App() {
             <span className="reply-avatar">
               <Moon size={14} weight="fill" />
             </span>
-            <span>张容</span>
+            <span>{activePersonaName}</span>
             <span className="reply-divider" />
             <span className="reply-mood">
               {busy
@@ -1188,7 +1379,7 @@ export default function App() {
               type="button"
               className="corpus-open-button"
               onClick={() => nav("corpora")}
-              aria-label={`打开语料库，共 ${state.corpora?.length || 0} 条`}
+              aria-label={`打开语料库，共 ${personaCorpora.length} 条`}
               title="语料库"
             >
               <BookOpen size={18} />
@@ -1197,7 +1388,7 @@ export default function App() {
             <span className="composer-divider" />
             <input
               ref={inputRef}
-              aria-label="对张容说点什么"
+              aria-label={`对${activePersonaName}说点什么`}
               placeholder={
                 listening ? "正在听你说…" : "和我说说话吧，什么都可以…"
               }
@@ -1289,6 +1480,43 @@ export default function App() {
           </button>
         )}
         {panel === "wardrobe" && (
+          <WardrobePage
+            state={state}
+            currentLook={currentLook}
+            activeCharacter={activeCharacter}
+            activeCharacterName={appearanceCharacterName}
+            visibleLooks={visibleLooks}
+            availableLookCount={availableLookCount}
+            removedLookIds={removedLookIds}
+            query={wardrobeQuery}
+            setQuery={setWardrobeQuery}
+            category={wardrobeCategory}
+            setCategory={setWardrobeCategory}
+            view={wardrobeView}
+            setView={setWardrobeView}
+            chooseLook={chooseLook}
+            chooseCharacter={chooseCharacter}
+            removeLook={removeLook}
+            restoreLook={restoreLook}
+            chooseScene={chooseScene}
+            renameCharacter={renameCharacter}
+            addCharacterCorpus={addCharacterCorpus}
+            toggleCharacterCorpus={toggleCharacterCorpus}
+            deleteCharacterCorpus={deleteCharacterCorpus}
+            setBackground={setWardrobeBackground}
+            requestEmptyOutfit={requestEmptyOutfit}
+            onClose={() => setPanel(null)}
+            petProps={{
+              mood: busy ? "thinking" : mood,
+              action: petAction,
+              motion: settings.motion,
+              onInteract: interact,
+              onReady: onPetReady,
+              onError: onPetError,
+            }}
+          />
+        )}
+        {panel === "wardrobe-legacy" && (
           <Panel
             type="wardrobe"
             title="选一种，陪你的模样"
@@ -1657,7 +1885,7 @@ export default function App() {
                 visibleMemories.map((m) => (
                   <article key={m.id} className={`memory-message ${m.role}`}>
                     <div>
-                      <strong>{m.role === "user" ? "我" : "张容"}</strong>
+                      <strong>{m.role === "user" ? "我" : activePersonaName}</strong>
                       <time>
                         {new Date(m.createdAt).toLocaleTimeString("zh-CN", {
                           hour: "2-digit",
@@ -1666,10 +1894,10 @@ export default function App() {
                       </time>
                       <button
                         className={
-                          state.favorites.includes(m.id) ? "favorited" : ""
+                          favorites.includes(m.id) ? "favorited" : ""
                         }
                         aria-label={
-                          state.favorites.includes(m.id)
+                          favorites.includes(m.id)
                             ? "取消收藏"
                             : "收藏这条消息"
                         }
@@ -1678,7 +1906,7 @@ export default function App() {
                         <Heart
                           size={15}
                           weight={
-                            state.favorites.includes(m.id) ? "fill" : "regular"
+                            favorites.includes(m.id) ? "fill" : "regular"
                           }
                         />
                       </button>
@@ -1698,7 +1926,7 @@ export default function App() {
         {panel === "corpora" && (
           <Panel
             type="corpora"
-            title="张容的语料库"
+            title={`${activePersonaName}的语料库`}
             subtitle="WORDS TO KEEP"
             onClose={() => setPanel(null)}
           >
@@ -1750,17 +1978,17 @@ export default function App() {
             </form>
             <div className="corpus-list-heading">
               <strong>已保存</strong>
-              <span>{state.corpora?.length || 0} / 100</span>
+              <span>{personaCorpora.length} / 40</span>
             </div>
             <div className="corpus-list">
-              {!state.corpora?.length ? (
+              {!personaCorpora.length ? (
                 <div className="empty-state corpus-empty">
                   <BookOpen size={37} weight="thin" />
                   <h3>喜欢的文字，留在这里</h3>
-                  <p>保存后可以随时点开，让张容读给你听。</p>
+                  <p>保存后会成为{activePersonaName}独立人格的一部分。</p>
                 </div>
               ) : (
-                state.corpora.map((item) => (
+                personaCorpora.map((item) => (
                   <article className="corpus-card" key={item.id}>
                     <div className="corpus-card-heading">
                       <strong>{item.title}</strong>
@@ -1805,10 +2033,16 @@ export default function App() {
                 <input
                   id="your-name"
                   className="settings-input"
-                  value={settings.name}
+                  value={activeThread.memories.userName}
                   maxLength={24}
                   placeholder="留一个喜欢的称呼"
-                  onChange={(e) => changeSettings({ name: e.target.value })}
+                  onChange={(e) =>
+                    setState((current) =>
+                      updatePersonaMemories(current, current.activePersonaId, {
+                        userName: e.target.value,
+                      }),
+                    )
+                  }
                 />
               </div>
               <div className="settings-section">
@@ -1830,6 +2064,13 @@ export default function App() {
                 </div>
                 <VoiceLibrary
                   speaking={speaking}
+                  personaName={activePersonaName}
+                  preferredVoiceId={activePersona.voiceProfileId}
+                  onSelectedVoice={(voiceProfileId) =>
+                    setState((current) =>
+                      updatePersonaProfile(current, current.activePersonaId, { voiceProfileId }),
+                    )
+                  }
                   onStop={() => {
                     stopSpeech();
                     setSpeaking(false);
@@ -1837,7 +2078,7 @@ export default function App() {
                   }}
                   onPreview={() =>
                     readAloud(
-                      "你好，我是张容。今天过得怎么样？我会在这里，慢慢听你说。",
+                      `你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`,
                     )
                   }
                   onChange={() =>

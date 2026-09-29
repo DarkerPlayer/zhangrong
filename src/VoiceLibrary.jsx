@@ -42,9 +42,12 @@ export function encodeWav(buffer) {
 }
 export default function VoiceLibrary({
   onChange,
+  onSelectedVoice,
   onPreview,
   onStop,
   speaking,
+  personaName = "当前女友",
+  preferredVoiceId = "builtin",
 }) {
   const [library, setLibrary] = useState({ voices: [], selectedId: "builtin" }),
     [error, setError] = useState(""),
@@ -89,6 +92,8 @@ export default function VoiceLibrary({
       setLibrary(data);
       onStop();
       onChange?.();
+      if (path === "/select") onSelectedVoice?.(data.selectedId || body.id);
+      if (path === "/delete" && data.selectedId) onSelectedVoice?.(data.selectedId);
       setDeleteId(null);
       setRenameId(null);
     } catch (e) {
@@ -176,6 +181,7 @@ export default function VoiceLibrary({
       );
       if (!mounted.current) return;
       setLibrary(result);
+      onSelectedVoice?.(result.selectedId || result.voice?.id || preferredVoiceId);
       setText(result.voice.referenceText);
       setNotice(
         `“${result.voice.name}”已保存。识别台词：${result.voice.referenceText}`,
@@ -200,8 +206,8 @@ export default function VoiceLibrary({
     <section className="voice-library" aria-label="音色库">
       <header>
         <div>
-          <h3>张容的音色库</h3>
-          <p>保存喜欢的声音，随时换一种陪伴。</p>
+          <h3>{personaName}的音色库</h3>
+          <p>这个选择只属于{personaName}，切换女友时会自动切换。</p>
         </div>
         <button
           type="button"
