@@ -2180,7 +2180,7 @@ export default function App() {
                   </button>
                 </div>
                 <p className="footnote">
-                  张容是 AI
+                  {activePersonaName}是 AI
                   虚构角色。记录和偏好仅保存在本机，清空记录后无法恢复。
                 </p>
               </div>

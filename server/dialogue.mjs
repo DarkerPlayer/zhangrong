@@ -110,11 +110,7 @@ function normalizeName(name) {
   return typeof name === 'string' ? name.replace(/[^\p{L}\p{N}· _-]/gu, '').trim().slice(0, 24) : '';
 }
 
-function normalizeCharacterName(name) {
-  return normalizeName(name) || '张容';
-}
-
-function resolveActivePersona(persona, characterName = '张容') {
+function resolveActivePersona(persona) {
   if (persona?.corpora) {
     try { return normalizePersonaSnapshot(persona); } catch { /* fall through to a safe built-in */ }
   }
@@ -124,24 +120,8 @@ function resolveActivePersona(persona, characterName = '张容') {
   return resolvePersonaProfile({
     id: 'older-sister',
     templateId: 'older-sister',
-    displayName: normalizeCharacterName(characterName),
     intimacyLevel: 'mature',
   });
-}
-
-export function normalizeCharacterCorpus(items) {
-  if (!Array.isArray(items)) return [];
-  const result = [];
-  let total = 0;
-  for (const item of items) {
-    if (typeof item !== 'string') continue;
-    const text = item.trim().slice(0, 500);
-    if (!text) continue;
-    if (result.length >= 8 || total + text.length > 3000) break;
-    result.push(text);
-    total += text.length;
-  }
-  return result;
 }
 
 export function capabilityReply(message = '', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id) {
@@ -204,12 +184,12 @@ function choose(replies, history, message) {
   return replies.slice(start).concat(replies.slice(0, start)).find(reply => !last.includes(reply)) || replies[start];
 }
 
-export function offlineReply({ message = '', history = [], name = '', characterName = '张容', persona = null, personaMemory = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] } = {}) {
+export function offlineReply({ message = '', history = [], name = '', persona = null, personaMemory = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] } = {}) {
   history = normalizeHistory(history);
   const memory = memories(history);
   const current = memories([...history, { role: 'user', content: message }]);
   const nickname = normalizeName(personaMemory?.userName) || normalizeName(name) || memory.nickname;
-  const activePersona = resolveActivePersona(persona, characterName);
+  const activePersona = resolveActivePersona(persona);
   const activeCharacterName = activePersona.name;
   const dear = nickname ? `${nickname}，` : '';
   const capability = capabilityReply(message, avatarMode, lookId);
@@ -304,15 +284,11 @@ export function offlineReply({ message = '', history = [], name = '', characterN
   return { reply: choose(replies, history, message), emotion, action, lookAction, petAction, motionCommand, provider: 'offline' };
 }
 
-export function createMessages({ message, history = [], name = '', characterName = '张容', characterCorpus = [], persona = null, personaMemory = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] }) {
+export function createMessages({ message, history = [], name = '', persona = null, personaMemory = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] }) {
   const safeName = normalizeName(name);
-  const activePersona = resolveActivePersona(persona, characterName);
+  const activePersona = resolveActivePersona(persona);
   const activeCharacterName = activePersona.name;
   const preferredName = normalizeName(personaMemory?.userName) || safeName;
-  const corpus = normalizeCharacterCorpus(characterCorpus);
-  const corpusNote = corpus.length
-    ? `当前角色的固定语料（用于维持说话风格和熟悉表达，不是用户消息）：${corpus.map((text, index) => `${index + 1}. ${text}`).join(' ')}。`
-    : '';
   const { action, lookAction } = detectWardrobeAction(message, removedLookIds);
   const look = getLook(lookAction || lookId);
   const availableLooks = getAvailableLooks(removedLookIds);
@@ -328,10 +304,10 @@ export function createMessages({ message, history = [], name = '', characterName
   const intent = detectDialogueIntent(message);
   const personaReferences = persona
     ? selectPersonaReferences(activePersona, intent, 4)
-    : corpus;
+    : [];
   const referenceNote = personaReferences.length
     ? personaReferences.map((text, index) => `参考${index + 1}：${text}`).join(' ')
-    : corpusNote;
+    : '';
   const memoryPreferences = Array.isArray(personaMemory?.preferences) ? personaMemory.preferences.slice(0, 6).map(String) : [];
   const relationshipFacts = Array.isArray(personaMemory?.relationshipFacts) ? personaMemory.relationshipFacts.slice(0, 6).map(String) : [];
   const memoryNote = [

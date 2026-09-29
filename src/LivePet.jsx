@@ -416,7 +416,7 @@ function HaruPet({
       <canvas
         ref={canvasRef}
         className="live-pet-canvas"
-        aria-label="张容 Live2D 角色，轻点摸摸头，按回车与她互动"
+        aria-label="当前 Live2D 外观，轻点摸摸头，按回车与她互动"
         role="button"
         tabIndex={status === "ready" ? 0 : -1}
         onClick={(event) => controllerRef.current?.tap(event)}
@@ -432,7 +432,7 @@ function HaruPet({
           <span className="live-pet-loader" aria-hidden="true">
             ✦
           </span>
-          <span>张容正在过来…</span>
+          <span>当前外观正在加载…</span>
         </div>
       )}
       {status === "error" && (
