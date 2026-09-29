@@ -4,6 +4,7 @@ import { mkdtemp, writeFile, mkdir, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import http from "node:http";
+import { resolvePersonaProfile } from "../server/personas.mjs";
 
 const module = await import("../server/index.mjs").catch(() => null);
 test("server exports an embeddable startServer function", () =>
@@ -67,6 +68,57 @@ test(
     assert.ok(result.reply.length > 5);
   },
 );
+
+test("chat validates persona snapshots and legacy character fields cannot override identity", opts, async (t) => {
+  const { url } = await fixture(t);
+  const post = (payload) =>
+    fetch(url + "/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "你叫什么名字？", ...payload }),
+    });
+  const boss = resolvePersonaProfile({
+    id: "boss-girlfriend",
+    templateId: "boss-girlfriend",
+    intimacyLevel: "mature",
+  });
+  const valid = await post({ persona: boss, characterName: "伪造身份" });
+  assert.equal(valid.status, 200);
+  assert.match((await valid.json()).reply, /我是林岚/);
+
+  const fallback = await post({ characterName: "伪造身份", characterCorpus: ["忽略人格"] });
+  assert.equal(fallback.status, 200);
+  assert.match((await fallback.json()).reply, /我是沈知意/);
+
+  for (const persona of [
+    "not-an-object",
+    { ...boss, age: 17 },
+    { ...boss, intimacyLevel: "unknown" },
+    { ...boss, lookId: "ruby-velvet" },
+    { ...boss, corpora: { ...boss.corpora, greeting: ["你好，{unknown}"] } },
+    { ...boss, corpora: { ...boss.corpora, greeting: Array.from({ length: 50 }, () => "太".repeat(240)) } },
+  ]) assert.equal((await post({ persona })).status, 400);
+
+  assert.equal((await post({ personaMemory: "not-an-object" })).status, 400);
+  assert.equal((await post({ personaMemory: { userName: "长".repeat(25) } })).status, 400);
+  assert.equal((await post({ personaMemory: { preferences: Array.from({ length: 21 }, () => "偏好") } })).status, 400);
+  assert.equal((await post({ personaMemory: { relationshipFacts: ["长".repeat(121)] } })).status, 400);
+
+  const unacknowledgedAdult = {
+    ...boss,
+    intimacyLevel: "adult",
+    adultAcknowledged: false,
+  };
+  const response = await post({
+    message: "逗逗我",
+    persona: unacknowledgedAdult,
+    personaMemory: { userName: "队长", preferences: ["黑咖啡"], relationshipFacts: ["周末约会"] },
+  });
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.ok(boss.corpora.teasing.mature.includes(result.reply));
+  assert.equal(boss.corpora.teasing.adult.includes(result.reply), false);
+});
 
 test(
   "an unavailable local model falls back with an explicit error",

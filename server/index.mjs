@@ -8,6 +8,7 @@ import { offlineReply, normalizeHistory, MAX_MESSAGE_LENGTH, SCENES, AVATAR_MODE
 import { listModels, modelReply } from './ollama.mjs';
 import { createVoiceService } from './voice.mjs';
 import { LOOKS, cleanRemovedLookIds, getAvailableLookId, isLookId, ORIGINAL_LOOK } from './looks.mjs';
+import { normalizePersonaSnapshot, resolvePersonaProfile } from './personas.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MAX_BODY = 64 * 1024;
@@ -37,6 +38,37 @@ async function body(request, limit=MAX_BODY) {
   } catch (error) { throw fail(error.status ? error.message : 'JSON 内容格式不正确。'); }
 }
 
+function normalizePersonaMemory(value) {
+  if (value == null) return { userName: '', preferences: [], relationshipFacts: [] };
+  if (typeof value !== 'object' || Array.isArray(value)) throw fail('人格记忆格式无效。');
+  if (value.userName != null && (typeof value.userName !== 'string' || value.userName.length > 24)) throw fail('用户称呼最多 24 字。');
+  const cleanList = (items, label) => {
+    if (items == null) return [];
+    if (!Array.isArray(items) || items.length > 20) throw fail(`${label}列表无效。`);
+    if (items.some(item => typeof item !== 'string' || !item.trim() || item.length > 120)) throw fail(`${label}内容无效。`);
+    return items.map(item => item.trim());
+  };
+  return {
+    userName: typeof value.userName === 'string' ? value.userName.trim() : '',
+    preferences: cleanList(value.preferences, '用户偏好'),
+    relationshipFacts: cleanList(value.relationshipFacts, '关系记忆'),
+  };
+}
+
+function normalizeChatPersona(value) {
+  if (value == null) return resolvePersonaProfile({
+    id: 'older-sister',
+    templateId: 'older-sister',
+    intimacyLevel: 'mature',
+  });
+  if (typeof value !== 'object' || Array.isArray(value)) throw fail('人格快照格式无效。');
+  try {
+    return normalizePersonaSnapshot(value);
+  } catch (error) {
+    throw fail(error instanceof Error ? error.message : '人格快照格式无效。');
+  }
+}
+
 function chatInput(value) {
   if (typeof value.message !== 'string' || !value.message.trim()) throw fail('请输入想说的话。');
   if (value.message.length > MAX_MESSAGE_LENGTH) throw fail('每条消息最多 2000 字。');
@@ -47,7 +79,7 @@ function chatInput(value) {
   if (value.model != null && (typeof value.model !== 'string' || !/^[\w./:-]{1,100}$/.test(value.model))) throw fail('模型名称格式无效。');
   const removedLookIds = cleanRemovedLookIds(value.removedLookIds);
   const lookId = getAvailableLookId(removedLookIds, value.lookId || ORIGINAL_LOOK.id);
-  return {message:value.message.trim(),history:normalizeHistory(value.history),name:typeof value.name==='string' ? value.name.slice(0,24) : '',scene:SCENES.includes(value.scene)?value.scene:'home',avatarMode:value.avatarMode || 'photo',lookId,removedLookIds,provider:value.provider || 'offline',model:value.model};
+  return {message:value.message.trim(),history:normalizeHistory(value.history),persona:normalizeChatPersona(value.persona),personaMemory:normalizePersonaMemory(value.personaMemory),scene:SCENES.includes(value.scene)?value.scene:'home',avatarMode:value.avatarMode || 'photo',lookId,removedLookIds,provider:value.provider || 'offline',model:value.model};
 }
 
 function allowedRequest(request, port) {
