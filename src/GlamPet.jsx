@@ -22,6 +22,8 @@ import {
   glamPose,
   deformVertices,
   fitGlamModel,
+  remapFaceFeature,
+  resolveFaceStabilizer,
   resolveActionFit,
 } from "./glam-motion.mjs";
 import "./glam-pet.css";
@@ -67,6 +69,7 @@ uniform float uCurrentWeight;
 uniform float uNextWeight;
 uniform float uStabilizeFace;
 uniform vec4 uHead;
+uniform vec4 uActionHead;
 
 float oval(vec2 point, vec2 center, vec2 radius, float feather) {
   float distance = length((point - center) / radius);
@@ -78,8 +81,10 @@ vec4 portraitSample(vec2 uv) {
   vec4 source = base * uBaseWeight +
     texture2D(uSampler, uv) * uCurrentWeight +
     texture2D(uNextSampler, uv) * uNextWeight;
-  float stableFace = oval(uv, uHead.xy, uHead.zw * vec2(0.62, 0.76), 0.26) * uStabilizeFace;
-  return mix(source, base, stableFace);
+  vec2 canonicalUV = uHead.xy + (uv - uActionHead.xy) * (uHead.zw / uActionHead.zw);
+  vec4 canonical = texture2D(uBaseSampler, canonicalUV);
+  float stableFace = oval(uv, uActionHead.xy, uActionHead.zw * vec2(0.62, 0.80), 0.22) * uStabilizeFace;
+  return mix(source, canonical, stableFace);
 }
 
 vec3 eye(vec3 source, vec4 shape, vec3 skin, vec3 lid) {
@@ -189,6 +194,7 @@ export default function GlamPet({
     let telemetryFrames = 0;
     let lastTelemetry = 0;
     let mouth = 0;
+    let stabilizedActionKind;
     let gaze = { x: 0, y: 0 };
     let gazeTarget = { x: 0, y: 0 };
     const detach = [];
@@ -425,6 +431,7 @@ export default function GlamPet({
             uNextWeight: 0,
             uStabilizeFace: 0,
             uHead: new Float32Array([rig.head.x, rig.head.y, rig.head.radiusX, rig.head.radiusY]),
+            uActionHead: new Float32Array([rig.head.x, rig.head.y, rig.head.radiusX, rig.head.radiusY]),
           },
         });
         const geometry = new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65);
@@ -450,7 +457,11 @@ export default function GlamPet({
                 uBaseWeight: 0,
                 uCurrentWeight: 1,
                 uNextWeight: 0,
-                uStabilizeFace: 1,
+                uStabilizeFace: 0,
+                uActionHead: new Float32Array([rig.head.x, rig.head.y, rig.head.radiusX, rig.head.radiusY]),
+                uEyeL: shape(rig.eyes[0]),
+                uEyeR: shape(rig.eyes[1]),
+                uMouth: shape(rig.mouth),
               },
             });
             const actionMesh = new PIXI.Mesh(new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65), actionMaterial);
@@ -510,6 +521,20 @@ export default function GlamPet({
           const actionFrames = visibleAction.frame ? actionTextures.get(visibleAction.actionKind) : null;
           const poseAlpha = resolveActionPoseAlpha(visibleAction, motionState, Boolean(actionFrames?.length));
           if (actionMeshes.length) {
+            if (stabilizedActionKind !== visibleAction.actionKind) {
+              const stabilizer = resolveFaceStabilizer(rig, visibleAction.actionKind);
+              const targetHead = rig.actionFaces?.[visibleAction.actionKind] || rig.head;
+              const mappedEyes = rig.eyes.map((eye) => remapFaceFeature(eye, rig.head, targetHead));
+              const mappedMouth = remapFaceFeature(rig.mouth, rig.head, targetHead);
+              for (const actionMaterial of actionMaterials) {
+                actionMaterial.uniforms.uStabilizeFace = stabilizer.enabled;
+                actionMaterial.uniforms.uActionHead.set(stabilizer.target);
+                actionMaterial.uniforms.uEyeL.set(shape(mappedEyes[0]));
+                actionMaterial.uniforms.uEyeR.set(shape(mappedEyes[1]));
+                actionMaterial.uniforms.uMouth.set(shape(mappedMouth));
+              }
+              stabilizedActionKind = visibleAction.actionKind;
+            }
             if (actionFrames?.length) {
               const first = actionFrames[visibleAction.frame.index] || actionFrames[0];
               const second = actionFrames[visibleAction.frame.nextIndex] || first;

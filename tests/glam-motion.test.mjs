@@ -9,6 +9,8 @@ import {
   deformArmPoint,
   deformVertices,
   fitGlamModel,
+  remapFaceFeature,
+  resolveFaceStabilizer,
 } from "../src/glam-motion.mjs";
 
 test("ambient animation deforms the head and torso locally while planted feet stay still", () => {
@@ -179,6 +181,34 @@ test("malformed facial coordinates cannot poison shader uniforms or mesh positio
   assert.ok(rig.eyes[0].rx > 0);
   assert.ok(rig.eyes[0].skin.every(Number.isFinite));
   assert.ok(rig.eyes[1]);
+});
+
+test("crouch face stabilizer maps the authored target face back to the canonical identity", () => {
+  const rig = normalizeRig({
+    head: { x: 0.48, y: 0.1, radiusX: 0.15, radiusY: 0.085 },
+    eyes: [
+      { x: 0.45, y: 0.085, rx: 0.018, ry: 0.005 },
+      { x: 0.51, y: 0.085, rx: 0.018, ry: 0.005 },
+    ],
+    actionFaces: {
+      squat: { x: 0.515, y: 0.12, radiusX: 0.142, radiusY: 0.09 },
+    },
+  });
+
+  const crouch = resolveFaceStabilizer(rig, "squat");
+  assert.equal(crouch.enabled, 1);
+  assert.deepEqual([...crouch.source], [0.48, 0.1, 0.15, 0.085]);
+  assert.deepEqual([...crouch.target], [0.515, 0.12, 0.142, 0.09]);
+
+  const walk = resolveFaceStabilizer(rig, "sexyWalk");
+  assert.equal(walk.enabled, 0);
+  assert.deepEqual([...walk.target], [...walk.source]);
+
+  const mappedLeftEye = remapFaceFeature(rig.eyes[0], rig.head, rig.actionFaces.squat);
+  assert.ok(Math.abs(mappedLeftEye.x - 0.4866) < 1e-9);
+  assert.ok(Math.abs(mappedLeftEye.y - 0.10411764705882352) < 1e-9);
+  assert.ok(Math.abs(mappedLeftEye.rx - rig.eyes[0].rx * (0.142 / 0.15)) < 1e-9);
+  assert.ok(Math.abs(mappedLeftEye.ry - rig.eyes[0].ry * (0.09 / 0.085)) < 1e-9);
 });
 
 test("an interaction received during artwork loading plays once on readiness and never survives disposal", () => {

@@ -11,6 +11,23 @@ const color = (value, fallback) =>
 /** Each asset has normalized coordinates: facial artwork stays attached to its UVs. */
 export function normalizeRig(input = {}) {
   const head = input.head || {};
+  const normalizedHead = {
+    x: number(head.x, 0.5),
+    y: number(head.y, 0.13),
+    neckY: number(head.neckY, 0.22, 0.1, 0.4),
+    radiusX: number(head.radiusX, 0.19, 0.03, 0.4),
+    radiusY: number(head.radiusY, 0.09, 0.02, 0.25),
+  };
+  const actionFaces = Object.fromEntries(
+    Object.entries(input.actionFaces || {})
+      .filter(([, source]) => source && typeof source === "object")
+      .map(([kind, source]) => [kind, {
+        x: number(source.x, normalizedHead.x),
+        y: number(source.y, normalizedHead.y),
+        radiusX: number(source.radiusX, normalizedHead.radiusX, 0.03, 0.4),
+        radiusY: number(source.radiusY, normalizedHead.radiusY, 0.02, 0.25),
+      }]),
+  );
   const eye = (source, x) => ({
     x: number(source?.x, x),
     y: number(source?.y, 0.128),
@@ -24,13 +41,8 @@ export function normalizeRig(input = {}) {
   const point = (source, fallback) => fallback.map((v, i) => number(source?.[i], v));
   return {
     armMobility: number(input.armMobility, 1),
-    head: {
-      x: number(head.x, 0.5),
-      y: number(head.y, 0.13),
-      neckY: number(head.neckY, 0.22, 0.1, 0.4),
-      radiusX: number(head.radiusX, 0.19, 0.03, 0.4),
-      radiusY: number(head.radiusY, 0.09, 0.02, 0.25),
-    },
+    head: normalizedHead,
+    actionFaces,
     eyes: [eye(input.eyes?.[0], 0.455), eye(input.eyes?.[1], 0.545)],
     mouth: {
       x: number(mouth.x, 0.5),
@@ -51,6 +63,32 @@ export function normalizeRig(input = {}) {
       right: number(bounds.right, 0.88, 0.55, 1),
       bottom: number(bounds.bottom, 0.985, 0.75, 1),
     },
+  };
+}
+
+const faceVector = (face) => [face.x, face.y, face.radiusX, face.radiusY];
+
+/** Map the canonical portrait face into an authored action frame. */
+export function resolveFaceStabilizer(rig, actionKind) {
+  const source = rig?.head || normalizeRig({}).head;
+  const target = rig?.actionFaces?.[actionKind] || source;
+  return {
+    enabled: target === source ? 0 : 1,
+    source: faceVector(source),
+    target: faceVector(target),
+  };
+}
+
+/** Keep eye and mouth animation attached after the canonical face is relocated. */
+export function remapFaceFeature(feature, source, target) {
+  const scaleX = target.radiusX / source.radiusX;
+  const scaleY = target.radiusY / source.radiusY;
+  return {
+    ...feature,
+    x: target.x + (feature.x - source.x) * scaleX,
+    y: target.y + (feature.y - source.y) * scaleY,
+    rx: feature.rx * scaleX,
+    ry: feature.ry * scaleY,
   };
 }
 

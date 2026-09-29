@@ -7,6 +7,14 @@
     "radiusX": 0.15,
     "radiusY": 0.085
   },
+  "actionFaces": {
+    "squat": {
+      "x": 0.492351,
+      "y": 0.137292,
+      "radiusX": 0.183156,
+      "radiusY": 0.108261
+    }
+  },
   "eyes": [
     {
       "x": 0.46614,
