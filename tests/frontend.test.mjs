@@ -311,6 +311,22 @@ test("switching persona while a reply is pending never appends it to the new per
   assert.equal(saved.personaThreads["older-sister"].messages.some((item) => item.content === "不该出现的旧回复"), false);
 });
 
+test("deleting a persona while its reply is pending discards the stale reply", async () => {
+  const ui = await mountV2();
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "复制当前人格" }));
+  fireEvent.click(ui.getByRole("button", { name: "返回陪伴" }));
+  await submit(ui, "这是副本的问题");
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "删除这个副本" }));
+  await resolveChat("过期回复");
+  await act(() => new Promise((resolve) => setTimeout(resolve, 250)));
+
+  const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.equal(Object.values(saved.personas).some((item) => item.displayName.endsWith("副本")), false);
+  assert.doesNotMatch(ui.container.querySelector(".reply-text").textContent, /过期回复/);
+});
+
 test("missing persona voice repairs only that persona to builtin", async () => {
   const base = restoreState(null);
   base.personas["boss-girlfriend"].voiceProfileId = "missing-boss-voice";
@@ -767,4 +783,44 @@ test('saved voice cards can switch the active voice and rename without changing 
  await waitFor(()=>assert.equal(ui.getByRole('button',{name:'重命名温柔声音'}).disabled,false));
  fireEvent.click(ui.getByRole('button',{name:'重命名温柔声音'}));fireEvent.change(ui.getByRole('textbox',{name:'新音色名称'}),{target:{value:'夜晚声音'}});fireEvent.click(ui.getByRole('button',{name:'保存名称'}));await waitFor(()=>assert.ok(ui.getByText('夜晚声音')));
  fireEvent.click(ui.getByRole('button',{name:'＋ 添加音色'}));assert.ok(ui.getByLabelText('1. 选择录音'));
+});
+
+test("a pending voice selection stays with the persona that started it", async () => {
+  const original = globalThis.fetch;
+  let finishSelection;
+  const snapshot = () => ({
+    selectedId: "builtin",
+    voices: [
+      { id: "builtin", name: "原始参考音色", builtin: true, duration: 5.4 },
+      { id: "custom", name: "姐姐音色", builtin: false, duration: 6 },
+    ],
+  });
+  globalThis.fetch = async (url, options) => {
+    if (url === "/api/voices") return { ok: true, json: async () => snapshot() };
+    if (url === "/api/voices/select" && JSON.parse(options.body).id === "custom")
+      return new Promise((resolve) => {
+        finishSelection = () => resolve({
+          ok: true,
+          json: async () => ({ ...snapshot(), selectedId: "custom" }),
+        });
+      });
+    return original(url, options);
+  };
+
+  const ui = await mountV2();
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  await waitFor(() => assert.ok(ui.getByText("姐姐音色")));
+  fireEvent.click(ui.getByRole("button", { name: "使用音色", exact: true }));
+  await waitFor(() => assert.equal(typeof finishSelection, "function"));
+  fireEvent.click(ui.getByRole("button", { name: "选择女友：夏桃" }));
+  await act(async () => {
+    finishSelection();
+    await Promise.resolve();
+  });
+
+  await waitFor(() => {
+    const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+    assert.equal(saved.personas["older-sister"].voiceProfileId, "custom");
+    assert.equal(saved.personas["adult-younger"].voiceProfileId, "builtin");
+  });
 });

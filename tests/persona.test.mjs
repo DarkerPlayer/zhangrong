@@ -93,6 +93,10 @@ test("invalid persona snapshots reject underage, oversized, and appearance-bound
     customCorpora: [],
   });
   assert.throws(() => normalizePersonaSnapshot({ ...valid, age: 17 }), /年龄/);
+  assert.throws(
+    () => normalizePersonaSnapshot({ ...valid, templateId: "unknown-template" }),
+    /模板/,
+  );
   assert.throws(() => normalizePersonaSnapshot({ ...valid, lookId: "ruby-velvet" }), /外观/);
   assert.throws(
     () => normalizePersonaSnapshot({

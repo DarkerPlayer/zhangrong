@@ -907,6 +907,14 @@ export default function App() {
   }
   function removeActivePersona() {
     const name = activePersonaName;
+    requestEpoch.current += 1;
+    requestRef.current?.abort();
+    requestRef.current = null;
+    sendLock.current = false;
+    setBusy(false);
+    stopSpeech();
+    setSpeaking(false);
+    setSpeechPreparing(false);
     setState((current) => removePersonaState(current, current.activePersonaId));
     notify(`已删除「${name}」的人格副本。`);
   }
@@ -1506,7 +1514,7 @@ export default function App() {
                 readAloud(`你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`),
               onSelectedVoice: (voiceProfileId) =>
                 setState((current) =>
-                  updatePersonaProfile(current, current.activePersonaId, { voiceProfileId }),
+                  updatePersonaProfile(current, activePersona.id, { voiceProfileId }),
                 ),
               onChange: () =>
                 fetch("/api/health").then((response) => response.json()).then(setHealth).catch(() => {}),

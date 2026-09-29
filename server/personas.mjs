@@ -216,9 +216,11 @@ export function normalizePersonaSnapshot(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) fail("人格快照格式无效。");
   const acknowledged = value.adultAcknowledged === true;
   const requestedLevel = cleanIntimacy(value.intimacyLevel);
+  const templateId = cleanId(value.templateId, "人格模板 ID");
+  if (!templateById.has(templateId)) fail("人格模板不存在。");
   const result = {
     id: cleanId(value.id),
-    templateId: cleanId(value.templateId, "人格模板 ID"),
+    templateId,
     name: cleanString(value.name, "人格名称", 24),
     age: cleanAge(value.age),
     archetype: cleanString(value.archetype, "人格类型", 60),
