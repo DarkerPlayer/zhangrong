@@ -154,48 +154,35 @@ async function resolveChat(text = "我听到啦。") {
   });
 }
 
-test("衣柜是全屏工作台，并支持角色切换、改名、独立语料和背景", async () => {
-  const ui = await mount({ lookId: "ruby-velvet" });
+test("衣柜只管理外观，切换模特与背景不改变女友本体", async () => {
+  const base = restoreState(null);
+  base.lookId = "ruby-velvet";
+  base.activePersonaId = "boss-girlfriend";
+  base.personaThreads["boss-girlfriend"].messages = [
+    { id: "identity-proof", role: "assistant", content: "本体记录", createdAt: 1 },
+  ];
+  const beforePersona = JSON.stringify(base.personas["boss-girlfriend"]);
+  const beforeThread = JSON.stringify(base.personaThreads["boss-girlfriend"]);
+  const ui = await mountV2(base);
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
 
   const page = ui.getByRole("region", { name: "选一种，陪你的模样" });
   assert.ok(ui.getByRole("heading", { name: "全身衣柜工作台" }));
   assert.equal(page.querySelector('[data-testid="live-pet"]').dataset.fullBody, "true");
+  assert.deepEqual(ui.getAllByRole("tab").map((item) => item.textContent), ["套装", "部件", "背景"]);
+  assert.equal(ui.queryByRole("textbox", { name: "角色名称" }), null);
+  assert.equal(ui.queryByRole("tab", { name: "角色语料" }), null);
 
-  fireEvent.click(ui.getByRole("button", { name: "选择人物：林薇" }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：林薇" }));
   assert.equal(page.querySelector('[data-testid="live-pet"]').dataset.look, "linwei-red-sole");
-
-  fireEvent.change(ui.getByRole("textbox", { name: "角色名称" }), {
-    target: { value: "薇姐" },
-  });
-  fireEvent.click(ui.getByRole("button", { name: "保存角色名称" }));
-  assert.equal(
-    JSON.parse(localStorage.getItem("muyu-state-v2")).characterProfiles.linwei
-      .displayName,
-    "薇姐",
-  );
-
-  fireEvent.click(ui.getByRole("tab", { name: "角色语料" }));
-  fireEvent.change(ui.getByRole("textbox", { name: "语料标题" }), {
-    target: { value: "称呼" },
-  });
-  fireEvent.change(ui.getByRole("textbox", { name: "语料内容" }), {
-    target: { value: "叫我队长" },
-  });
-  fireEvent.click(ui.getByRole("button", { name: "保存到当前角色" }));
-  assert.equal(
-    JSON.parse(localStorage.getItem("muyu-state-v2")).characterProfiles.linwei
-      .corpora[0].text,
-    "叫我队长",
-  );
-
-  fireEvent.click(ui.getByRole("button", { name: "选择人物：绯月" }));
-  assert.equal(ui.queryByText("叫我队长"), null);
   fireEvent.click(ui.getByRole("tab", { name: "背景" }));
   fireEvent.click(ui.getByRole("button", { name: "背景：玫瑰影棚" }));
   const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
   assert.equal(saved.backgroundId, "rose-studio");
-  assert.equal(saved.lookId, "ruby-velvet");
+  assert.equal(saved.lookId, "linwei-red-sole");
+  assert.equal(saved.activePersonaId, "boss-girlfriend");
+  assert.equal(JSON.stringify(saved.personas["boss-girlfriend"]), beforePersona);
+  assert.equal(JSON.stringify(saved.personaThreads["boss-girlfriend"]), beforeThread);
 });
 
 test("部件页展示可复用槽位，清空穿搭会切到当前角色的安全底装", async () => {

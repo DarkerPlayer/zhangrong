@@ -48,7 +48,6 @@ import {
   STORAGE_KEY,
   LEGACY_STORAGE_KEY,
   restoreState,
-  createCorpus,
   formatRemaining,
 } from "./state.mjs";
 import {
@@ -85,7 +84,6 @@ import {
 import WardrobeFilters, { WardrobeEmpty } from "./WardrobeFilters.jsx";
 import {
   getCharacter,
-  getCharacterDisplayName,
   getCharacterForLook,
   isBackgroundId,
   resolveEmptyOutfit,
@@ -250,10 +248,6 @@ export default function App() {
   const animated = state.avatarMode !== "photo";
   const currentLook = getLook(state.lookId);
   const activeCharacter = getCharacterForLook(state.lookId);
-  const appearanceCharacterName = getCharacterDisplayName(
-    state.characterProfiles,
-    activeCharacter.id,
-  );
   const removedLookIds = state.removedLookIds || [];
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
@@ -678,74 +672,6 @@ export default function App() {
     );
     if (nextLook) chooseLook(nextLook);
   }
-  function renameCharacter(characterId, value) {
-    const displayName = value.trim().slice(0, 24);
-    setState((s) => {
-      const oldProfile = s.characterProfiles?.[characterId] || {};
-      return {
-        ...s,
-        characterProfiles: {
-          ...(s.characterProfiles || {}),
-          [characterId]: {
-            ...oldProfile,
-            ...(displayName ? { displayName } : { displayName: undefined }),
-            corpora: oldProfile.corpora || [],
-          },
-        },
-      };
-    });
-    notify(displayName ? `已改名为「${displayName}」。` : "已恢复默认名称。");
-  }
-  function addCharacterCorpus(characterId, text, title) {
-    const corpus = createCorpus(text, title);
-    setState((s) => {
-      const oldProfile = s.characterProfiles?.[characterId] || {};
-      return {
-        ...s,
-        characterProfiles: {
-          ...(s.characterProfiles || {}),
-          [characterId]: {
-            ...oldProfile,
-            corpora: [{ ...corpus, enabled: true }, ...(oldProfile.corpora || [])].slice(0, 40),
-          },
-        },
-      };
-    });
-    notify("已保存到这个角色。");
-  }
-  function toggleCharacterCorpus(characterId, corpusId) {
-    setState((s) => {
-      const oldProfile = s.characterProfiles?.[characterId] || {};
-      return {
-        ...s,
-        characterProfiles: {
-          ...(s.characterProfiles || {}),
-          [characterId]: {
-            ...oldProfile,
-            corpora: (oldProfile.corpora || []).map((item) =>
-              item.id === corpusId ? { ...item, enabled: item.enabled === false } : item,
-            ),
-          },
-        },
-      };
-    });
-  }
-  function deleteCharacterCorpus(characterId, corpusId) {
-    setState((s) => {
-      const oldProfile = s.characterProfiles?.[characterId] || {};
-      return {
-        ...s,
-        characterProfiles: {
-          ...(s.characterProfiles || {}),
-          [characterId]: {
-            ...oldProfile,
-            corpora: (oldProfile.corpora || []).filter((item) => item.id !== corpusId),
-          },
-        },
-      };
-    });
-    notify("角色语料已删除。");
-  }
   function setWardrobeBackground(backgroundId) {
     if (!isBackgroundId(backgroundId)) return;
     setState((s) => ({ ...s, backgroundId }));
@@ -755,7 +681,7 @@ export default function App() {
     if (result.status === "ready" && result.lookId !== state.lookId) {
       chooseLook(result.lookId);
     } else if (result.status === "pending") {
-      notify("当前人物的白色比基尼底装还未生成，已安全保留原造型。");
+      notify("当前外观模特的白色比基尼底装还未生成，已安全保留原造型。");
     }
     return result;
   }
@@ -1519,7 +1445,6 @@ export default function App() {
             state={state}
             currentLook={currentLook}
             activeCharacter={activeCharacter}
-            activeCharacterName={appearanceCharacterName}
             visibleLooks={visibleLooks}
             availableLookCount={availableLookCount}
             removedLookIds={removedLookIds}
@@ -1534,10 +1459,6 @@ export default function App() {
             removeLook={removeLook}
             restoreLook={restoreLook}
             chooseScene={chooseScene}
-            renameCharacter={renameCharacter}
-            addCharacterCorpus={addCharacterCorpus}
-            toggleCharacterCorpus={toggleCharacterCorpus}
-            deleteCharacterCorpus={deleteCharacterCorpus}
             setBackground={setWardrobeBackground}
             requestEmptyOutfit={requestEmptyOutfit}
             onClose={() => setPanel(null)}
