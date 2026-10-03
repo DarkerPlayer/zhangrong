@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-03",
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "sourceLookId": "fancha-rose-office",
+  "intent": "Faithfully reconstructed transparent standalone wardrobe item references, derived from the current character illustration.",
+  "transparentBackground": true,
+  "postProcessing": "None; generated PNG files copied unchanged with original alpha.",
+  "usage": "Reusable inventory reference assets. Character-specific fitted render layers require separate alignment and compatible base artwork.",
+  "items": [
+    {
+      "id": "dress",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/fancha-rose-dress.png",
+      "publicPath": "/wardrobe/items/fancha-rose-dress.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff9a-ef99-73c3-9471-c6c03e5e6a88/exec-132441b3-5655-4067-8437-8653f1337f6d.png",
+      "prompt": "Use case: background-extraction. Asset type: reusable wardrobe item reference icon, one standalone garment on genuine transparent background. Input image 1 is the reference character; extract and faithfully reconstruct ONLY her rose-pink fitted blazer wrap mini dress in the same polished Korean webtoon rendering. Front three-quarter product view, centered and fully visible, generous clear margin. Preserve opaque dusty rose satin fabric, lapel collar and wrap V neckline, three-quarter sleeves, curved fitted waist and hip tailoring, six round black jewel buttons in two columns of three, matching seams, asymmetric wrap hem, fine fabric folds and highlights. Use a hollow invisible mannequin garment presentation: empty collar and sleeves with visible inside fabric where needed, no person, no skin or body inside, no mannequin, no head, no legs, no hands, no jewelry, no shoes, no hair. Pure isolated dress only, tasteful clothing catalog asset, no background glow, shadow plane, text or watermark. Actual transparent alpha outside garment.",
+      "referencedImagePaths": [
+        "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png"
+      ],
+      "sha256": "e25c02297094b155a88d9a2e6e61dd5e3af342ab0f2e70ef3a59f55aee5f63f3",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "alphaVerification": {
+        "mode": "RGBA",
+        "range": [
+          0,
+          254
+        ],
+        "fullyTransparentFraction": 0.495281
+      },
+      "referenceSha256": "628bf31665c05c6c90dd0ec934d3d218447a4ebee0463684871702095eb837e5"
+    },
+    {
+      "id": "heels",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/fancha-ivory-heels.png",
+      "publicPath": "/wardrobe/items/fancha-ivory-heels.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff9a-ef99-73c3-9471-c6c03e5e6a88/exec-69064314-89bf-4291-8dcd-c2deb574b5fb.png",
+      "prompt": "Use case: background-extraction. Asset type: reusable wardrobe item reference icon, one pair of shoes on genuine transparent background. Input image 1 is the reference character; extract and faithfully reconstruct ONLY the matched pair of ivory pumps she wears. Preserve the sleek smooth satin-like ivory cream upper, pointed closed toes, slim high heels, fine light tan/gold sole edge, and elegant low-cut topline. Same polished Korean webtoon rendering with precise dark fine outlines and soft bright highlights. Arrange the two shoes as a coherent catalog pair in three-quarter view, one showing outer side and heel and the other showing toe and empty interior, fully visible and centered with clear margin. No feet, legs, skin, person, mannequin or additional objects. No background glow, ground plane, labels, branding, text or watermark. Genuine transparent alpha outside both shoes.",
+      "referencedImagePaths": [
+        "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png"
+      ],
+      "sha256": "49b04771960501683c4f7a72be567acaeb076a87320786c42c4c3685679cdda2",
+      "dimensions": {
+        "width": 1223,
+        "height": 1286
+      },
+      "alphaVerification": {
+        "mode": "RGBA",
+        "range": [
+          0,
+          255
+        ],
+        "fullyTransparentFraction": 0.625957
+      },
+      "referenceSha256": "628bf31665c05c6c90dd0ec934d3d218447a4ebee0463684871702095eb837e5"
+    },
+    {
+      "id": "watch",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/fancha-white-watch.png",
+      "publicPath": "/wardrobe/items/fancha-white-watch.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff9a-ef99-73c3-9471-c6c03e5e6a88/exec-740a578a-c699-4346-9dfc-b8bd2490a368.png",
+      "prompt": "Use case: background-extraction. Asset type: reusable wardrobe item reference icon, one standalone watch on genuine transparent background. Input image 1 is the reference character; faithfully reconstruct ONLY her white wristwatch, remove the wrist. White leather band with subtle stitched edge and small silver buckle, small silver rectangular wristwatch case and simple light face; preserve the visible reference watch's feminine restrained proportions. Same polished Korean webtoon rendering, clean fine outlines, soft silver highlights. Three-quarter catalog view of one watch with strap gently curved into a loose loop and dial clearly visible, centered, complete, generous margin. Do not add a brand or any legible text. No wrist, hand, skin, arm, person, mannequin, jewelry or other objects. No background glow, ground plane, text, logo, watermark. Genuine transparent alpha outside watch.",
+      "referencedImagePaths": [
+        "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png"
+      ],
+      "sha256": "374883f477d59b7e240811d70388a73e4f0438fa5f7d41ea0f74d88f1d7dcb89",
+      "dimensions": {
+        "width": 1230,
+        "height": 1278
+      },
+      "alphaVerification": {
+        "mode": "RGBA",
+        "range": [
+          0,
+          255
+        ],
+        "fullyTransparentFraction": 0.60634
+      },
+      "referenceSha256": "628bf31665c05c6c90dd0ec934d3d218447a4ebee0463684871702095eb837e5"
+    },
+    {
+      "id": "hair",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/fancha-sidepart-hair.png",
+      "publicPath": "/wardrobe/items/fancha-sidepart-hair.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff9a-ef99-73c3-9471-c6c03e5e6a88/exec-3b1974c0-db86-468b-b5b5-84655a51ea84.png",
+      "prompt": "Use case: background-extraction. Asset type: reusable wardrobe hairstyle reference icon on genuine transparent background. Input image 1 is the reference character; extract and faithfully reconstruct ONLY her long glossy black side-part hairstyle as a detached wig asset, preserving sweeping side part, smooth crown, asymmetric front side-swept strands, long black lengths extending below the shoulders with softly tapering tips, and cool blue-white reflective highlights. Match the existing polished Korean webtoon rendering and precise fine outlines. Slight three-quarter frontal view, fully visible and centered with clear margins. Empty transparent opening where the face and neck would go. The asset contains hair only: absolutely no face, eyes, skin, ears, head, neck, torso, mannequin, bust, clothing, jewelry or hands. No background, glow, shadow plane, text or watermark. Actual transparent alpha outside hair and inside the empty face opening.",
+      "referencedImagePaths": [
+        "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png"
+      ],
+      "sha256": "c117631f5b018a85571197334c5b232b242495738d798bacd4c433713cd44233",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "alphaVerification": {
+        "mode": "RGBA",
+        "range": [
+          0,
+          254
+        ],
+        "fullyTransparentFraction": 0.624655
+      },
+      "referenceSha256": "628bf31665c05c6c90dd0ec934d3d218447a4ebee0463684871702095eb837e5"
+    },
+    {
+      "id": "earrings",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/fancha-pearl-earrings.png",
+      "publicPath": "/wardrobe/items/fancha-pearl-earrings.png",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff9a-ef99-73c3-9471-c6c03e5e6a88/exec-d18434ac-12a0-41ff-910c-142596f3e64f.png",
+      "prompt": "Use case: background-extraction. Asset type: reusable wardrobe accessory reference icon on genuine transparent background. Input image 1 is the reference character; extract and faithfully reconstruct ONLY a matching pair of her small pearl drop earrings. Each earring consists of a tiny restrained silver attachment and one white pearly teardrop-shaped bead, the same simple elegant design visible on her ear. Same polished Korean webtoon rendering with clean fine outlines, soft luminous white pearl shading and subtle silver highlights. Present exactly two matching earrings side by side, one very slightly angled for depth, fully visible, centered with ample clear margins. No ear, face, skin, head, person, mannequin, clothing or other objects. No background glow, ground plane, text, brand or watermark. Actual transparent alpha outside earrings.",
+      "referencedImagePaths": [
+        "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png"
+      ],
+      "sha256": "5f3419dd7765e5dae16b2f575cb8aa831e9cc652c00263e39b2d591bc315b84c",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "alphaVerification": {
+        "mode": "RGBA",
+        "range": [
+          0,
+          254
+        ],
+        "fullyTransparentFraction": 0.913074
+      },
+      "referenceSha256": "628bf31665c05c6c90dd0ec934d3d218447a4ebee0463684871702095eb837e5"
+    }
+  ]
+}

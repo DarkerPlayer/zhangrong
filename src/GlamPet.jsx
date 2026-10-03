@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { portraitMouth } from "./portrait-mouth.mjs";
 import { getSpeechLevel } from "./audio.js";
 import { getLook } from "./looks.mjs";
+import { createGlamActionResources } from "./glam-action-resources.mjs";
 import { pointerFocus } from "./live2d-motion.mjs";
 import { MotionController } from "./motion/MotionController.mjs";
 import { MotionScheduler } from "./motion/MotionScheduler.mjs";
@@ -17,7 +18,7 @@ import {
 } from "./motion/adapters/GlamMotionAdapter.mjs";
 import {
   createGlamActionQueue,
-  armSplitRows,
+  resolveArmSeparation,
   normalizeRig,
   glamPose,
   deformVertices,
@@ -58,12 +59,12 @@ uniform float uBlink;
 uniform float uMouthOpen;
 uniform float uSmile;
 uniform float uBlush;
-uniform vec2 uShoulder;
 uniform float uArmLayer;
 uniform float uUseArmMask;
 uniform sampler2D uArmBoundary;
 uniform sampler2D uBaseSampler;
 uniform sampler2D uNextSampler;
+uniform vec2 uBaseUvOffset;
 uniform float uBaseWeight;
 uniform float uCurrentWeight;
 uniform float uNextWeight;
@@ -77,11 +78,20 @@ float oval(vec2 point, vec2 center, vec2 radius, float feather) {
 }
 
 vec4 portraitSample(vec2 uv) {
-  vec4 base = texture2D(uBaseSampler, uv);
+  // Authored gestures move the action mesh to its ground anchor. Compensate
+  // only the resting layer so entry/exit fades keep it in its original place.
+  vec2 baseUV = uv + uBaseUvOffset;
+  vec4 base = texture2D(uBaseSampler, baseUV);
+  if (any(notEqual(uBaseUvOffset, vec2(0.0))) &&
+      (baseUV.x < 0.0 || baseUV.x > 1.0 || baseUV.y < 0.0 || baseUV.y > 1.0)) {
+    base = vec4(0.0);
+  }
   vec4 source = base * uBaseWeight +
     texture2D(uSampler, uv) * uCurrentWeight +
     texture2D(uNextSampler, uv) * uNextWeight;
   vec2 canonicalUV = uHead.xy + (uv - uActionHead.xy) * (uHead.zw / uActionHead.zw);
+  // Canonical facial replacement remains in its original source coordinates;
+  // authored-expression gestures disable that replacement entirely.
   vec4 canonical = texture2D(uBaseSampler, canonicalUV);
   float stableFace = oval(uv, uActionHead.xy, uActionHead.zw * vec2(0.62, 0.80), 0.22) * uStabilizeFace;
   return mix(source, canonical, stableFace);
@@ -127,10 +137,9 @@ void main(void) {
       oval(vTextureCoord, uMouth.xy + vec2(-offset.x, offset.y), uMouth.zw * vec2(1.0, 0.78), 0.6);
     result = mix(result, vec3(0.89, 0.39, 0.45), cheeks * (uBlush * 0.2 + uSmile * 0.025));
   }
-  float boundary = texture2D(uArmBoundary, vec2(0.5, vTextureCoord.y)).r;
-  float arm = smoothstep(boundary - 0.0015, boundary + 0.0015, vTextureCoord.x) *
-    smoothstep(uShoulder.y - 0.012, uShoulder.y + 0.020, vTextureCoord.y) *
-    (1.0 - smoothstep(uShoulder.y + 0.36, uShoulder.y + 0.405, vTextureCoord.y));
+  vec4 armRow = texture2D(uArmBoundary, vec2(0.5, vTextureCoord.y));
+  float boundary = dot(armRow.rg, vec2(256.0 / 257.0, 1.0 / 257.0));
+  float arm = step(boundary, vTextureCoord.x) * armRow.b;
   float splitLayer = uArmLayer > 0.5 ? arm : 1.0 - arm;
   float layer = mix(1.0, splitLayer, uUseArmMask);
   gl_FragColor = vec4(result, source.a) * uColor * layer;
@@ -142,6 +151,7 @@ const rgb = (value) => new Float32Array(value);
 /** Original local artwork animated with a weighted mesh and a UV facial shader. */
 export default function GlamPet({
   lookId,
+  appearance,
   mood = "idle",
   action = null,
   motion = true,
@@ -159,7 +169,7 @@ export default function GlamPet({
   latest.current = { mood, motion, petMode, onInteract, onReady, onError };
   const [status, setStatus] = useState("loading");
   const [retry, setRetry] = useState(0);
-  const look = getLook(lookId);
+  const look = appearance?.id === lookId ? appearance : getLook(lookId);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -180,8 +190,8 @@ export default function GlamPet({
     let wasMoving = false;
     let texture;
     let armBoundaryTexture;
-    const actionTextures = new Map();
-    const actionImageUrls = [];
+    let actionResources;
+    let actionRequest = 0;
     let image;
     let imageUrl;
     let observer;
@@ -206,6 +216,8 @@ export default function GlamPet({
 
     const disposeGraphics = () => {
       app?.stop();
+      actionResources?.destroy();
+      actionResources = null;
       if (app) {
         app.destroy(false, { children: true });
         app = null;
@@ -218,11 +230,6 @@ export default function GlamPet({
       texture = null;
       armBoundaryTexture?.destroy(true);
       armBoundaryTexture = null;
-      for (const frames of actionTextures.values()) {
-        for (const frame of frames) frame.destroy(true);
-      }
-      actionTextures.clear();
-      for (const url of actionImageUrls.splice(0)) URL.revokeObjectURL(url);
       if (imageUrl) URL.revokeObjectURL(imageUrl);
       imageUrl = null;
       image = null;
@@ -264,16 +271,21 @@ export default function GlamPet({
       app.render();
     };
 
-    const perform = (kind, notify = false, options = {}) => {
+    const startAction = (kind, options = {}) => {
       if (disposed || !mesh || !motionController) return;
-      if (notify && latest.current.onInteract) {
-        latest.current.onInteract(kind);
-        return;
-      }
       const explicit = MOTION_PRIORITIES.EXPLICIT;
       if (Number.isFinite(options.playbackRate)) motionController.setLocomotionSpeed(options.playbackRate);
       let result;
-      if (kind === "squat") {
+      if (kind === "idle" || kind === "idle_neutral") {
+        motionController.stopAllMotions();
+        result = motionController.playMotion("idle_neutral");
+      } else if (kind === "spit") {
+        // This authored gesture always plays once; duration/repeat overrides
+        // must not turn the release into an ongoing animation.
+        motionController.stopAllMotions();
+        motionController.setLocomotionSpeed(1);
+        result = motionController.playMotion("spit", { priority: explicit });
+      } else if (kind === "squat") {
         motionController.stopAllMotions();
         result = motionController.playMotion("crouch_enter", { priority: explicit });
         if (result.accepted) {
@@ -313,10 +325,49 @@ export default function GlamPet({
         canvas.dataset.action = result.motionId;
         canvas.dataset.motionCount = String(Number(canvas.dataset.motionCount || 0) + 1);
       }
+      actionResources?.setActive(document.hidden ? null : glamAdapter?.getSample().actionKind);
+    };
+
+    const perform = (kind, notify = false, options = {}) => {
+      if (disposed || !mesh || !motionController) return;
+      if (notify && latest.current.onInteract) {
+        latest.current.onInteract(kind);
+        return;
+      }
+      const request = ++actionRequest;
+      const canonical = motionController.aliases[kind] || kind;
+      const group = motionController.motions[canonical]?.assets;
+      if (!group) {
+        canvas.dataset.actionLoading = "";
+        actionResources?.cancelPending();
+        startAction(kind, options);
+        return;
+      }
+      if (actionResources.get(group)) {
+        startAction(kind, options);
+        return;
+      }
+      // Keep the resting portrait visible until every frame is ready. Only the
+      // latest explicit request may start a motion after asynchronous decoding.
+      canvas.dataset.actionLoading = group;
+      void actionResources.load(group).then((loaded) => {
+        if (disposed || request !== actionRequest || !loaded.length) return;
+        glamAdapter.availableActions[group] = loaded.length;
+        canvas.dataset.actionLoading = "";
+        startAction(kind, options);
+      }).catch((error) => {
+        if (disposed || request !== actionRequest) return;
+        canvas.dataset.actionLoading = "";
+        if (error?.name !== "AbortError") {
+          console.warn(`Could not load ${group} pose for ${look.id}`, error);
+          latest.current.onError?.("动作暂时没有加载成功，再点一次就好。");
+        }
+      });
     };
 
     const visibility = () => {
       if (!app) return;
+      actionResources?.setActive(document.hidden ? null : glamAdapter?.getSample().actionKind);
       if (document.hidden) app.stop();
       else app.start();
     };
@@ -335,6 +386,7 @@ export default function GlamPet({
         const [blob, rigData] = await Promise.all([imageResponse.blob(), rigResponse.json()]);
         if (disposed) return;
         rig = normalizeRig(rigData);
+        canvas.dataset.artwork = look.asset;
         // Instance-owned decoded images avoid cache collisions during StrictMode
         // remounts, outfit switches and simultaneous main/pet windows.
         imageUrl = URL.createObjectURL(blob);
@@ -351,48 +403,59 @@ export default function GlamPet({
         if (!imageWidth || !imageHeight) throw new Error(`Artwork ${look.id} has no drawable pixels`);
         texture = PIXI.Texture.from(image);
         texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-        const actionEntries = await Promise.all(
-          Object.entries(look.actions || {}).map(async ([kind, sources]) => {
-            const results = await Promise.allSettled(
-              sources.map(async (source) => {
-                const assetSource = typeof source === "string" ? source : source.src;
-                const response = await fetch(assetSource, { signal: abort.signal });
-                if (!response.ok) throw new Error(`Action artwork ${assetSource}: HTTP ${response.status}`);
-                const url = URL.createObjectURL(await response.blob());
-                actionImageUrls.push(url);
-                const frameImage = new Image();
-                frameImage.src = url;
-                await frameImage.decode();
-                if (disposed) throw new DOMException("Disposed", "AbortError");
-                const frameTexture = PIXI.Texture.from(frameImage);
-                frameTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-                return frameTexture;
-              }),
-            );
-            const loaded = results
-              .filter((result) => result.status === "fulfilled")
-              .map((result) => result.value);
-            const failure = results.find((result) => result.status === "rejected");
-            if (failure) {
-              for (const frame of loaded) frame.destroy(true);
-              if (failure.reason?.name === "AbortError") throw failure.reason;
-              console.warn(`Could not load ${kind} pose for ${look.id}`, failure.reason);
-              return [kind, []];
+        actionResources = createGlamActionResources({
+          actions: look.actions,
+          loadFrame: async (source, signal) => {
+            const assetSource = typeof source === "string" ? source : source.src;
+            const response = await fetch(assetSource, { signal });
+            if (!response.ok) throw new Error(`Action artwork ${assetSource}: HTTP ${response.status}`);
+            const frameBlob = await response.blob();
+            signal.throwIfAborted();
+            const url = URL.createObjectURL(frameBlob);
+            const frameImage = new Image();
+            const cancelImage = () => { frameImage.src = ""; URL.revokeObjectURL(url); };
+            signal.addEventListener("abort", cancelImage, { once: true });
+            try {
+              frameImage.src = url;
+              await frameImage.decode();
+              signal.throwIfAborted();
+              const frameTexture = PIXI.Texture.from(frameImage);
+              frameTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+              return frameTexture;
+            } finally {
+              signal.removeEventListener("abort", cancelImage);
+              URL.revokeObjectURL(url);
             }
-            return [kind, loaded];
-          }),
-        );
-        for (const [kind, actionFrames] of actionEntries) {
-          if (actionFrames.length) actionTextures.set(kind, actionFrames);
-        }
+          },
+          releaseFrame: (frame) => frame.destroy(true),
+          onRelease: (kind) => {
+            if (glamAdapter) glamAdapter.availableActions[kind] = 0;
+            if (glamAdapter?.getSample().actionKind === kind) {
+              motionController?.stopAllMotions();
+              if (!disposed) motionController?.playMotion("idle_neutral");
+            }
+            for (const actionMesh of actionMeshes) {
+              actionMesh.texture = texture;
+              actionMesh.alpha = 0;
+              actionMesh.material.uniforms.uNextSampler = texture;
+            }
+            if (mesh) mesh.alpha = 1;
+            if (armMesh) armMesh.alpha = 1;
+          },
+        });
         const matteCanvas = document.createElement("canvas");
         matteCanvas.width = imageWidth;
         matteCanvas.height = imageHeight;
         const matteContext = matteCanvas.getContext("2d", { willReadFrequently: true });
         matteContext.drawImage(image, 0, 0);
         const pixels = matteContext.getImageData(0, 0, imageWidth, imageHeight).data;
-        armBoundaryTexture = PIXI.Texture.fromBuffer(armSplitRows(pixels, imageWidth, imageHeight, rig), 1, imageHeight);
-        armBoundaryTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+        const armSeparation = resolveArmSeparation(pixels, imageWidth, imageHeight, rig);
+        rig = { ...rig, armMobility: armSeparation.armMobility };
+        canvas.dataset.armLayerMode = armSeparation.separated ? "separated-arm" : "joined-body";
+        armBoundaryTexture = PIXI.Texture.fromBuffer(armSeparation.rows, 1, imageHeight);
+        // Encoded coordinates and row ownership are discrete, so interpolation
+        // must not turn transparent gaps into cuts through source pixels.
+        armBoundaryTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
         matteCanvas.width = matteCanvas.height = 1;
         app = new PIXI.Application({
           view: canvas,
@@ -420,12 +483,12 @@ export default function GlamPet({
             uMouthOpen: 0,
             uSmile: 0,
             uBlush: 0,
-            uShoulder: new Float32Array(rig.shoulders.right),
             uArmLayer: 0,
-            uUseArmMask: 1,
+            uUseArmMask: armSeparation.separated ? 1 : 0,
             uArmBoundary: armBoundaryTexture,
             uBaseSampler: texture,
             uNextSampler: texture,
+            uBaseUvOffset: new Float32Array(2),
             uBaseWeight: 0,
             uCurrentWeight: 1,
             uNextWeight: 0,
@@ -441,19 +504,20 @@ export default function GlamPet({
           uniforms: { ...material.uniforms, uArmLayer: 1 },
         });
         armMesh = new PIXI.Mesh(new PIXI.PlaneGeometry(imageWidth, imageHeight, 33, 65), armMaterial);
+        armMesh.visible = armSeparation.separated;
         rest = new Float32Array(geometry.getBuffer("aVertexPosition").data);
         app.stage.addChild(mesh, armMesh);
-        const firstActionFrame = [...actionTextures.values()].find((frames) => frames.length)?.[0];
-        if (firstActionFrame) {
+        if (Object.values(look.actions || {}).some((frames) => frames.length)) {
           for (let index = 0; index < 1; index++) {
-            const actionMaterial = new PIXI.MeshMaterial(firstActionFrame, {
+            const actionMaterial = new PIXI.MeshMaterial(texture, {
               program: material.program,
               uniforms: {
                 ...material.uniforms,
                 uArmLayer: 0,
                 uUseArmMask: 0,
                 uBaseSampler: texture,
-                uNextSampler: firstActionFrame,
+                uNextSampler: texture,
+                uBaseUvOffset: new Float32Array(2),
                 uBaseWeight: 0,
                 uCurrentWeight: 1,
                 uNextWeight: 0,
@@ -474,7 +538,7 @@ export default function GlamPet({
         const manifest = createMotionManifest(look);
         glamAdapter = new GlamMotionAdapter({
           manifest,
-          availableActions: Object.fromEntries([...actionTextures].map(([kind, frames]) => [kind, frames.length])),
+          availableActions: {},
         });
         motionController = new MotionController({
           motions: manifest.motions,
@@ -518,16 +582,24 @@ export default function GlamPet({
           wasMoving = moving;
           applyDisplayTransform();
           const visibleAction = glamAdapter.getSample();
-          const actionFrames = visibleAction.frame ? actionTextures.get(visibleAction.actionKind) : null;
+          const actionFrames = visibleAction.frame ? actionResources.get(visibleAction.actionKind) : null;
+          actionResources.setActive(actionFrames?.length ? visibleAction.actionKind : null);
           const poseAlpha = resolveActionPoseAlpha(visibleAction, motionState, Boolean(actionFrames?.length));
           if (actionMeshes.length) {
+            const anchorOffset = visibleAction.preserveExpression ? visibleAction.frame?.anchorOffset : null;
+            for (const actionMaterial of actionMaterials) {
+              actionMaterial.uniforms.uBaseUvOffset.set([
+                anchorOffset?.x ? (visibleAction.facing === "left" ? -anchorOffset.x : anchorOffset.x) : 0,
+                anchorOffset?.y || 0,
+              ]);
+            }
             if (stabilizedActionKind !== visibleAction.actionKind) {
               const stabilizer = resolveFaceStabilizer(rig, visibleAction.actionKind);
               const targetHead = rig.actionFaces?.[visibleAction.actionKind] || rig.head;
               const mappedEyes = rig.eyes.map((eye) => remapFaceFeature(eye, rig.head, targetHead));
               const mappedMouth = remapFaceFeature(rig.mouth, rig.head, targetHead);
               for (const actionMaterial of actionMaterials) {
-                actionMaterial.uniforms.uStabilizeFace = stabilizer.enabled;
+                actionMaterial.uniforms.uStabilizeFace = visibleAction.preserveExpression ? 0 : stabilizer.enabled;
                 actionMaterial.uniforms.uActionHead.set(stabilizer.target);
                 actionMaterial.uniforms.uEyeL.set(shape(mappedEyes[0]));
                 actionMaterial.uniforms.uEyeR.set(shape(mappedEyes[1]));
@@ -572,14 +644,16 @@ export default function GlamPet({
           armBuffer.update();
           for (const actionMesh of actionMeshes) {
             const actionBuffer = actionMesh.geometry.getBuffer("aVertexPosition");
-            deformVertices(rest, actionBuffer.data, pose, rig, imageWidth, imageHeight);
+            const actionPose = visibleAction.preserveExpression ? glamPose({ motion: false }) : pose;
+            deformVertices(rest, actionBuffer.data, actionPose, rig, imageWidth, imageHeight);
             actionBuffer.update();
           }
           for (const targetMaterial of [material, armMaterial, ...actionMaterials]) {
-            targetMaterial.uniforms.uBlink = pose.blink;
-            targetMaterial.uniforms.uMouthOpen = mouth;
-            targetMaterial.uniforms.uSmile = pose.smile;
-            targetMaterial.uniforms.uBlush = pose.blush;
+            const authored = visibleAction.preserveExpression && actionMaterials.includes(targetMaterial);
+            targetMaterial.uniforms.uBlink = authored ? 0 : pose.blink;
+            targetMaterial.uniforms.uMouthOpen = authored ? 0 : mouth;
+            targetMaterial.uniforms.uSmile = authored ? 0 : pose.smile;
+            targetMaterial.uniforms.uBlush = authored ? 0 : pose.blush;
           }
           frames++;
           canvas.dataset.blink = pose.blink.toFixed(3);
@@ -701,7 +775,7 @@ export default function GlamPet({
   return (
     <div ref={hostRef} className={`live-pet glam-pet ${petMode ? "pet-mode" : ""}`} data-status={status} data-look={look.id}>
       <canvas
-        key={`${look.id}:${retry}`}
+        key={`${look.id}:${look.asset}:${look.rig}:${retry}`}
         ref={canvasRef}
         className="live-pet-canvas glam-pet-canvas"
         aria-label={`${look.character}原创动态立绘，轻点摸摸头，按回车与她互动`}

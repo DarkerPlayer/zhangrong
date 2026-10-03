@@ -18,7 +18,8 @@ body {
 }
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 button {
@@ -34,17 +35,20 @@ button:disabled {
 }
 button,
 input,
-select {
+select,
+textarea {
   outline: none;
 }
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+textarea:focus-visible {
   outline: 2px solid #ddd2fc;
   outline-offset: 4px;
 }
 input,
-select {
+select,
+textarea {
   -webkit-app-region: no-drag;
 }
 button {
@@ -65,7 +69,7 @@ button:active:not(:disabled) {
   width: 100%;
   height: 100dvh;
   min-height: 600px;
-  overflow: hidden;
+  overflow: clip;
   background: #1a202d;
 }
 .scene-backdrop {
@@ -750,15 +754,77 @@ button:active:not(:disabled) {
   backdrop-filter: blur(35px);
   animation: panelEnter 0.3s ease;
   outline: none;
-  overflow: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #ffffff26 transparent;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: #bdaed066 transparent;
 }
 .panel-heading {
+  position: sticky;
+  top: -1px;
+  z-index: 6;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 19px;
+  padding: 4px 0 12px;
+  background: linear-gradient(180deg, #191d2bf7 0 82%, transparent);
+  backdrop-filter: blur(18px);
+}
+.side-panel::-webkit-scrollbar {
+  width: 10px;
+}
+.side-panel::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #bdaed066;
+  background-clip: padding-box;
+}
+/* Workspaces sit above a stage that passes pointers through to the character.
+   Their entire surface, including native scrollbar gutters, must accept input. */
+.animated-world .persona-page,
+.animated-world .voice-studio,
+.animated-world .wardrobe-page,
+.animated-world .main-stage textarea {
+  pointer-events: auto;
+}
+.side-panel,
+.persona-page,
+.voice-studio,
+.wardrobe-page {
+  -webkit-app-region: no-drag;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  /* Custom Chromium scrollbars remain visible on macOS, with a wide drag target. */
+  scrollbar-color: auto;
+}
+.side-panel::-webkit-scrollbar,
+.persona-page::-webkit-scrollbar,
+.voice-studio::-webkit-scrollbar,
+.wardrobe-page::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background: #211c26;
+}
+.side-panel::-webkit-scrollbar-thumb,
+.persona-page::-webkit-scrollbar-thumb,
+.voice-studio::-webkit-scrollbar-thumb,
+.wardrobe-page::-webkit-scrollbar-thumb {
+  min-height: 44px;
+  border: 3px solid #211c26;
+  border-radius: 999px;
+  background: #ad8ba8;
+}
+.side-panel::-webkit-scrollbar-thumb:hover,
+.persona-page::-webkit-scrollbar-thumb:hover,
+.voice-studio::-webkit-scrollbar-thumb:hover,
+.wardrobe-page::-webkit-scrollbar-thumb:hover {
+  background: #dec0d6;
+}
+.live-pet canvas {
+  touch-action: pan-y !important;
 }
 .panel-heading h2 {
   font-size: 22px;
@@ -1119,17 +1185,12 @@ button:active:not(:disabled) {
   margin-left: 4px;
 }
 .memories {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: block;
 }
 .memory-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  min-height: auto;
+  overflow: visible;
   padding: 14px 0;
-  scrollbar-width: thin;
-  scrollbar-color: #ffffff22 transparent;
 }
 .empty-state {
   text-align: center;
@@ -1205,9 +1266,7 @@ button:active:not(:disabled) {
   border-top: 1px solid #ffffff0b;
 }
 .corpora.side-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: block;
 }
 .corpora .panel-intro {
   margin-bottom: 14px;
@@ -1285,12 +1344,9 @@ button:active:not(:disabled) {
   color: #90889d;
 }
 .corpus-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  min-height: auto;
+  overflow: visible;
   padding: 4px 2px 0;
-  scrollbar-width: thin;
-  scrollbar-color: #ffffff22 transparent;
 }
 .corpus-card {
   padding: 12px;
@@ -1349,15 +1405,11 @@ button:active:not(:disabled) {
   margin-top: 26px;
 }
 .settings {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 .settings-scroll {
-  overflow-y: auto;
-  min-height: 0;
-  scrollbar-width: thin;
-  scrollbar-color: #ffffff22 transparent;
+  overflow: visible;
+  min-height: auto;
   padding-right: 5px;
   margin-right: -9px;
 }
@@ -1735,6 +1787,22 @@ select {
   }
 }
 @media (max-height: 790px) and (min-width: 761px) {
+  .nav-main {
+    gap: 2px;
+    margin-top: 8px;
+  }
+  .nav-item {
+    height: 46px;
+    gap: 3px;
+  }
+  .nav-bottom {
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .nav-divider,
+  .privacy-mark {
+    display: none;
+  }
   .welcome {
     top: 23%;
   }
@@ -2443,7 +2511,8 @@ select {
   display: block;
   width: 100%;
   height: 100%;
-  touch-action: none;
+  /* Pixi writes touch-action:none inline; keep vertical page gestures available. */
+  touch-action: pan-y !important;
 }
 .live-pet-status,
 .live-pet-loading,

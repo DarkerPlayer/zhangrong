@@ -67,3 +67,13 @@ test('cancelling a stream preserves the warm process for the next response',asyn
  await assert.rejects(worker.synthesize('stream',{signal:abort.signal,onChunk:()=>abort.abort()}),{name:'AbortError'});
  const after=(await worker.synthesize('pid')).readInt16LE(44);assert.equal(before,after);
 });
+
+test('each request forwards its own reference root without restarting the model', async t => {
+ const worker=make();t.after(()=>worker.close());
+ const before=(await worker.synthesize('pid')).readInt16LE(44);
+ for(const voiceRoot of ['/voices/short','/voices/another-reference']) {
+  const audio=await worker.synthesize('voice-root',{voiceRoot});
+  assert.equal(audio.readInt16LE(44),voiceRoot.length);
+ }
+ assert.equal((await worker.synthesize('pid')).readInt16LE(44),before);
+});

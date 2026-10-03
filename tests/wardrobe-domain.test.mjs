@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { JSDOM } from "jsdom";
 import { LOOKS } from "../server/looks.mjs";
+import * as wardrobeCatalog from "../server/wardrobe.mjs";
 import {
   BACKGROUNDS,
   CHARACTERS,
@@ -16,10 +18,103 @@ import {
   getCharacterLooks,
 } from "../server/wardrobe.mjs";
 
-test("wardrobe separates fifteen stable adult appearance models from outfit variants", () => {
-  assert.equal(CHARACTERS.length, 15);
+const authoredBaseCharacterIds = [
+  "discipline-lead", "wuduohui", "linwei", "medusa", "yelan", "ruby",
+  "shuanghua", "sakura", "yuki", "zhixia", "lingyue", "elise", "mia",
+  "amara", "zuri",
+];
+const fittedCharacterIds = authoredBaseCharacterIds.filter((id) => !["amara", "zuri"].includes(id));
+
+test("wardrobe contains legacy shoes and six extracted Fancha parts", () => {
+  assert.ok(Array.isArray(wardrobeCatalog.WARDROBE_ITEMS));
+  assert.deepEqual(
+    wardrobeCatalog.getWardrobeItemsBySlot("shoes").map((item) => item.id),
+    ["black-pointed-heels", "ivory-soft-slippers", "fancha-ivory-heels"],
+  );
+  for (const item of wardrobeCatalog.WARDROBE_ITEMS) {
+    assert.ok(GARMENT_SLOT_IDS.includes(item.slot));
+    assert.equal(item.fitPolicy, "imagegen-adapt");
+    if (item.kind === "color") assert.match(item.color, /^#[0-9a-f]{6}$/i);
+    else assert.match(item.asset, /^\/wardrobe\/items\/.+\.png$/);
+  }
+  assert.equal(wardrobeCatalog.getWardrobeItemsBySlot("hair")[0].id, "fancha-sidepart-hair");
+});
+
+test("fitted shoe selections resolve actual artwork and never borrow another model's body", () => {
+  assert.equal(typeof wardrobeCatalog.resolveWardrobeAppearance, "function");
+  const base = LOOKS.find((look) => look.id === "xuanling-golden-crown");
+  const heels = wardrobeCatalog.resolveWardrobeAppearance(base.id, { shoes: "black-pointed-heels" });
+  const slippers = wardrobeCatalog.resolveWardrobeAppearance(base.id, { shoes: "ivory-soft-slippers" });
+  assert.notEqual(heels.asset, base.asset);
+  assert.notEqual(slippers.asset, base.asset);
+  assert.notEqual(heels.asset, slippers.asset);
+  assert.equal(heels.characterId, base.characterId);
+  assert.equal(heels.id, base.id);
+  assert.ok(heels.rig && slippers.rig);
+  assert.deepEqual(wardrobeCatalog.resolveWardrobeAppearance(base.id, {}), base);
+  const unadapted = LOOKS.find((look) => look.id === "amara-ankara");
+  assert.deepEqual(wardrobeCatalog.resolveWardrobeAppearance(unadapted.id, { shoes: "black-pointed-heels" }), unadapted);
+  assert.equal(wardrobeCatalog.getWardrobeFit(unadapted.id, "black-pointed-heels"), null);
+});
+
+test("each previously fitted model offers both reusable shoes without borrowing another identity", () => {
+  for (const characterId of fittedCharacterIds) {
+    const character = getCharacter(characterId);
+    assert.equal(character.id, characterId);
+    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+      const looks = wardrobeCatalog.getFittedLooksForItem(character.id, item.id);
+      assert.ok(looks.length > 0, `${character.id}:${item.id}`);
+      assert.ok(looks.every((look) => look.characterId === character.id));
+      assert.deepEqual(wardrobeCatalog.getFittedLooksForItem(character.id, item.id, looks.map((look) => look.id)), []);
+    }
+  }
+});
+
+test("every previously processed outfit reports a real fit or an explicit generation issue for each shoe", () => {
+  for (const look of LOOKS.filter((item) => fittedCharacterIds.includes(item.characterId))) {
+    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+      const status = wardrobeCatalog.getWardrobeFitStatus(look.id, item.id);
+      assert.ok(["ready", "blocked"].includes(status.status), `${look.id}:${item.id}`);
+      if (status.status === "ready") assert.ok(wardrobeCatalog.getWardrobeFit(look.id, item.id));
+      else assert.match(status.message, /审核|校准|检验/);
+    }
+  }
+  assert.equal(wardrobeCatalog.getWardrobeFitStatus("missing", "unknown").status, "pending");
+});
+
+test("every fitted shoe has a local full-body PNG and its own face rig", async () => {
+  for (const fit of wardrobeCatalog.WARDROBE_FITS) {
+    const image = await readFile(new URL(`../public${fit.asset}`, import.meta.url));
+    assert.equal(image.readUInt32BE(16), 1024);
+    assert.equal(image.readUInt32BE(20), 1536);
+    assert.equal(image[25], 6);
+    const rig = JSON.parse(await readFile(new URL(`../public${fit.rig}`, import.meta.url), "utf8"));
+    assert.equal(rig.eyes.length, 2);
+    assert.ok(rig.eyes[0].x < rig.eyes[1].x);
+    assert.ok(rig.mouth.y > Math.max(...rig.eyes.map((eye) => eye.y)));
+    assert.ok(rig.head.y < 0.45, `${fit.lookId}/${fit.itemId}: face must be on the upper body`);
+  }
+});
+
+test("wardrobe caption stays in a separate layout row instead of covering shoes", async () => {
+  const css = await readFile(new URL("../src/wardrobe.css", import.meta.url), "utf8");
+  const dom = new JSDOM('<style></style><div class="wardrobe-preview"><div class="wardrobe-preview-model"></div><div class="wardrobe-preview-caption"></div></div>');
+  try {
+    dom.window.document.querySelector("style").textContent = css;
+    const style = (selector) => dom.window.getComputedStyle(dom.window.document.querySelector(selector));
+    assert.equal(style(".wardrobe-preview").display, "grid");
+    assert.equal(style(".wardrobe-preview").gridTemplateRows, "minmax(0, 1fr) auto");
+    assert.equal(style(".wardrobe-preview-model").position, "relative");
+    assert.equal(style(".wardrobe-preview-caption").position, "relative");
+  } finally {
+    dom.window.close();
+  }
+});
+
+test("wardrobe separates sixteen stable adult appearance models from outfit variants", () => {
+  assert.equal(CHARACTERS.length, 16);
   assert.equal(OUTFIT_VARIANTS.length, LOOKS.length);
-  assert.equal(new Set(CHARACTERS.map((item) => item.id)).size, 15);
+  assert.equal(new Set(CHARACTERS.map((item) => item.id)).size, 16);
   assert.ok(CHARACTERS.every((item) => item.age >= 25));
   assert.equal(getCharacterForLook("linwei-red-sole").id, "linwei");
   assert.deepEqual(
@@ -56,6 +151,9 @@ test("every authored outfit exposes normalized reusable garment slots", () => {
     "underwear",
     "hosiery",
     "shoes",
+    "nails",
+    "watch",
+    "earrings",
     "accessories",
   ]);
   assert.equal(OUTFIT_VARIANTS.length, LOOKS.length);
@@ -78,7 +176,7 @@ test("every authored outfit exposes normalized reusable garment slots", () => {
   assert.ok(getVariantsBySlot("shoes").length > 0);
 });
 
-test("empty outfit resolves to an authored white-bikini variant for every character", () => {
+test("empty outfit resolves to the existing authored white-bikini variant for all fifteen completed characters", () => {
   assert.deepEqual(resolveEmptyOutfit("ruby", "ruby-velvet"), {
     status: "ready",
     characterId: "ruby",
@@ -86,13 +184,38 @@ test("empty outfit resolves to an authored white-bikini variant for every charac
     lookId: "ruby-white-bikini",
     message: "已换上白色比基尼安全底装",
   });
-  for (const character of CHARACTERS) {
+  for (const characterId of authoredBaseCharacterIds) {
+    const character = getCharacter(characterId);
+    assert.equal(character.id, characterId);
     const result = resolveEmptyOutfit(character.id, character.defaultLookId);
     assert.equal(result.status, "ready", character.id);
     assert.equal(result.characterId, character.id);
     assert.equal(result.lookId, `${character.id}-white-bikini`);
   }
   assert.equal(resolveEmptyOutfit("missing", "ruby-velvet").lookId, "ruby-velvet");
+});
+
+test("Fancha keeps her rose office outfit while her independent safe base is pending", () => {
+  assert.equal(getCharacter("fancha").defaultLookId, "fancha-rose-office");
+  assert.deepEqual(getCharacterLooks("fancha").map((look) => look.id), ["fancha-rose-office"]);
+  assert.deepEqual(resolveEmptyOutfit("fancha", "fancha-rose-office"), {
+    status: "pending",
+    characterId: "fancha",
+    requestedBase: "white-bikini",
+    lookId: "fancha-rose-office",
+    message: "白色比基尼适配待生成",
+  });
+});
+
+test("Fancha reports pending shoe fits and never substitutes another character's artwork", () => {
+  const look = LOOKS.find((item) => item.id === "fancha-rose-office");
+  assert.ok(look);
+  for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+    assert.equal(wardrobeCatalog.getWardrobeFitStatus(look.id, item.id).status, "pending");
+    assert.equal(wardrobeCatalog.getWardrobeFit(look.id, item.id), null);
+    assert.deepEqual(wardrobeCatalog.getFittedLooksForItem("fancha", item.id), []);
+    assert.deepEqual(wardrobeCatalog.resolveWardrobeAppearance(look.id, { shoes: item.id }), look);
+  }
 });
 
 test("日韩成年穿搭配方可作为后续合身生成单", () => {

@@ -1,0 +1,6 @@
+interface:
+  display_name: "参考图角色与衣橱制作"
+  short_description: "按指定参考图还原角色细节、拆分动作并建立可复用衣橱单品"
+  default_prompt: "使用 $character-reference-studio，按我指定的参考图和重点细节完成角色、动作或衣橱任务。"
+policy:
+  allow_implicit_invocation: true

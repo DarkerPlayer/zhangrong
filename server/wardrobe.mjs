@@ -1,4 +1,5 @@
 import { DEFAULT_LOOK_ID, LOOKS, getLook } from "./looks.mjs";
+import { SHOE_FITS, SHOE_FIT_ISSUES } from "./wardrobe-fits.mjs";
 
 const DEFAULT_BACKGROUND_ID = "moon-room";
 
@@ -67,7 +68,7 @@ for (const look of LOOKS) {
   groupedLooks.set(look.characterId, list);
 }
 
-export const CHARACTERS = Object.freeze(
+export let CHARACTERS = Object.freeze(
   [...groupedLooks.entries()].map(([id, looks]) => {
     const defaultLook = looks.find((look) => look.characterDefault) || looks[0];
     return Object.freeze({
@@ -83,8 +84,8 @@ export const CHARACTERS = Object.freeze(
   }),
 );
 
-const characterById = new Map(CHARACTERS.map((item) => [item.id, item]));
-const characterByLookId = new Map(
+let characterById = new Map(CHARACTERS.map((item) => [item.id, item]));
+let characterByLookId = new Map(
   LOOKS.map((look) => [look.id, characterById.get(look.characterId)]),
 );
 
@@ -97,8 +98,164 @@ export const GARMENT_SLOT_IDS = Object.freeze([
   "underwear",
   "hosiery",
   "shoes",
+  "nails",
+  "watch",
+  "earrings",
   "accessories",
 ]);
+
+export const GARMENT_SLOT_LABELS = Object.freeze({
+  hair: "发型", top: "上装", bottom: "下装", dress: "连身装",
+  outerwear: "外套", underwear: "内搭 / 内衣", hosiery: "袜类",
+  shoes: "鞋履", nails: "指甲颜色", watch: "手表", earrings: "耳环", accessories: "配饰",
+});
+
+const wardrobeItem = (id, name, description, asset, details = {}) =>
+  Object.freeze({
+    id,
+    slot: "shoes",
+    name,
+    description,
+    asset,
+    audience: "adult",
+    fitPolicy: "imagegen-adapt",
+    status: "source-ready",
+    ...details,
+  });
+
+const fanchaItem = (id, slot, name, description, details = {}) => wardrobeItem(
+  id, name, description, slot === "nails" ? null : `/wardrobe/items/${id}.png`,
+  {slot, sourceLookId: "fancha-rose-office", sourceCharacterId: "fancha",
+    embeddedLookIds: Object.freeze(["fancha-rose-office"]), ...details},
+);
+
+export let WARDROBE_ITEMS = Object.freeze([
+  wardrobeItem(
+    "black-pointed-heels",
+    "黑色尖头高跟鞋",
+    "黑色皮面、尖头与细高跟，适合作为通勤或晚装的合身生成来源。",
+    "/wardrobe/items/black-pointed-heels.png",
+  ),
+  wardrobeItem(
+    "ivory-soft-slippers",
+    "象牙白软底拖鞋",
+    "柔软绒面与轻量软底，适合作为居家造型的合身生成来源。",
+    "/wardrobe/items/ivory-soft-slippers.png",
+  ),
+  fanchaItem("fancha-rose-dress", "dress", "玫瑰粉双排扣连衣裙", "收腰包裹翻领、七分袖与六颗黑色珠宝纽扣，保留自然腰腹曲线。"),
+  fanchaItem("fancha-violet-nails", "nails", "亮紫色指甲", "带细腻光泽的紫色甲油，可用于其他人物的指甲配色。", {color: "#A45BEF", kind: "color"}),
+  fanchaItem("fancha-ivory-heels", "shoes", "象牙白细跟鞋", "象牙白包头浅口细高跟鞋，保留鞋面的柔和光泽。"),
+  fanchaItem("fancha-white-watch", "watch", "白色腕表", "白色表带与精致金属表盘，作为独立腕部配饰。"),
+  fanchaItem("fancha-sidepart-hair", "hair", "侧分黑长直发", "侧分光泽黑色长直发，顺着肩部垂落。"),
+  fanchaItem("fancha-pearl-earrings", "earrings", "珍珠耳饰", "简洁白色珍珠耳饰，带小巧金属连接细节。"),
+]);
+
+const BUILT_IN_ITEMS = WARDROBE_ITEMS;
+let wardrobeItemById = new Map(
+  WARDROBE_ITEMS.map((item) => [item.id, item]),
+);
+
+export function getWardrobeItem(id) {
+  return wardrobeItemById.get(id) || null;
+}
+
+export function getWardrobeItemsBySlot(slotId) {
+  if (!GARMENT_SLOT_IDS.includes(slotId)) return [];
+  return WARDROBE_ITEMS.filter((item) => item.slot === slotId);
+}
+
+export function getEmbeddedWardrobeItems(lookId) {
+  return WARDROBE_ITEMS.filter(item => item.embeddedLookIds?.includes(lookId));
+}
+
+// A fit is a complete painting. Every selected slot must match one authored
+// combination; independently fitted images must never be stacked or overwritten.
+export function normalizeWardrobeSelection(selection = {}, {strict = false, lookId, items = WARDROBE_ITEMS} = {}) {
+  const invalid = message => {if (strict) throw new Error(message);};
+  if (!selection || typeof selection !== "object" || Array.isArray(selection)) {
+    invalid("穿搭选择格式无效。"); return {};
+  }
+  const byId = new Map(items.map(item => [item.id, item]));
+  for (const slot of Object.keys(selection)) if (!GARMENT_SLOT_IDS.includes(slot)) invalid("单品分类无效。");
+  return Object.fromEntries(GARMENT_SLOT_IDS.flatMap(slot => {
+    const value = selection[slot];
+    if (value === undefined || value === null || value === "") return [];
+    const item = byId.get(value);
+    if (!item || item.slot !== slot) {invalid("单品不存在或不属于所选分类。"); return [];}
+    if (lookId && item.embeddedLookIds?.includes(lookId)) return [];
+    return [[slot, item.id]];
+  }));
+}
+
+export function wardrobeSelectionKey(selection = {}, options = {}) {
+  return JSON.stringify(normalizeWardrobeSelection(selection, {...options, strict: true}));
+}
+
+function fitSelection(fit, items = WARDROBE_ITEMS) {
+  if (fit.selection !== undefined) return fit.selection;
+  const item = items.find(item => item.id === fit.itemId);
+  return item ? {[item.slot]: item.id} : null;
+}
+
+export function getWardrobeCombinationFit(lookId, selection = {}, {looks = LOOKS, items = WARDROBE_ITEMS, fits = WARDROBE_FITS} = {}) {
+  const look = looks.find(look => look.id === lookId);
+  if (!look) return null;
+  let key, normalized;
+  try {normalized = normalizeWardrobeSelection(selection, {strict: true, lookId, items}); key = wardrobeSelectionKey(normalized, {items});}
+  catch {return null;}
+  if (!Object.keys(normalized).length) return {lookId, selection: {}, asset: look.asset, rig: look.rig, original: true};
+  return fits.find(fit => {
+    if (fit.lookId !== lookId) return false;
+    try {const candidate = fitSelection(fit, items); return candidate !== null && wardrobeSelectionKey(candidate, {lookId, items}) === key;}
+    catch {return false;}
+  }) || null;
+}
+
+export function getWardrobeSelectionStatus(lookId, selection = {}) {
+  if (getWardrobeCombinationFit(lookId, selection)) return {status: "ready", message: "这套组合已适配，可以使用"};
+  return {status: "pending", message: "这套组合待适配，当前外观保持不变"};
+}
+
+export let WARDROBE_FITS = Object.freeze(
+  SHOE_FITS.map((fit) => Object.freeze(fit)),
+);
+
+export function getWardrobeFit(lookId, itemId) {
+  const item = getWardrobeItem(itemId);
+  return item ? getWardrobeCombinationFit(lookId, {[item.slot]: item.id}) : null;
+}
+
+export function getWardrobeFitStatus(lookId, itemId) {
+  if (getWardrobeFit(lookId, itemId)) return { status: "ready", message: "已适配，点击穿上" };
+  const issue = SHOE_FIT_ISSUES.find((entry) => entry.lookId === lookId && entry.itemId === itemId);
+  return issue ? { status: "blocked", message: issue.message } : { status: "pending", message: "该造型待适配" };
+}
+
+export function getFittedLooksForItem(characterId, itemId, removedLookIds = []) {
+  const removed = new Set(removedLookIds);
+  return LOOKS.filter((look) => look.characterId === characterId && !removed.has(look.id) && getWardrobeFit(look.id, itemId));
+}
+
+export function resolveWardrobeAppearance(lookId, selection = {}) {
+  const look = getLook(lookId);
+  const fit = getWardrobeCombinationFit(look.id, selection);
+  if (!fit || fit.original) return look;
+  const normalized = normalizeWardrobeSelection(selection, {lookId: look.id});
+  const selectedItems = Object.values(normalized).map(getWardrobeItem);
+  const names = selectedItems.map(item => item.name).join(" · ");
+  return {
+    ...look,
+    asset: fit.asset,
+    rig: fit.rig,
+    thumbnail: fit.asset,
+    outfit: `${look.outfit} · ${names}`,
+    description: `${look.description} 当前独立单品：${names}。`,
+    actions: null,
+    wardrobeItemId: selectedItems.length === 1 ? selectedItems[0].id : null,
+    wardrobeItemIds: selectedItems.map(item => item.id),
+    wardrobeSelection: normalized,
+  };
+}
 
 const SLOT_PATTERNS = Object.freeze({
   hair: /发|马尾|辫/,
@@ -109,6 +266,9 @@ const SLOT_PATTERNS = Object.freeze({
   underwear: /内衣|文胸|比基尼|内搭/,
   hosiery: /丝袜|连裤袜|长筒袜|过膝袜|黑丝|白丝|袜/,
   shoes: /高跟鞋|镴|凉鞋|鞋/,
+  nails: /指甲|美甲|甲油/,
+  watch: /手表|腕表/,
+  earrings: /耳环|耳饰|耳钉/,
   accessories: /眼罩|颈带|腰带|耳|项链|手链|工牌|王冠|宝石|发簪|头饰|手套|丝巾|腰饰|珍珠|领带/,
 });
 
@@ -145,7 +305,7 @@ function buildSlots(look) {
   );
 }
 
-export const OUTFIT_VARIANTS = Object.freeze(
+export let OUTFIT_VARIANTS = Object.freeze(
   LOOKS.map((look) =>
     Object.freeze({
       id: look.id,
@@ -155,14 +315,14 @@ export const OUTFIT_VARIANTS = Object.freeze(
       description: look.description,
       baseLayer: look.baseLayer,
       asset: look.asset,
-      rig: `/looks/${look.id}/rig.json`,
+      rig: look.rig || `/looks/${look.id}/rig.json`,
       slots: buildSlots(look),
       status: "ready",
     }),
   ),
 );
 
-const outfitVariantByLookId = new Map(
+let outfitVariantByLookId = new Map(
   OUTFIT_VARIANTS.map((variant) => [variant.lookId, variant]),
 );
 
@@ -224,4 +384,29 @@ export function isBackgroundId(id) {
 
 export function getDefaultBackgroundId() {
   return DEFAULT_BACKGROUND_ID;
+}
+
+export function setLocalWardrobe({items = [], fits = []} = {}) {
+  const reserved = new Set(BUILT_IN_ITEMS.map(item => item.id));
+  const localItems = Array.isArray(items) ? items.filter(item => item && typeof item.id === 'string' && item.id.startsWith('local-item-') && !reserved.has(item.id) && GARMENT_SLOT_IDS.includes(item.slot) && typeof item.asset === 'string' && item.asset.startsWith('/local-studio/assets/')) : [];
+  WARDROBE_ITEMS = Object.freeze([...BUILT_IN_ITEMS, ...localItems.map(item => Object.freeze({...item}))]);
+  wardrobeItemById = new Map(WARDROBE_ITEMS.map(item => [item.id,item]));
+  const knownLooks = new Set(LOOKS.map(look => look.id));
+  const localFits = Array.isArray(fits) ? fits.filter(fit => {
+    if (!fit || !knownLooks.has(fit.lookId) || typeof fit.asset !== 'string' || !fit.asset.startsWith('/local-studio/assets/') || typeof fit.rig !== 'string' || !fit.rig.startsWith('/local-studio/assets/')) return false;
+    try {const selection = fitSelection(fit); if (selection === null) return false; wardrobeSelectionKey(selection, {lookId: fit.lookId}); return true;} catch {return false;}
+  }) : [];
+  const key = fit => `${fit.lookId}:${wardrobeSelectionKey(fitSelection(fit), {lookId: fit.lookId})}`;
+  const combined = new Map([...SHOE_FITS, ...localFits].map(fit => [key(fit), Object.freeze({...fit})]));
+  WARDROBE_FITS = Object.freeze([...combined.values()]);
+  const groups = new Map();
+  for(const look of LOOKS) {const list=groups.get(look.characterId) || [];list.push(look);groups.set(look.characterId,list);}
+  CHARACTERS = Object.freeze([...groups.entries()].map(([id,looks]) => {
+    const defaultLook = looks.find(look => look.characterDefault) || looks[0];
+    return Object.freeze({id,defaultName:defaultLook.character,age:defaultLook.age,aliases:Object.freeze([...new Set(looks.flatMap(look => [look.character,...look.aliases]))]),defaultLookId:defaultLook.id,lookIds:Object.freeze(looks.map(look => look.id))});
+  }));
+  characterById = new Map(CHARACTERS.map(item => [item.id,item]));
+  characterByLookId = new Map(LOOKS.map(look => [look.id,characterById.get(look.characterId)]));
+  OUTFIT_VARIANTS = Object.freeze(LOOKS.map(look => Object.freeze({id:look.id,lookId:look.id,characterId:look.characterId,name:look.outfit,description:look.description,baseLayer:look.baseLayer,asset:look.asset,rig:look.rig || `/looks/${look.id}/rig.json`,slots:buildSlots(look),status:'ready'})));
+  outfitVariantByLookId = new Map(OUTFIT_VARIANTS.map(variant => [variant.lookId,variant]));
 }

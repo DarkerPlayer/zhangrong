@@ -1,0 +1,13 @@
+{
+  "lookId": "sakura-cafe",
+  "itemId": "black-pointed-heels",
+  "prompt": "Use case: identity-preserve. Asset type: complete fitted character artwork for a local wardrobe. Image 1 is the edit target: a fictional adult woman, age 25+, in a neutral standing clothing display. Image 2 is the supporting footwear reference. Replace ONLY footwear, fit a matching pair of black smooth-leather pointed-toe stiletto pumps from image 2 naturally on her feet with correct perspective and shape. Preserve the EXACT face, hair, identity, body proportions, existing opaque clothing coverage, all accessories, pose, hands, original framing, lighting and image style. Do not add or remove clothing. Keep both shoes clearly visible and fully in canvas. If a long gown covers the feet, lift only the tiny central hem minimally to reveal footwear, keep the gown design unchanged. Full head-to-toes artwork centered in a portrait 1024x1536 canvas, keep original margins. Actual transparent background. No other people, no text, no watermark.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a0ec0b-53c9-7d41-9215-9bd65503ad22/exec-7730db8d-b8a6-42fc-ac71-c74be67f5bcf.png",
+  "references": [
+    "public/looks/sakura-cafe/character.png",
+    "public/wardrobe/items/black-pointed-heels.png"
+  ],
+  "provider": "builtin-imagegen",
+  "faceConfidence": 1,
+  "pixelProcessing": "none"
+}

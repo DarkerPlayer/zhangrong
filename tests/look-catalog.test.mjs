@@ -4,16 +4,17 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import * as catalog from "../src/looks.mjs";
 
-test("expanded wardrobe keeps existing IDs and the saved default alongside thirteen adult companions", () => {
-  assert.equal(catalog.LOOKS.length, 25);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 13);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 25);
+test("expanded wardrobe keeps existing IDs and the saved default alongside sixteen adult companions", () => {
+  assert.equal(catalog.LOOKS.length, 43);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 16);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 43);
   assert.equal(catalog.DEFAULT_LOOK_ID, "ruby-velvet");
   for (const id of [
     "noir-evening",
     "noir-office",
     "ruby-velvet",
     "ruby-date",
+    "ruby-white-bikini",
     "silver-leather",
     "silver-knit",
   ]) {
@@ -47,7 +48,7 @@ test("search and category filters find compatible looks without replacing the se
     ["sakura-kimono"],
   );
   assert.equal(catalog.filterLooks({ category: "可爱" }).length, 6);
-  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 8);
+  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 26);
   assert.equal(catalog.filterLooks({ query: "Ankara" })[0].id, "amara-ankara");
   assert.deepEqual(
     catalog.filterLooks({ category: "日系", query: "非洲公主" }),
@@ -82,6 +83,63 @@ test("the Medusa fantasy avatar is selectable and searchable by its character or
   assert.equal(catalog.isLookId(id), true);
   assert.ok(catalog.filterLooks({ query: "金枝王冠" }).some((item) => item.id === id));
   assert.equal(catalog.matchLookAlias("请换上金枝王冠"), id);
+});
+
+test("Wu Duohui is selectable as a new adult agent and searchable by her role or plaid outfit", () => {
+  const id = "wuduohui-plaid-agent";
+  const look = catalog.getLook(id);
+
+  assert.equal(look.id, id);
+  assert.equal(look.character, "吴多慧");
+  assert.equal(look.age, 29);
+  assert.equal(look.outfit, "格纹代理");
+  assert.equal(look.renderer, "glam");
+  assert.equal(look.characterDefault, true);
+  assert.equal(look.isNew, true);
+  assert.equal(look.greetingMotion, "nod");
+  assert.ok(catalog.filterLooks({ category: "成熟", query: "吴代理" }).some((item) => item.id === id));
+  assert.ok(catalog.filterLooks({ query: "格纹职场" }).some((item) => item.id === id));
+  assert.equal(catalog.matchLookAlias("请换成吴多慧代理"), id);
+});
+
+test("the discipline lead is a selectable adult character with a complete local model", () => {
+  const id = "discipline-lead-noir";
+  const look = catalog.getLook(id);
+
+  assert.equal(look.id, id);
+  assert.equal(look.character, "调教组长");
+  assert.equal(look.age, 30);
+  assert.equal(look.outfit, "黑金组长");
+  assert.equal(look.renderer, "glam");
+  assert.equal(look.characterDefault, true);
+  assert.equal(look.isNew, true);
+  assert.equal(look.greetingMotion, "nod");
+  assert.equal(existsSync(resolve("public/looks", id, "character.png")), true);
+  assert.equal(existsSync(resolve("public/looks", id, "rig.json")), true);
+  assert.ok(catalog.filterLooks({ category: "成熟", query: "黑金组长" }).some((item) => item.id === id));
+  assert.equal(catalog.matchLookAlias("换成调教组长"), id);
+});
+
+test("Fancha is selectable by her name and rose office outfit without replacing the saved default", () => {
+  const id = "fancha-rose-office";
+  const look = catalog.getLook(id);
+
+  assert.equal(look.id, id);
+  assert.equal(look.characterId, "fancha");
+  assert.equal(look.character, "反差婊");
+  assert.equal(look.age, 29);
+  assert.equal(look.outfit, "玫瑰职场");
+  assert.equal(look.renderer, "glam");
+  assert.equal(look.characterDefault, true);
+  assert.equal(look.isNew, true);
+  assert.equal(look.greetingMotion, "nod");
+  assert.equal(catalog.filterLooks()[0].id, id);
+  for (const query of ["反差婊", "反差", "粉色双排扣", "粉色职场裙"]) {
+    assert.ok(catalog.filterLooks({ category: "成熟", query }).some((item) => item.id === id), query);
+    assert.equal(catalog.matchLookAlias(`请换成${query}`), id, query);
+  }
+  assert.equal(catalog.getAvailableLookId([], "ruby-velvet"), "ruby-velvet");
+  assert.equal(catalog.getAvailableLookId([id], id), "ruby-velvet");
 });
 
 test("Linwei walk cycles ship sixteen timed poses with grounded contact metadata", () => {

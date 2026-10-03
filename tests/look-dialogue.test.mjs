@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { offlineReply, createMessages } from "../server/dialogue.mjs";
 import { modelReply } from "../server/ollama.mjs";
 import { startServer } from "../server/index.mjs";
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 test("greeting commands and capabilities describe each look's actual greeting", () => {
   for (const lookId of ["lingyue-hanfu", "amara-royal", "sakura-cafe"]) {
@@ -227,8 +230,9 @@ test("model receives the actual dynamic appearance without claiming it is a Cubi
 });
 
 test("API carries supported look IDs and returns a new-look action", async (t) => {
-  const app = await startServer({ prewarm: false, port: 0 });
-  t.after(() => app.close());
+  const directory=await mkdtemp(join(tmpdir(),'muyu-look-api-'));
+  const app = await startServer({ prewarm: false, port: 0, studioDirectory:join(directory,'studio') });
+  t.after(async() => {await app.close();await rm(directory,{recursive:true,force:true});});
   const post = (body) =>
     fetch(`http://127.0.0.1:${app.port}/api/chat`, {
       method: "POST",

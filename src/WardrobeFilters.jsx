@@ -14,6 +14,9 @@ export default function WardrobeFilters({
   removedCount = 0,
   total = LOOK_COUNT,
   compact = false,
+  searchLabel = "搜索伙伴或穿搭",
+  searchPlaceholder = "搜索名字、穿搭或风格",
+  resultHint,
 }) {
   return (
     <div className={`wardrobe-tools ${compact ? "is-compact" : ""}`}>
@@ -21,8 +24,8 @@ export default function WardrobeFilters({
         <MagnifyingGlass size={15} aria-hidden="true" />
         <input
           type="search"
-          aria-label="搜索伙伴或穿搭"
-          placeholder="搜索名字、穿搭或风格"
+          aria-label={searchLabel}
+          placeholder={searchPlaceholder}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
@@ -75,7 +78,7 @@ export default function WardrobeFilters({
         <span>
           {count} / {total} 套穿搭
         </span>
-        <span>{view === "active" ? "新伙伴优先" : "可随时恢复"}</span>
+        <span>{resultHint ?? (view === "active" ? "新伙伴优先" : "可随时恢复")}</span>
       </div>
     </div>
   );

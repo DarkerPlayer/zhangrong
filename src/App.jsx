@@ -4,7 +4,10 @@ import React, {
   useLayoutEffect,
   useRef,
   useCallback,
+  lazy,
+  Suspense,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   Heart,
   ChatCircleDots,
@@ -65,10 +68,23 @@ import {
   togglePersonaFavorite,
   updatePersonaMemories,
   updatePersonaProfile,
+  upsertPersonaMemory,
+  removePersonaMemory,
+  recordPersonaExperience,
+  updatePersonaExperience,
+  removePersonaExperience,
 } from "./persona-state.mjs";
 import { resolvePersonaProfile } from "./personas.mjs";
+import { buildCompanionContext } from "./companion-memory.mjs";
+import {
+  capturePersonaAppearance,
+  switchPersonaAppearance,
+} from "./persona-appearance.mjs";
+import { consumeChatStream } from "./chat-stream.mjs";
+import { createSentenceSpeechQueue } from "./sentence-speech.mjs";
 import { readMedia, saveMedia } from "./media.mjs";
 import { setRain, speak, stopSpeech } from "./audio.js";
+import VoiceLibrary from "./VoiceLibrary.jsx";
 import {
   DEFAULT_LOOK_ID,
   ORIGINAL_LOOK,
@@ -87,7 +103,12 @@ import {
   getCharacterForLook,
   isBackgroundId,
   resolveEmptyOutfit,
+  resolveWardrobeAppearance,
 } from "./wardrobe.mjs";
+import {
+  importedWardrobeSelection,
+  planWardrobeSelection,
+} from "./wardrobe-selection.mjs";
 import { version as appVersion } from "../package.json";
 import "./wardrobe.css";
 
@@ -97,11 +118,20 @@ import LookActionMenu from "./LookActionMenu.jsx";
 import MotionDebugPanel from "./MotionDebugPanel.jsx";
 import WardrobePage from "./WardrobePage.jsx";
 import PersonaPage from "./PersonaPage.jsx";
+import ModelTrial from "./ModelTrial.jsx";
+import { importTextPackEntries } from "./text-pack-import.mjs";
+const TextWorkshop = lazy(() => import("./TextWorkshop.jsx"));
+import {
+  applyStudioCatalog,
+  restoreCachedStudioCatalog,
+  studioRequest,
+} from "./local-studio.mjs";
 
 function load() {
   try {
     return restoreState(
-      localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY),
+      localStorage.getItem(STORAGE_KEY) ??
+        localStorage.getItem(LEGACY_STORAGE_KEY),
     );
   } catch {
     return restoreState(null);
@@ -178,9 +208,16 @@ function Panel({ type, title, subtitle, children, onClose, scrollResetKey }) {
   }, [scrollResetKey]);
   useEffect(() => {
     const before = document.activeElement;
-    ref.current?.focus();
+    const panelElement = ref.current;
+    panelElement?.focus({ preventScroll: true });
     return () => {
-      if (before?.isConnected) before.focus();
+      const active = document.activeElement;
+      if (
+        before?.isConnected &&
+        (active === document.body || panelElement?.contains(active))
+      ) {
+        before.focus({ preventScroll: true });
+      }
     };
   }, [type]);
   return (
@@ -205,10 +242,42 @@ function Panel({ type, title, subtitle, children, onClose, scrollResetKey }) {
 }
 
 export default function App() {
+  const [catalogReady, setCatalogReady] = useState(false);
+  useEffect(() => {
+    let live = true;
+    const request = new AbortController();
+    restoreCachedStudioCatalog();
+    const timeout = setTimeout(() => request.abort(), 5000);
+    studioRequest("", undefined, request.signal)
+      .then((result) => {
+        if (live) applyStudioCatalog(result.catalog);
+      })
+      .catch(() => {})
+      .finally(() => {
+        clearTimeout(timeout);
+        if (live) setCatalogReady(true);
+      });
+    return () => {
+      live = false;
+      clearTimeout(timeout);
+      request.abort();
+    };
+  }, []);
+  if (!catalogReady)
+    return (
+      <div className="app local-app-loading" role="status">
+        正在打开本地衣橱…
+      </div>
+    );
+  return <AppContent />;
+}
+
+function AppContent() {
   const [state, setState] = useState(load),
     [panel, setPanel] = useState(null),
     [input, setInput] = useState(""),
     [busy, setBusy] = useState(false),
+    [streamingText, setStreamingText] = useState(""),
     [speaking, setSpeaking] = useState(false),
     [speechPreparing, setSpeechPreparing] = useState(false),
     [rain, setRainState] = useState(false),
@@ -237,17 +306,38 @@ export default function App() {
     [wardrobeCategory, setWardrobeCategory] = useState("全部"),
     [wardrobeView, setWardrobeView] = useState("active");
   const { scene, settings } = state;
+  const currentStateRef = useRef(state);
+  currentStateRef.current = state;
   const activePersona = getActivePersona(state);
   const activePersonaSnapshot = resolvePersonaProfile(activePersona);
   const activePersonaName = activePersonaSnapshot.name;
+  const [voiceRevision, setVoiceRevision] = useState(0);
+  const [activeVoiceName, setActiveVoiceName] = useState("原始参考音色");
+  const [voiceProfiles, setVoiceProfiles] = useState([]);
+  const [auditionVoiceId, setAuditionVoiceId] = useState(
+    activePersona.voiceProfileId || "builtin",
+  );
+  const activeVoiceRef = useRef(activePersona.voiceProfileId || "builtin");
+  activeVoiceRef.current = activePersona.voiceProfileId || "builtin";
   const activeThread = getPersonaThread(state, state.activePersonaId);
   const messages = activeThread.messages;
   const savedMessages = activeThread.savedMessages;
   const favorites = savedMessages.map((item) => item.id);
   const personaCorpora = activePersona.customCorpora || [];
+  const protectedVoiceIds = [
+    ...new Set(
+      Object.values(state.personas || {}).flatMap((persona) => [
+        persona.voiceProfileId,
+        ...(persona.customCorpora || []).map((item) => item.voiceProfileId),
+      ]),
+    ),
+  ].filter((id) => id && id !== "builtin");
   const animated = state.avatarMode !== "photo";
-  const currentLook = getLook(state.lookId);
   const activeCharacter = getCharacterForLook(state.lookId);
+  const currentLook = resolveWardrobeAppearance(
+    state.lookId,
+    state.wardrobeSelections?.[activeCharacter.id],
+  );
   const removedLookIds = state.removedLookIds || [];
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
@@ -270,9 +360,12 @@ export default function App() {
     customUrlRef = useRef(),
     sceneRef = useRef(scene),
     sendLock = useRef(false),
+    voiceStudioRef = useRef(),
     petModeRef = useRef(petMode),
     settingsRef = useRef(settings),
-    requestEpoch = useRef(0);
+    requestEpoch = useRef(0),
+    speechQueueRef = useRef(null),
+    focusSessionRef = useRef(null);
   const removedLookIdsRef = useRef(removedLookIds);
   removedLookIdsRef.current = removedLookIds;
   settingsRef.current = settings;
@@ -283,7 +376,9 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(""), 4000);
   }, []);
   const readAloud = useCallback(
-    (text) => {
+    (text, voiceProfileId = activeVoiceRef.current) => {
+      speechQueueRef.current?.cancel();
+      speechQueueRef.current = null;
       setSpeaking(true);
       setSpeechPreparing(true);
       speak(
@@ -294,10 +389,18 @@ export default function App() {
           if (error) notify(error.message);
         },
         () => setSpeechPreparing(false),
+        { voiceProfileId },
       );
     },
     [notify],
   );
+  const stopVoice = () => {
+    speechQueueRef.current?.cancel();
+    speechQueueRef.current = null;
+    stopSpeech();
+    setSpeaking(false);
+    setSpeechPreparing(false);
+  };
   const changeSettings = (patch) =>
     setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
   const currentScene = SCENES.find((s) => s.id === scene) || SCENES[0];
@@ -307,27 +410,69 @@ export default function App() {
       : models.length
         ? "ollama"
         : "offline";
+  function preparePersonaAppearance(nextState) {
+    const nextCharacter = getCharacterForLook(nextState.lookId);
+    const nextAppearance = resolveWardrobeAppearance(
+      nextState.lookId,
+      nextState.wardrobeSelections?.[nextCharacter.id],
+    );
+    if (
+      nextState.lookId !== state.lookId ||
+      nextState.avatarMode !== state.avatarMode ||
+      nextAppearance.asset !== currentLook.asset ||
+      nextAppearance.rig !== currentLook.rig
+    )
+      setPetReady(false);
+    setCustomEnabled(nextState.customEnabled && Boolean(custom));
+    sceneRef.current = nextState.scene;
+  }
   function choosePersona(personaId) {
-    if (!state.personas?.[personaId] || personaId === state.activePersonaId) return;
+    if (!state.personas?.[personaId] || personaId === state.activePersonaId)
+      return;
     requestEpoch.current += 1;
     requestRef.current?.abort();
     requestRef.current = null;
     sendLock.current = false;
     setBusy(false);
+    speechQueueRef.current?.cancel();
+    speechQueueRef.current = null;
     stopSpeech();
     setSpeaking(false);
     setSpeechPreparing(false);
+    focusSessionRef.current = null;
+    setFocusRunning(false);
+    setFocusRemaining(focusDuration * 60);
+    setFocusDone(false);
     const next = resolvePersonaProfile(state.personas[personaId]);
     const greeting = next.corpora.greeting[0]
       .replaceAll("{personaName}", next.name)
-      .replaceAll("{userName}", getPersonaThread(state, personaId).memories.userName || "你");
+      .replaceAll(
+        "{userName}",
+        getPersonaThread(state, personaId).memories.userName || "你",
+      );
     setSceneLine(greeting);
     setLineKind("welcome");
-    setState((current) => setActivePersona(current, personaId));
+    const appearanceState = switchPersonaAppearance(state, personaId);
+    preparePersonaAppearance(appearanceState);
+    setState((current) =>
+      setActivePersona(switchPersonaAppearance(current, personaId), personaId),
+    );
   }
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...state,
+          personas: {
+            ...state.personas,
+            [state.activePersonaId]: {
+              ...state.personas[state.activePersonaId],
+              appearance: capturePersonaAppearance(state),
+            },
+          },
+        }),
+      );
     } catch {
       notify("本地存储空间不足，新的记录暂时无法保存。");
     }
@@ -336,33 +481,43 @@ export default function App() {
     const personaId = state.activePersonaId;
     const preferredVoiceId = activePersona.voiceProfileId || "builtin";
     const controller = new AbortController();
-    const select = async (id) => {
-      const response = await fetch("/api/voices/select", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({ id }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw Error(data.error || "音色切换失败");
-      return data;
-    };
-    select(preferredVoiceId).catch(async (error) => {
-      if (controller.signal.aborted || preferredVoiceId === "builtin") return;
-      try {
-        await select("builtin");
-        setState((current) =>
-          current.activePersonaId === personaId
-            ? updatePersonaProfile(current, personaId, { voiceProfileId: "builtin" })
-            : current,
+    fetch("/api/voices", { signal: controller.signal })
+      .then(async (response) => {
+        const library = await response.json();
+        if (!response.ok || controller.signal.aborted) return;
+        const voices = Array.isArray(library.voices) ? library.voices : [];
+        const voice = voices.find((voice) => voice.id === preferredVoiceId);
+        setVoiceProfiles(voices);
+        setAuditionVoiceId((current) =>
+          voices.some((item) => item.id === current)
+            ? current
+            : voice?.id || "builtin",
         );
-        notify(`${activePersonaName}原来的音色不可用，已恢复内置音色。`);
-      } catch {
-        if (!controller.signal.aborted) notify(error.message);
-      }
-    });
+        setActiveVoiceName(voice?.name || "原始参考音色");
+        if (!voice) {
+          setState((current) =>
+            current.activePersonaId === personaId &&
+            current.personas[personaId]?.voiceProfileId === preferredVoiceId
+              ? updatePersonaProfile(current, personaId, {
+                  voiceProfileId: "builtin",
+                })
+              : current,
+          );
+          notify(`${activePersonaName}原来的音色不可用，已恢复内置音色。`);
+        }
+      })
+      .catch(() => {});
     return () => controller.abort();
-  }, [state.activePersonaId, activePersona.voiceProfileId, activePersonaName, notify]);
+  }, [
+    state.activePersonaId,
+    activePersona.voiceProfileId,
+    activePersonaName,
+    voiceRevision,
+    notify,
+  ]);
+  useEffect(() => {
+    setAuditionVoiceId(activePersona.voiceProfileId || "builtin");
+  }, [state.activePersonaId, activePersona.voiceProfileId]);
   useEffect(() => {
     let live = true;
     fetch("/api/health")
@@ -376,7 +531,12 @@ export default function App() {
       .then((data) => {
         if (live)
           setModels(
-            (data.models || [])
+            [...(data.models || [])]
+              .sort(
+                (a, b) =>
+                  Number(b.name === data.defaultModel) -
+                  Number(a.name === data.defaultModel),
+              )
               .map((m) => (typeof m === "string" ? m : m.name))
               .filter(Boolean),
           );
@@ -402,8 +562,14 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    const id = setInterval(() => setClock(new Date()), 1000);
-    return () => clearInterval(id);
+    // The header displays minutes; avoid rerendering every editor every second.
+    let timer;
+    const tick = () => {
+      setClock(new Date());
+      timer = setTimeout(tick, 60000 - (Date.now() % 60000));
+    };
+    timer = setTimeout(tick, 60000 - (Date.now() % 60000));
+    return () => clearTimeout(timer);
   }, []);
   useEffect(() => {
     const desk = window.desktop;
@@ -433,6 +599,7 @@ export default function App() {
   }, [petMode]);
   useEffect(() => {
     const listener = (e) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (e.key === "Escape") {
         setPanel(null);
         setImmersive(false);
@@ -441,14 +608,33 @@ export default function App() {
         e.preventDefault();
         setPanel(null);
         setImmersive(false);
-        inputRef.current?.focus();
+        window.setTimeout(
+          () => inputRef.current?.focus({ preventScroll: true }),
+          0,
+        );
       }
     };
     window.addEventListener("keydown", listener);
     return () => window.removeEventListener("keydown", listener);
   }, []);
   useEffect(() => {
+    if (panel !== "voices") return undefined;
+    const before = document.activeElement;
+    voiceStudioRef.current?.focus({ preventScroll: true });
+    return () => {
+      const active = document.activeElement;
+      if (
+        before?.isConnected &&
+        (active === document.body || voiceStudioRef.current?.contains(active))
+      ) {
+        before.focus({ preventScroll: true });
+      }
+    };
+  }, [panel]);
+  useEffect(() => {
     if (!settings.voice) {
+      speechQueueRef.current?.cancel();
+      speechQueueRef.current = null;
       stopSpeech();
       setSpeaking(false);
     }
@@ -461,6 +647,8 @@ export default function App() {
   useEffect(
     () => () => {
       requestRef.current?.abort();
+      speechQueueRef.current?.cancel();
+      speechQueueRef.current = null;
       stopSpeech();
       recognitionRef.current?.stop();
       if (customUrlRef.current) URL.revokeObjectURL(customUrlRef.current);
@@ -482,6 +670,17 @@ export default function App() {
       if (remain === 0) {
         setFocusRunning(false);
         setFocusDone(true);
+        const completed = focusSessionRef.current;
+        if (completed) {
+          setState((current) =>
+            recordPersonaExperience(current, completed.personaId, {
+              id: completed.id,
+              kind: "focus",
+              title: `完成 ${completed.minutes} 分钟专注陪伴`,
+            }),
+          );
+          focusSessionRef.current = null;
+        }
         setSceneLine(
           "做得很好，这一段专注完成了。起来伸个懒腰，我们休息一下吧。",
         );
@@ -530,11 +729,16 @@ export default function App() {
     }
     sendLock.current = true;
     setBusy(true);
+    setStreamingText("");
     setInput("");
+    speechQueueRef.current?.cancel();
+    speechQueueRef.current = null;
     stopSpeech();
     setSpeaking(false);
     const sourcePersonaId = state.activePersonaId;
-    const sourceHistory = activeThread.messages.slice(-24).map(({ role, content }) => ({ role, content }));
+    const sourceHistory = activeThread.messages
+      .slice(-24)
+      .map(({ role, content }) => ({ role, content }));
     const sourceMemory = activeThread.memories;
     const sourcePersona = activePersonaSnapshot;
     setState((current) => appendPersonaMessage(current, "user", value));
@@ -542,6 +746,9 @@ export default function App() {
     const controller = new AbortController();
     requestRef.current = controller;
     const timeout = setTimeout(() => controller.abort(), 100000);
+    let sentenceQueue;
+    let streamed = false;
+    let receivedText = "";
     try {
       const r = await fetch("/api/chat", {
         method: "POST",
@@ -551,7 +758,17 @@ export default function App() {
           message: value,
           history: sourceHistory,
           persona: sourcePersona,
-          personaMemory: sourceMemory,
+          personaMemory: {
+            userName: sourceMemory.userName,
+            preferences: sourceMemory.preferences,
+            relationshipFacts: sourceMemory.relationshipFacts,
+          },
+          companionContext: buildCompanionContext(
+            activeThread,
+            value,
+            activePersona,
+          ),
+          stream: true,
           scene: sceneRef.current,
           avatarMode: animated || petMode ? "live2d" : "photo",
           lookId: state.lookId,
@@ -560,8 +777,70 @@ export default function App() {
           provider: actualProvider,
         }),
       });
-      const data = await r.json();
-      if (epoch !== requestEpoch.current || state.activePersonaId !== sourcePersonaId) return;
+      if (!r.ok) {
+        const problem = await r.json().catch(() => ({}));
+        throw new Error(problem.error || "连接暂时中断");
+      }
+      streamed = Boolean(
+        r.headers?.get("Content-Type")?.includes("application/x-ndjson"),
+      );
+      if (
+        streamed &&
+        settingsRef.current.voice &&
+        epoch === requestEpoch.current
+      ) {
+        sentenceQueue = createSentenceSpeechQueue({
+          speak,
+          stop: stopSpeech,
+          voiceProfileId: activeVoiceRef.current,
+          onStart: () => {
+            if (epoch === requestEpoch.current) {
+              setSpeaking(true);
+              setSpeechPreparing(false);
+            }
+          },
+          onEnd: () => {
+            if (epoch === requestEpoch.current) {
+              setSpeaking(false);
+              setSpeechPreparing(false);
+            }
+          },
+          onError: (error) => {
+            if (epoch === requestEpoch.current) {
+              setSpeaking(false);
+              setSpeechPreparing(false);
+              notify(error.message);
+            }
+          },
+        });
+        speechQueueRef.current = sentenceQueue;
+      }
+      const data = streamed
+        ? await consumeChatStream(r, {
+            signal: controller.signal,
+            onDelta: (delta) => {
+              if (epoch !== requestEpoch.current || controller.signal.aborted)
+                return;
+              if (
+                !receivedText &&
+                sentenceQueue &&
+                speechQueueRef.current === sentenceQueue &&
+                settingsRef.current.voice
+              ) {
+                setSpeaking(true);
+                setSpeechPreparing(true);
+              }
+              receivedText += delta;
+              setStreamingText(receivedText);
+              sentenceQueue?.push(delta);
+            },
+          })
+        : await r.json();
+      if (
+        epoch !== requestEpoch.current ||
+        state.activePersonaId !== sourcePersonaId
+      )
+        return;
       if (!r.ok || typeof data.reply !== "string")
         throw Error(data.error || "连接暂时中断");
       if (isLookAvailable(data.lookAction, removedLookIdsRef.current)) {
@@ -577,22 +856,39 @@ export default function App() {
           : "calm",
       );
       if (data.petAction)
-        setPetAction({ kind: data.petAction, args: data.motionCommand?.args, nonce: Date.now() });
+        setPetAction({
+          kind: data.petAction,
+          args: data.motionCommand?.args,
+          nonce: Date.now(),
+        });
       setState((current) =>
         current.activePersonaId === sourcePersonaId
-          ? appendPersonaMessage(current, "assistant", data.reply, { provider: data.provider })
+          ? appendPersonaMessage(current, "assistant", data.reply, {
+              provider: data.provider,
+            })
           : current,
       );
-      say(data.reply);
+      if (streamed) {
+        setSceneLine(data.reply);
+        setLineKind("stream");
+        sentenceQueue?.finish();
+      } else say(data.reply);
       if (data.error) notify("本地模型暂不可用，已切换为内置互动。");
     } catch (error) {
+      sentenceQueue?.cancel();
       if (epoch !== requestEpoch.current) return;
+      setSpeaking(false);
+      setSpeechPreparing(false);
       if (error.name === "AbortError") {
         notify("已停止生成。");
         setSceneLine("我在这里。想好了，再慢慢说。");
       } else {
-        notify("暂时连接不上本地服务，请重新打开应用。");
-        setSceneLine("连接暂时中断了，重新打开应用后我们继续。");
+        notify(error.message || "本地回复中断，请重试。");
+        setSceneLine(
+          receivedText
+            ? `${receivedText}（回复中断，未保存；请重试）`
+            : "连接暂时中断了，请重试。",
+        );
       }
       setLineKind("status");
     } finally {
@@ -667,19 +963,75 @@ export default function App() {
   function chooseCharacter(characterId) {
     const character = getCharacter(characterId);
     const remembered = state.lastLookByCharacter?.[character.id];
-    const nextLook = [remembered, character.defaultLookId, ...character.lookIds].find(
-      (id) => isLookAvailable(id, removedLookIdsRef.current),
-    );
+    const nextLook = [
+      remembered,
+      character.defaultLookId,
+      ...character.lookIds,
+    ].find((id) => isLookAvailable(id, removedLookIdsRef.current));
     if (nextLook) chooseLook(nextLook);
+  }
+  function importStudioResult({ job, catalog }) {
+    applyStudioCatalog(catalog);
+    const importedWardrobe = importedWardrobeSelection(job);
+    if (job?.importedLookId && isLookId(job.importedLookId)) {
+      chooseLook(job.importedLookId);
+    } else if (importedWardrobe && isLookAvailable(importedWardrobe.lookId, removedLookIdsRef.current)) {
+      const look = getLook(importedWardrobe.lookId);
+      setPetReady(false);
+      setPetAction({ kind: "idle", nonce: Date.now() });
+      setState((current) => ({
+        ...current,
+        lookId: look.id,
+        avatarMode: "live2d",
+        lastLookByCharacter: {
+          ...(current.lastLookByCharacter || {}),
+          [look.characterId]: look.id,
+        },
+        wardrobeSelections: {
+          ...(current.wardrobeSelections || {}),
+          [look.characterId]: importedWardrobe.selection,
+        },
+      }));
+    } else setState((current) => ({ ...current }));
+    notify("已加入本地衣橱，可以直接使用了。");
   }
   function setWardrobeBackground(backgroundId) {
     if (!isBackgroundId(backgroundId)) return;
     setState((s) => ({ ...s, backgroundId }));
   }
+  function selectWardrobeItem(slotId, itemId) {
+    const result = planWardrobeSelection({
+      lookId: state.lookId,
+      selection: state.wardrobeSelections?.[activeCharacter.id],
+      slotId,
+      itemId,
+    });
+    if (result.status !== "ready") return result;
+    const nextAppearance = result.appearance;
+    if (
+      nextAppearance.asset !== currentLook.asset ||
+      nextAppearance.rig !== currentLook.rig
+    ) {
+      setPetReady(false);
+      setPetAction({ kind: "idle", nonce: Date.now() });
+    }
+    setState((s) => ({
+      ...s,
+      wardrobeSelections: {
+        ...(s.wardrobeSelections || {}),
+        [activeCharacter.id]: result.selection,
+      },
+    }));
+    return result;
+  }
   function requestEmptyOutfit() {
     const result = resolveEmptyOutfit(activeCharacter.id, state.lookId);
-    if (result.status === "ready" && result.lookId !== state.lookId) {
-      chooseLook(result.lookId);
+    if (result.status === "ready") {
+      setState((current) => ({
+        ...current,
+        wardrobeSelections: { ...current.wardrobeSelections, [activeCharacter.id]: {} },
+      }));
+      if (result.lookId !== state.lookId) chooseLook(result.lookId);
     } else if (result.status === "pending") {
       notify("当前外观模特的白色比基尼底装还未生成，已安全保留原造型。");
     }
@@ -738,6 +1090,8 @@ export default function App() {
           : ["嗨！我在这里，看到你啦。", "挥挥手，给你送来一点好心情。"],
       happy: ["收到你的好心情啦，今天也要一起开心。"],
       shy: ["这样看着我，会有一点点害羞呢。"],
+      spit: ["好，我做一次简短的吐口水动作，然后恢复站姿。"],
+      idle_neutral: ["好，我恢复平常的站姿。"],
       squat: [
         "好呀，我轻轻屈膝蹲下，再从容地站好。",
         "蹲好啦，裙摆和步子都整理妥了。",
@@ -764,7 +1118,9 @@ export default function App() {
     const personaAction = ["pat", "wave"].includes(kind)
       ? activePersonaSnapshot.corpora.action[kind]
       : null;
-    const choices = personaAction?.length ? personaAction : lines[kind] || lines.pat;
+    const choices = personaAction?.length
+      ? personaAction
+      : lines[kind] || lines.pat;
     setPetAction({ kind, args, nonce: Date.now() });
     if (args.silent) return;
     setMood(kind === "shy" ? "shy" : "happy");
@@ -843,8 +1199,21 @@ export default function App() {
           `${new Date(m.createdAt).toLocaleString("zh-CN")} ${m.role === "user" ? "我" : activePersonaName}\n${m.content}\n`,
       )
       .join("\n");
+    const memories = (activeThread.memories.entries || [])
+      .map(
+        (item) =>
+          `- [${item.kind}${item.status === "done" ? " · 已完成" : ""}] ${item.text}`,
+      )
+      .join("\n");
+    const experiences = (activeThread.relationship?.experiences || [])
+      .map(
+        (item) =>
+          `- ${new Date(item.createdAt).toLocaleDateString("zh-CN")} ${item.title}${item.detail ? `：${item.detail}` : ""}`,
+      )
+      .join("\n");
+    const exported = `${activePersonaName}的本地回忆\n\n长期记忆\n${memories || "暂无"}\n\n共同经历\n${experiences || "暂无"}\n\n聊天记录\n${text || "还没有聊天记录。"}`;
     const url = URL.createObjectURL(
-      new Blob([text || "还没有聊天记录。"], {
+      new Blob([exported], {
         type: "text/plain;charset=utf-8",
       }),
     );
@@ -858,26 +1227,57 @@ export default function App() {
   function favorite(id) {
     setState((s) => togglePersonaFavorite(s, id));
   }
-  function saveCorpus(event) {
+  function saveCorpus(event, voiceProfileId = auditionVoiceId) {
     event.preventDefault();
     const text = corpusDraft.trim();
     if (!text) {
       notify(`先写下想让${activePersonaName}读的内容。`);
       return;
     }
-    setState((s) => addPersonaCorpus(s, s.activePersonaId, text, corpusTitle));
+    setState((s) =>
+      addPersonaCorpus(
+        s,
+        s.activePersonaId,
+        text,
+        corpusTitle,
+        "fallback",
+        getActivePersona(s).intimacyLevel,
+        voiceProfileId,
+      ),
+    );
     setCorpusDraft("");
     setCorpusTitle("");
     notify("语料已保存在本机。");
   }
-  function playCorpus(text) {
-    setSceneLine(text);
+  function resolveCorpusText(text) {
+    return text
+      .replaceAll("{personaName}", activePersonaName)
+      .replaceAll("{userName}", activeThread.memories.userName || "你");
+  }
+  function playCorpus(text, voiceProfileId = activeVoiceRef.current) {
+    const resolvedText = resolveCorpusText(text);
+    const availableVoiceId = voiceProfiles.some(
+      (voice) => voice.id === voiceProfileId,
+    )
+      ? voiceProfileId
+      : activeVoiceRef.current;
+    setSceneLine(resolvedText);
     setLineKind("corpus");
-    readAloud(text);
+    readAloud(resolvedText, availableVoiceId);
   }
   function deleteCorpus(id) {
     setState((s) => deletePersonaCorpus(s, s.activePersonaId, id));
     notify("这条语料已删除。");
+  }
+  function applyTextPack(payload) {
+    const current = currentStateRef.current;
+    if (current.activePersonaId !== payload.personaId)
+      throw new Error("角色已切换，请为当前角色重新选择语料。");
+    const result = importTextPackEntries(current, payload.personaId, payload);
+    currentStateRef.current = result.state;
+    setState(result.state);
+    notify(result.added ? `已加入 ${result.added} 条语料${result.duplicates ? `，跳过 ${result.duplicates} 条重复内容` : ""}。` : "这些内容已经在角色语料中，没有重复添加。");
+    return result.added;
   }
   function setPersonaIntimacy(intimacyLevel, adultAcknowledged = false) {
     setState((current) =>
@@ -898,31 +1298,68 @@ export default function App() {
     );
   }
   function cloneActivePersona() {
+    focusSessionRef.current = null;
+    setFocusRunning(false);
+    setFocusRemaining(focusDuration * 60);
     requestEpoch.current += 1;
     requestRef.current?.abort();
     sendLock.current = false;
     setBusy(false);
-    setState((current) => clonePersonaState(current, current.activePersonaId));
+    stopVoice();
+    setState((current) =>
+      clonePersonaState(
+        updatePersonaProfile(current, current.activePersonaId, {
+          appearance: capturePersonaAppearance(current),
+        }),
+        current.activePersonaId,
+      ),
+    );
     notify("已复制为完全独立的人格副本。");
   }
   function removeActivePersona() {
+    focusSessionRef.current = null;
+    setFocusRunning(false);
+    setFocusRemaining(focusDuration * 60);
     const name = activePersonaName;
     requestEpoch.current += 1;
     requestRef.current?.abort();
     requestRef.current = null;
     sendLock.current = false;
     setBusy(false);
+    speechQueueRef.current?.cancel();
+    speechQueueRef.current = null;
     stopSpeech();
     setSpeaking(false);
     setSpeechPreparing(false);
-    setState((current) => removePersonaState(current, current.activePersonaId));
+    const removedState = removePersonaState(state, state.activePersonaId);
+    const nextState = switchPersonaAppearance(
+      state,
+      removedState.activePersonaId,
+    );
+    preparePersonaAppearance(nextState);
+    setState((current) => {
+      const remaining = removePersonaState(current, current.activePersonaId);
+      return setActivePersona(
+        {
+          ...switchPersonaAppearance(current, remaining.activePersonaId),
+          personas: remaining.personas,
+          personaThreads: remaining.personaThreads,
+        },
+        remaining.activePersonaId,
+      );
+    });
     notify(`已删除「${name}」的人格副本。`);
   }
   function clearHistory() {
     requestEpoch.current++;
     requestRef.current?.abort();
+    speechQueueRef.current?.cancel();
+    speechQueueRef.current = null;
     stopSpeech();
     setSpeaking(false);
+    setBusy(false);
+    sendLock.current = false;
+    setSpeechPreparing(false);
     setState((s) => clearPersonaThread(s));
     setSceneLine("新的一页，也想陪你一起写。");
     notify("聊天记录已清空。");
@@ -935,6 +1372,17 @@ export default function App() {
     setFocusDone(false);
     const duration = focusRemaining > 0 ? focusRemaining : focusDuration * 60;
     setFocusRemaining(duration);
+    if (
+      !focusSessionRef.current ||
+      focusDone ||
+      focusSessionRef.current.personaId !== state.activePersonaId
+    ) {
+      focusSessionRef.current = {
+        id: `focus-${Date.now()}`,
+        personaId: state.activePersonaId,
+        minutes: Math.ceil(duration / 60),
+      };
+    }
     deadline.current = Date.now() + duration * 1000;
     setFocusRunning(true);
     setSceneLine(`接下来的 ${Math.ceil(duration / 60)} 分钟，我安静地陪着你。`);
@@ -959,6 +1407,7 @@ export default function App() {
       <PetShell
         characterName={activePersonaName}
         lookId={state.lookId}
+        appearance={currentLook}
         removedLookIds={removedLookIds}
         chooseLook={chooseLook}
         removeLook={removeLook}
@@ -988,15 +1437,14 @@ export default function App() {
       className={`app ${animated ? "animated-world" : "photo-world"} ${compact ? "compact" : ""} ${immersive ? "immersive" : ""} ${panel ? "panel-open" : ""} ${panel === "wardrobe" ? "wardrobe-open" : ""} ${settings.motion ? "motion-on" : ""} ${settings.fontSize === "large" ? "large-text" : ""} ${window.desktop ? "native" : ""}`}
     >
       <div className="scene-backdrop" aria-hidden="true">
-        {!animated &&
-          SCENES.map((s) => (
-            <img
-              key={s.id}
-              src={`/assets/scene-${s.id}.png`}
-              className={`scene-image ${scene === s.id && !customEnabled ? "visible" : ""}`}
-              alt=""
-            />
-          ))}
+        {!animated && !customEnabled && (
+          <img
+            key={scene}
+            src={`/assets/scene-${scene}.png`}
+            className="scene-image visible"
+            alt=""
+          />
+        )}
         {!animated &&
           customEnabled &&
           custom &&
@@ -1050,9 +1498,14 @@ export default function App() {
         )}
       </div>
       {animated && panel !== "wardrobe" && (
-        <div className="live-stage">
+        <div
+          className="live-stage"
+          inert={panel === "voices" ? true : undefined}
+          aria-hidden={panel === "voices" ? true : undefined}
+        >
           <LivePet
             lookId={state.lookId}
+            appearance={currentLook}
             mood={busy ? "thinking" : mood}
             action={petAction}
             motion={settings.motion}
@@ -1083,6 +1536,7 @@ export default function App() {
           {[
             { id: null, icon: ChatCircleDots, label: "陪伴" },
             { id: "personas", icon: Heart, label: "女友" },
+            { id: "voices", icon: Waveform, label: "朗读" },
             { id: "wardrobe", icon: CoatHanger, label: "衣橱" },
             { id: "focus", icon: Timer, label: "专注" },
             { id: "memories", icon: BookOpen, label: "回忆" },
@@ -1113,7 +1567,11 @@ export default function App() {
           </span>
         </div>
       </aside>
-      <main className="main-stage">
+      <main
+        className="main-stage"
+        inert={panel === "voices" ? true : undefined}
+        aria-hidden={panel === "voices" ? true : undefined}
+      >
         <header className="topbar">
           <div className="brand">
             <span className="brand-name">母狗张容</span>
@@ -1227,7 +1685,9 @@ export default function App() {
           <div className="pet-interaction-bar" aria-label="角色互动">
             <span className="live-status">
               <i />
-              {petReady ? `${activePersonaName} · 正在你身边` : `${activePersonaName} · 正在换好衣服`}
+              {petReady
+                ? `${activePersonaName} · 正在你身边`
+                : `${activePersonaName} · 正在换好衣服`}
             </span>
             <div>
               <button onClick={() => interact("pat")}>
@@ -1283,6 +1743,8 @@ export default function App() {
               className="inline-voice"
               onClick={() => {
                 if (speaking) {
+                  speechQueueRef.current?.cancel();
+                  speechQueueRef.current = null;
                   stopSpeech();
                   setSpeaking(false);
                 } else {
@@ -1295,12 +1757,17 @@ export default function App() {
             </button>
           </div>
           <p className="reply-text" aria-live="polite">
-            {busy ? (
+            {busy && streamingText ? (
+              streamingText
+            ) : busy ? (
               <span className="thinking">
                 让我想一想<span>···</span>
               </span>
             ) : (
-              <TypingText text={sceneLine} instant={!settings.motion} />
+              <TypingText
+                text={sceneLine}
+                instant={!settings.motion || lineKind === "stream"}
+              />
             )}
           </p>
           {!busy && (
@@ -1347,9 +1814,9 @@ export default function App() {
             <button
               type="button"
               className="corpus-open-button"
-              onClick={() => nav("personas")}
+              onClick={() => nav("voices")}
               aria-label={`打开语料库，共 ${personaCorpora.length} 条`}
-              title="语料库"
+              title="朗读工作台"
             >
               <BookOpen size={18} />
               <span>语料</span>
@@ -1468,7 +1935,9 @@ export default function App() {
             restoreLook={restoreLook}
             chooseScene={chooseScene}
             setBackground={setWardrobeBackground}
+            selectWardrobeItem={selectWardrobeItem}
             requestEmptyOutfit={requestEmptyOutfit}
+            onStudioImported={importStudioResult}
             onClose={() => setPanel(null)}
             petProps={{
               mood: busy ? "thinking" : mood,
@@ -1485,7 +1954,62 @@ export default function App() {
             state={state}
             activePersona={activePersona}
             activeSnapshot={activePersonaSnapshot}
+            onOpenTextWorkshop={() => { stopVoice(); nav("text-packs"); }}
             appearanceCaption={currentLook.outfit || currentLook.name}
+            boundAppearanceCaption={
+              activePersona.appearance
+                ? activePersona.appearance.avatarMode === "photo"
+                  ? SCENES.find(
+                      (item) => item.id === activePersona.appearance.scene,
+                    )?.name
+                  : getLook(activePersona.appearance.lookId).name
+                : "还未保存，将随切换自动记住"
+            }
+            onProfileChange={(patch) =>
+              setState((current) =>
+                updatePersonaProfile(current, current.activePersonaId, {
+                  ...patch,
+                  ...(patch.mood ? { moodUpdatedAt: Date.now() } : {}),
+                }),
+              )
+            }
+            onBindAppearance={() => {
+              setState((current) =>
+                updatePersonaProfile(current, current.activePersonaId, {
+                  appearance: capturePersonaAppearance(current),
+                }),
+              );
+              notify("已记住当前角色的穿搭。");
+            }}
+            onSaveMemory={(entry) =>
+              setState((current) =>
+                upsertPersonaMemory(current, current.activePersonaId, entry),
+              )
+            }
+            onDeleteMemory={(id) =>
+              setState((current) =>
+                removePersonaMemory(current, current.activePersonaId, id),
+              )
+            }
+            onUpdateExperience={(id, patch) => setState(current => updatePersonaExperience(current,current.activePersonaId,id,patch))}
+            onDeleteExperience={id => setState(current => removePersonaExperience(current,current.activePersonaId,id))}
+            onStartActivity={
+              busy
+                ? undefined
+                : (prompt) => {
+                    setPanel(null);
+                    send(prompt);
+                  }
+            }
+            onRecordExperience={(entry) =>
+              setState((current) =>
+                recordPersonaExperience(
+                  current,
+                  current.activePersonaId,
+                  entry,
+                ),
+              )
+            }
             selectPersona={choosePersona}
             setIntimacy={setPersonaIntimacy}
             renamePersona={renameActivePersona}
@@ -1494,34 +2018,243 @@ export default function App() {
             removePersona={removeActivePersona}
             addCorpus={(text, title, category, level) =>
               setState((current) =>
-                addPersonaCorpus(current, current.activePersonaId, text, title, category, level),
+                addPersonaCorpus(
+                  current,
+                  current.activePersonaId,
+                  text,
+                  title,
+                  category,
+                  level,
+                ),
               )
             }
             toggleCorpus={(id) =>
-              setState((current) => togglePersonaCorpus(current, current.activePersonaId, id))
+              setState((current) =>
+                togglePersonaCorpus(current, current.activePersonaId, id),
+              )
             }
             deleteCorpus={(id) =>
-              setState((current) => deletePersonaCorpus(current, current.activePersonaId, id))
+              setState((current) =>
+                deletePersonaCorpus(current, current.activePersonaId, id),
+              )
             }
             voiceProps={{
               speaking,
-              onStop: () => {
-                stopSpeech();
-                setSpeaking(false);
-                setSpeechPreparing(false);
-              },
-              onPreview: () =>
-                readAloud(`你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`),
+              onStop: stopVoice,
+              onPreview: (
+                text,
+                voiceProfileId = activePersona.voiceProfileId || "builtin",
+              ) =>
+                readAloud(
+                  text ||
+                    `你好，我是${activePersonaName}。今天过得怎么样？我会在这里，慢慢听你说。`,
+                  voiceProfileId,
+                ),
               onSelectedVoice: (voiceProfileId) =>
                 setState((current) =>
-                  updatePersonaProfile(current, activePersona.id, { voiceProfileId }),
+                  updatePersonaProfile(current, activePersona.id, {
+                    voiceProfileId,
+                  }),
                 ),
-              onChange: () =>
-                fetch("/api/health").then((response) => response.json()).then(setHealth).catch(() => {}),
             }}
             onClose={() => setPanel(null)}
           />
         )}
+        {panel === "text-packs" && (
+          <Suspense fallback={<section className="persona-page" role="status">正在打开文本工坊…</section>}>
+            <TextWorkshop
+              personaId={state.activePersonaId}
+              personaName={activePersonaName}
+              corpusCount={personaCorpora.length}
+              model={settings.model || health?.model || ""}
+              onApplyEntries={applyTextPack}
+              onRead={(text) => readAloud(text, activeVoiceRef.current)}
+              onStopRead={stopVoice}
+              onClose={() => { stopVoice(); setPanel(null); }}
+            />
+          </Suspense>
+        )}
+        {panel === "voices" &&
+          createPortal(
+            <section
+              ref={voiceStudioRef}
+              className={`voice-studio ${compact ? "compact" : ""}`}
+              aria-label="朗读工作台"
+              tabIndex={-1}
+            >
+              <header className="voice-studio-header">
+                <button
+                  type="button"
+                  onClick={() => {
+                    stopVoice();
+                    setPanel(null);
+                  }}
+                >
+                  返回陪伴
+                </button>
+                <div>
+                  <p>VOICE STUDIO</p>
+                  <h1>朗读工作台</h1>
+                  <span>
+                    选一张音色，写下文字，听满意后存进{activePersonaName}
+                    的语料。
+                  </span>
+                </div>
+                <Waveform size={38} />
+                <button type="button" onClick={() => { stopVoice(); nav("text-packs"); }}>文本工坊 · 从书中提取语料</button>
+              </header>
+              <div className="voice-studio-content">
+                <section className="voice-reader" aria-label="文本朗读">
+                  <header>
+                    <div>
+                      <p>READ &amp; KEEP</p>
+                      <h2>先试听，再保存</h2>
+                    </div>
+                    <span>{personaCorpora.length} / 40 条语料</span>
+                  </header>
+                  <form
+                    onSubmit={(event) => saveCorpus(event, auditionVoiceId)}
+                  >
+                    <label>
+                      朗读音色
+                      <select
+                        aria-label="朗读音色"
+                        value={auditionVoiceId}
+                        onChange={(event) => {
+                          stopVoice();
+                          setAuditionVoiceId(event.target.value);
+                        }}
+                      >
+                        {!voiceProfiles.length && (
+                          <option value="builtin">原始参考音色</option>
+                        )}
+                        {voiceProfiles.map((voice) => (
+                          <option key={voice.id} value={voice.id}>
+                            {voice.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      语料名称（选填）
+                      <input
+                        aria-label="语料名称"
+                        value={corpusTitle}
+                        maxLength={60}
+                        placeholder="例如：睡前问候"
+                        onChange={(event) => setCorpusTitle(event.target.value)}
+                      />
+                    </label>
+                    <label className="voice-reader-text">
+                      朗读文本
+                      <textarea
+                        aria-label="朗读文本"
+                        value={corpusDraft}
+                        maxLength={240}
+                        placeholder={`写下想让${activePersonaName}读的文字，最多 240 字…`}
+                        onChange={(event) => setCorpusDraft(event.target.value)}
+                      />
+                      <small>{corpusDraft.length} / 240</small>
+                    </label>
+                    <div className="voice-reader-actions">
+                      <button
+                        type="button"
+                        className="voice-preview-button"
+                        disabled={!corpusDraft.trim()}
+                        onClick={
+                          speaking
+                            ? stopVoice
+                            : () => readAloud(corpusDraft, auditionVoiceId)
+                        }
+                      >
+                        {speaking ? (
+                          <Stop size={17} weight="fill" />
+                        ) : (
+                          <Play size={17} weight="fill" />
+                        )}
+                        {speaking ? "停止朗读" : "读给我听"}
+                      </button>
+                      <button
+                        type="submit"
+                        className="voice-save-corpus"
+                        disabled={!corpusDraft.trim()}
+                        aria-label={`保存为${activePersonaName}的语料`}
+                      >
+                        <Plus size={17} />
+                        保存语料
+                      </button>
+                    </div>
+                  </form>
+                  <div
+                    className="voice-saved-corpora"
+                    aria-label={`${activePersonaName}已保存的语料`}
+                  >
+                    {!personaCorpora.length ? (
+                      <p className="voice-saved-empty">
+                        还没有保存的语料。试听满意后，就会收在这里。
+                      </p>
+                    ) : (
+                      personaCorpora.map((item) => {
+                        const itemVoice = voiceProfiles.find(
+                          (voice) => voice.id === item.voiceProfileId,
+                        );
+                        const replayVoiceId =
+                          itemVoice?.id ||
+                          activePersona.voiceProfileId ||
+                          "builtin";
+                        const replayVoiceName =
+                          itemVoice?.name || activeVoiceName;
+                        return (
+                          <article key={item.id}>
+                            <div>
+                              <strong>{item.title}</strong>
+                              <small>{replayVoiceName}</small>
+                              <p>{item.text}</p>
+                            </div>
+                            <button
+                              type="button"
+                              aria-label={`用${replayVoiceName}朗读语料：${item.title}`}
+                              onClick={() =>
+                                playCorpus(item.text, replayVoiceId)
+                              }
+                            >
+                              <Play size={15} weight="fill" /> 朗读
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`删除语料：${item.title}`}
+                              onClick={() => deleteCorpus(item.id)}
+                            >
+                              <Trash size={15} /> 删除
+                            </button>
+                          </article>
+                        );
+                      })
+                    )}
+                  </div>
+                </section>
+                <div className="voice-library-heading">
+                  <p>VOICE CARDS</p>
+                  <h2>音色管理</h2>
+                  <span>新建、改名或删除音色卡；上方朗读区会自动同步。</span>
+                </div>
+                <VoiceLibrary
+                  mode="manage"
+                  speaking={speaking}
+                  onStop={stopVoice}
+                  protectedVoiceIds={protectedVoiceIds}
+                  onPreview={(text, voiceProfileId) =>
+                    readAloud(
+                      text || "你好，这是这张音色卡的试听。今天过得怎么样？",
+                      voiceProfileId,
+                    )
+                  }
+                  onChange={() => setVoiceRevision((revision) => revision + 1)}
+                />
+              </div>
+            </section>,
+            document.body,
+          )}
         {panel === "wardrobe-legacy" && (
           <Panel
             type="wardrobe"
@@ -1798,6 +2531,7 @@ export default function App() {
                   disabled={focusRunning}
                   className={focusDuration === n ? "selected" : ""}
                   onClick={() => {
+                    focusSessionRef.current = null;
                     setFocusDuration(n);
                     setFocusRemaining(n * 60);
                     setFocusDone(false);
@@ -1891,7 +2625,9 @@ export default function App() {
                 visibleMemories.map((m) => (
                   <article key={m.id} className={`memory-message ${m.role}`}>
                     <div>
-                      <strong>{m.role === "user" ? "我" : activePersonaName}</strong>
+                      <strong>
+                        {m.role === "user" ? "我" : activePersonaName}
+                      </strong>
                       <time>
                         {new Date(m.createdAt).toLocaleTimeString("zh-CN", {
                           hour: "2-digit",
@@ -1899,21 +2635,15 @@ export default function App() {
                         })}
                       </time>
                       <button
-                        className={
-                          favorites.includes(m.id) ? "favorited" : ""
-                        }
+                        className={favorites.includes(m.id) ? "favorited" : ""}
                         aria-label={
-                          favorites.includes(m.id)
-                            ? "取消收藏"
-                            : "收藏这条消息"
+                          favorites.includes(m.id) ? "取消收藏" : "收藏这条消息"
                         }
                         onClick={() => favorite(m.id)}
                       >
                         <Heart
                           size={15}
-                          weight={
-                            favorites.includes(m.id) ? "fill" : "regular"
-                          }
+                          weight={favorites.includes(m.id) ? "fill" : "regular"}
                         />
                       </button>
                     </div>
@@ -1958,8 +2688,8 @@ export default function App() {
                 id="corpus-text"
                 className="corpus-textarea"
                 value={corpusDraft}
-                maxLength={1500}
-                placeholder="输入或粘贴一段文字，最多 1500 字…"
+                maxLength={240}
+                placeholder="输入或粘贴一段文字，最多 240 字…"
                 onChange={(event) => setCorpusDraft(event.target.value)}
               />
               <div className="corpus-editor-actions">
@@ -2004,7 +2734,11 @@ export default function App() {
                     </div>
                     <p>{item.text}</p>
                     <div className="corpus-card-actions">
-                      <button onClick={() => playCorpus(item.text)}>
+                      <button
+                        onClick={() =>
+                          playCorpus(item.text, item.voiceProfileId)
+                        }
+                      >
                         <Play size={15} weight="fill" />
                         朗读
                       </button>
@@ -2058,7 +2792,7 @@ export default function App() {
                     <strong>语音回应</strong>
                     <p>
                       {health?.voiceProfile?.mode === "reference"
-                        ? `${health.voiceProfile.name || "参考音色"} · 本机流式朗读`
+                        ? `${activeVoiceName} · 本机流式朗读`
                         : "使用本机中文语音轻声朗读"}
                     </p>
                   </div>
@@ -2119,7 +2853,11 @@ export default function App() {
                     <strong>
                       {models.length ? "本地模型已就绪" : "内置互动已就绪"}
                     </strong>
-                    <p>{models[0] || "支持换装、问候与日常陪伴"}</p>
+                    <p>
+                      {(models.includes(settings.model)
+                        ? settings.model
+                        : models[0]) || "支持换装、问候与日常陪伴"}
+                    </p>
                   </div>
                   <span className="local-badge">LOCAL</span>
                 </div>
@@ -2137,7 +2875,7 @@ export default function App() {
                     Ollama 本地 AI
                   </option>
                 </select>
-                {models.length > 1 && (
+                {models.length > 0 && (
                   <select
                     aria-label="本地模型"
                     value={
@@ -2148,12 +2886,18 @@ export default function App() {
                     onChange={(e) => changeSettings({ model: e.target.value })}
                   >
                     {models.map((m) => (
-                      <option key={m}>{m}</option>
+                      <option key={m} value={m}>
+                        {m === "qwen3.5:4b"
+                          ? "Qwen3.5 4B · 日常推荐"
+                          : m === "qwen3.5:9b"
+                            ? "Qwen3.5 9B · 更大模型"
+                            : m}
+                      </option>
                     ))}
                   </select>
                 )}
                 <p className="footnote">
-                  本地模型用于自由对话；内置互动使用预设规则。语音输入取决于浏览器识别服务，可能需要联网。中文朗读可在本机完成。
+                  中文聊天和长期记忆在本机处理，模型安装后可离线使用。内置互动使用预设规则。语音输入取决于浏览器识别服务，可能需要联网。中文朗读可在本机完成。
                 </p>
                 <button
                   className="text-button"
@@ -2161,7 +2905,12 @@ export default function App() {
                     try {
                       const d = await (await fetch("/api/models")).json();
                       setModels(
-                        (d.models || [])
+                        [...(d.models || [])]
+                          .sort(
+                            (a, b) =>
+                              Number(b.name === d.defaultModel) -
+                              Number(a.name === d.defaultModel),
+                          )
                           .map((m) => (typeof m === "string" ? m : m.name))
                           .filter(Boolean),
                       );
@@ -2174,6 +2923,12 @@ export default function App() {
                   <ArrowCounterClockwise size={14} />
                   重新检测模型
                 </button>
+                <ModelTrial
+                  model={
+                    models.includes(settings.model) ? settings.model : models[0]
+                  }
+                  disabled={busy}
+                />
               </div>
               <div className="settings-section">
                 <h3>留住，或重新开始</h3>
@@ -2189,7 +2944,7 @@ export default function App() {
                 </div>
                 <p className="footnote">
                   {activePersonaName}是 AI
-                  虚构角色。记录和偏好仅保存在本机，清空记录后无法恢复。
+                  虚构角色。记录和偏好仅保存在本机。清空聊天保留长期记忆和成长记录；记忆可在角色档案中逐条删除。
                 </p>
               </div>
               <div className="about">

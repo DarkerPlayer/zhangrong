@@ -18,4 +18,5 @@ export {
   WARDROBE_SUMMARY,
   filterLooks,
   matchLookAlias,
+  setLocalLooks,
 } from "../server/looks.mjs";

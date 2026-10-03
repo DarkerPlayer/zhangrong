@@ -1,4 +1,23 @@
 // Shared by the browser bundle and packaged local dialogue service.
+export const CHARACTER_ID_BY_NAME = Object.freeze({
+  "反差婊": "fancha",
+  "调教组长": "discipline-lead",
+  "吴多慧": "wuduohui",
+  "林薇": "linwei",
+  "美杜莎": "medusa",
+  "夜澜": "yelan",
+  "绯月": "ruby",
+  "霜华": "shuanghua",
+  "樱奈": "sakura",
+  "雪乃": "yuki",
+  "知夏": "zhixia",
+  "灵玥": "lingyue",
+  "艾莉丝": "elise",
+  "米娅": "mia",
+  "阿玛拉": "amara",
+  "祖莉": "zuri",
+});
+
 const makeLook = (
   id,
   character,
@@ -9,6 +28,7 @@ const makeLook = (
   metadata = {},
 ) => ({
   id,
+  characterId: metadata.characterId || CHARACTER_ID_BY_NAME[character],
   name: `${character} · ${outfit}`,
   character,
   age,
@@ -21,6 +41,7 @@ const makeLook = (
   greetingMotion: metadata.greetingMotion || "wave",
   characterDefault: metadata.characterDefault === true,
   actions: metadata.actions || null,
+  baseLayer: metadata.baseLayer || null,
   aliases: [
     ...new Set([
       outfit,
@@ -76,6 +97,52 @@ const linweiWalk = (lookId) => WALK_POSES.map(([file, durationMs, phase, contact
 }));
 
 export const LOOKS = [
+  makeLook(
+    "fancha-rose-office",
+    "反差婊",
+    29,
+    "玫瑰职场",
+    "黑色侧分长直发、粉色双排扣连衣裙，配金色项链、珍珠耳饰、白色腕表和象牙白高跟鞋。",
+    "#ca9caa",
+    {
+      ...recent(null, ["成熟"]),
+      characterDefault: true,
+      aliases: ["反差", "粉色双排扣", "粉色职场裙", "玫瑰通勤"],
+      actions: {
+        spit: [
+          { src: "/looks/fancha-rose-office/actions/spit-prepare.png", durationMs: 550, phase: "prepare", groundAnchor: [0.5, 1475 / 1536] },
+          { src: "/looks/fancha-rose-office/actions/spit-release.png", durationMs: 350, phase: "release", groundAnchor: [0.5, 1475 / 1536] },
+          { src: "/looks/fancha-rose-office/actions/spit-recover.png", durationMs: 700, phase: "recover", groundAnchor: [0.5, 1476 / 1536] },
+        ],
+      },
+    },
+  ),
+  makeLook(
+    "discipline-lead-noir",
+    "调教组长",
+    30,
+    "黑金组长",
+    "深栗色侧分长卷发、黑色缎面眼罩与花卉蕾丝短上衣，配装饰颈带、丰满收腰轮廓、清晰腹部 V 线、腰至脚尖的黑色连裤袜和漆皮高跟鞋。",
+    "#29242b",
+    {
+      ...recent(null, ["成熟"]),
+      characterDefault: true,
+      aliases: ["组长", "黑金组长", "蕾丝眼罩", "黑色眼罩", "黑色蕾丝", "黑丝组长", "纪律组长"],
+    },
+  ),
+  makeLook(
+    "wuduohui-plaid-agent",
+    "吴多慧",
+    29,
+    "格纹代理",
+    "栗棕低马尾、灰白印花丝巾与棕色格纹收腰连衣裙，配双环细腰带和裸棕色高跟鞋。",
+    "#aa8176",
+    {
+      ...recent(null, ["成熟"]),
+      characterDefault: true,
+      aliases: ["吴代理", "多慧代理", "格纹职场", "棕色格纹裙", "代理通勤"],
+    },
+  ),
   makeLook(
     "linwei-ivory-wrap",
     "林薇",
@@ -182,6 +249,18 @@ export const LOOKS = [
     "#d1a0a4",
     {
       aliases: ["香槟礼服", "香槟色礼服", "香槟裙", "香槟色裙", "绯月约会"],
+    },
+  ),
+  makeLook(
+    "ruby-white-bikini",
+    "绯月",
+    29,
+    "白色比基尼底装",
+    "酒红长卷发，不透明白色支撑型比基尼上衣与中腰比基尼下装，赤足。",
+    "#eee8e2",
+    {
+      baseLayer: "white-bikini",
+      aliases: ["白色比基尼", "白比基尼", "安全底装", "什么都不穿", "清空穿搭"],
     },
   ),
   makeLook(
@@ -409,9 +488,47 @@ export const LOOKS = [
   ),
 ];
 
+const WHITE_BIKINI_BASES = [
+  ["discipline-lead", "调教组长", 30, "#eee8e2"],
+  ["wuduohui", "吴多慧", 29, "#eee8e2"],
+  ["linwei", "林薇", 28, "#eee8e2"],
+  ["medusa", "美杜莎", 28, "#eee8e2"],
+  ["yelan", "夜澜", 28, "#eee8e2"],
+  ["shuanghua", "霜华", 27, "#eee8e2"],
+  ["sakura", "樱奈", 26, "#eee8e2"],
+  ["yuki", "雪乃", 27, "#eee8e2"],
+  ["zhixia", "知夏", 28, "#eee8e2"],
+  ["lingyue", "灵玥", 27, "#eee8e2"],
+  ["elise", "艾莉丝", 28, "#eee8e2"],
+  ["mia", "米娅", 27, "#eee8e2"],
+  ["amara", "阿玛拉", 29, "#eee8e2"],
+  ["zuri", "祖莉", 30, "#eee8e2"],
+];
+
+LOOKS.push(
+  ...WHITE_BIKINI_BASES.map(([characterId, character, age, color]) =>
+    makeLook(
+      `${characterId}-white-bikini`,
+      character,
+      age,
+      "白色比基尼底装",
+      "不透明白色高领运动型上衣与高腰全覆盖下装，赤足。",
+      color,
+      {
+        characterId,
+        baseLayer: "white-bikini",
+        aliases: ["白色比基尼", "白比基尼", "安全底装", "什么都不穿", "清空穿搭"],
+      },
+    ),
+  ),
+);
+
+const BUILT_IN_LOOKS = LOOKS.slice();
+
 export const DEFAULT_LOOK_ID = "ruby-velvet";
 export const ORIGINAL_LOOK = {
   id: "haru-original",
+  characterId: "haru",
   name: "Haru · 动态陪伴",
   character: "Haru",
   outfit: "原始造型",
@@ -432,12 +549,24 @@ export const LOOK_FILTERS = [
   "非洲",
   "成熟",
 ];
-export const LOOK_COUNT = LOOKS.length;
-export const CHARACTER_NAMES = [
+export let LOOK_COUNT = LOOKS.length;
+export let CHARACTER_NAMES = [
   ...new Set(LOOKS.map((look) => look.character)),
 ];
-export const CHARACTER_COUNT = CHARACTER_NAMES.length;
-export const WARDROBE_SUMMARY = `${CHARACTER_COUNT}位伙伴 · ${LOOK_COUNT}套穿搭`;
+export let CHARACTER_COUNT = CHARACTER_NAMES.length;
+export let WARDROBE_SUMMARY = `${CHARACTER_COUNT}位伙伴 · ${LOOK_COUNT}套穿搭`;
+
+// Local Studio catalogs are loaded independently in the server and browser.
+// Keep the array identity so existing consumers continue to see new looks.
+export function setLocalLooks(looks = []) {
+  const reserved = new Set(BUILT_IN_LOOKS.map(look => look.id));
+  const local = Array.isArray(looks) ? looks.filter(look => look && typeof look.id === 'string' && look.id.startsWith('local-look-') && !reserved.has(look.id) && typeof look.characterId === 'string' && typeof look.character === 'string' && typeof look.asset === 'string' && look.asset.startsWith('/local-studio/assets/')).map(look => ({ ...look, actions: null, styles: Array.isArray(look.styles) ? look.styles : ['成熟'], aliases: Array.isArray(look.aliases) ? look.aliases : [look.character] })) : [];
+  LOOKS.splice(0, LOOKS.length, ...BUILT_IN_LOOKS, ...local);
+  LOOK_COUNT = LOOKS.length;
+  CHARACTER_NAMES = [...new Set(LOOKS.map(look => look.character))];
+  CHARACTER_COUNT = CHARACTER_NAMES.length;
+  WARDROBE_SUMMARY = `${CHARACTER_COUNT}位伙伴 · ${LOOK_COUNT}套穿搭`;
+}
 
 export const isLookId = (id) =>
   id === ORIGINAL_LOOK.id || LOOKS.some((look) => look.id === id);

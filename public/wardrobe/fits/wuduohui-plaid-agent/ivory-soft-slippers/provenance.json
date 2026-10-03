@@ -1,0 +1,13 @@
+{
+  "lookId": "wuduohui-plaid-agent",
+  "itemId": "ivory-soft-slippers",
+  "prompt": "Use case: identity-preserve. Asset type: complete fitted character artwork for a local wardrobe. Image 1 is the edit target: a fictional adult woman, age 25+, in a neutral standing clothing display. Image 2 is the supporting footwear reference. Replace ONLY footwear, fit a matching pair of ivory plush cross-band flat house slippers with rounded soft soles from image 2 naturally on her feet with correct perspective and shape. Preserve the EXACT face, hair, identity, body proportions, existing opaque clothing coverage, all accessories, pose, hands, original framing, lighting and image style. Do not add or remove clothing. Keep both shoes clearly visible and fully in canvas. If a long gown covers the feet, lift only the tiny central hem minimally to reveal footwear, keep the gown design unchanged. Full head-to-toes artwork centered in a portrait 1024x1536 canvas, keep original margins. Actual transparent background. No other people, no text, no watermark.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a0ec0b-53c9-7d41-9215-9bd65503ad22/exec-4232c44b-7340-4018-8aba-3d4d996d7e64.png",
+  "references": [
+    "public/looks/wuduohui-plaid-agent/character.png",
+    "public/wardrobe/items/ivory-soft-slippers.png"
+  ],
+  "provider": "builtin-imagegen",
+  "faceConfidence": 1,
+  "pixelProcessing": "none"
+}

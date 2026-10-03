@@ -1,6 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 const { speak, stopSpeech } = await import("../src/audio.js");
+test("preview dispatches the requested profile with literal corpus text", async () => {
+  globalThis.window = { speechSynthesis: { cancel() {} } };
+  let payload;
+  globalThis.fetch = async (_url, options) => {
+    payload = JSON.parse(options.body);
+    return { ok: false, json: async () => ({ error: "preview fixture" }) };
+  };
+  await speak("阿远，沈知意在这里。", () => {}, () => {}, { voiceProfileId: "saved-voice" });
+  assert.deepEqual(payload, { text: "阿远，沈知意在这里。", stream: false, voiceProfileId: "saved-voice" });
+});
 test("a reference-voice error is reported without silently switching to a different voice", async () => {
   let spoken = false,
     ended;

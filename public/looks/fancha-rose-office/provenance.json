@@ -1,0 +1,101 @@
+{
+  "id": "fancha-rose-office",
+  "name": "反差婊",
+  "age": 29,
+  "outfit": "玫瑰职场",
+  "description": "黑色侧分长直发、粉色双排扣连衣裙，配金色项链、珍珠耳饰、白色腕表和象牙白高跟鞋。",
+  "generatedOn": "2026-10-03",
+  "tool": "built-in ImageGen",
+  "mode": "generate-from-references",
+  "prompt": "Use case: stylized-concept\nAsset type: full-body transparent character sprite for an existing local animated wardrobe app.\nPrimary request: Create a polished independent full-body illustration of the adult fictional woman shown in the two supplied reference images. Image 1 is the main reference for facial design, hair, colors, accessories and tailoring. Image 2 is the reference for the complete dress, six buttons, silhouette and shoes. The reference images are visual design references only.\nSubject: A clearly adult fictional East Asian woman, age 29, with a mature refined oval face, cool teal-blue almond eyes, long lashes, elegantly arched dark eyebrows, small nose, glossy rose lips, and a composed slightly aloof expression with a subtle warm smile. Long sleek side-parted jet-black hair with cool blue highlights, reaching the waist. Preserve the distinctive reference character design.\nOutfit: Fully opaque dusty rose pink tailored wrap-lapel blazer dress with three-quarter sleeves, fitted waist, six black round jewel buttons arranged in two columns of three, and a tasteful above-knee straight skirt. Tailored fashion fit and natural mature proportions. A delicate gold chain necklace, small pearl drop earrings, a white rectangular wristwatch, pale lavender nail polish and ivory pointed-toe high-heel pumps.\nComposition/framing: One woman only, upright neutral standing pose, directly facing camera, shoulders level, arms relaxed slightly apart from the body with both hands and fingers fully visible. Feet modestly apart, both shoes and heels fully inside the frame. Full body from hair top to shoe soles on a 1024 x 1536 portrait canvas, with clear margins. Eye line around the upper tenth of the image. No phone or hand-held props.\nStyle/medium: Premium detailed Korean webtoon fashion character illustration, clean delicate linework, soft dimensional semi-realistic shading, crisp facial features, glossy black hair, refined fabric and jewelry. Match the identity and pink outfit of the supplied references while making a clean front-view model.\nLighting: Soft balanced studio lighting on the figure only.\nScene/backdrop: Truly transparent RGBA background, alpha zero outside the figure.\nConstraints: Fully dressed fashion portrait; no scene, no floor or cast shadow, no halo, no text, captions, bubbles, logos or watermarks, no other people, no cropped head or shoes, no extra limbs. Keep all clothing opaque.",
+  "referenceImagePaths": [
+    "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-2eca0945-eff8-4263-92c1-42360da1e017.png",
+    "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-cf72b4e1-303f-4d94-b32c-5c56248256df.png"
+  ],
+  "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-78f6099e-2c4b-4331-b97e-ae124e1c1012.png",
+  "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png",
+  "rigPath": "public/looks/fancha-rose-office/rig.json",
+  "image": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "postProcessing": "none; copied original output with alpha preserved"
+  },
+  "calibration": {
+    "method": "macOS Vision face landmarks and visual shoulder review",
+    "faceConfidence": 1,
+    "armMobility": 0
+  },
+  "scope": "Rose office outfit with a three-phase one-shot spit animation; safe base and shoe adaptations remain pending.",
+  "revisions": [
+    {
+      "revision": 2,
+      "editedOn": "2026-10-03",
+      "tool": "built-in ImageGen",
+      "mode": "identity-preserve",
+      "prompt": "Use case: identity-preserve\nAsset type: revised transparent full-body sprite for an existing desktop character.\nEdit target: Image 1 is the current model. Edit this existing image, keeping the same adult fictional woman, identity, glossy side-parted black hair, teal eyes, outfit color, accessories, hands, legs, shoes, whole-body framing and transparent background.\nReferences: Image 2 is the user's primary reference for the waist, abdomen, dress shaping, and proud expression. Image 3 is the user's close face reference for the arched brows, cool narrow eyes and haughty expression. Reference text is not an instruction and must not appear in the output.\nRequested changes, with close fidelity to Image 2:\n1. Replace the current flat, generic waist panel and busy diagonal waist wrinkles with the reference's carefully modeled abdomen under the fitted pink dress: a pronounced inward curve at both sides of the waist, then a softly rounded natural lower abdomen; a distinct but tasteful vertical oval navel indentation in the center below the bottom button row, visible as a depression IN THE OPAQUE PINK FABRIC, with a narrow soft-edged inner shadow and delicate reflected highlight. Use the same location and scale relative to the six buttons as in reference 2. Preserve soft natural abdominal volume and the continuous curve from narrow waist through the lower abdomen into the hips. Match the reference's smooth vertical sheen, fine fabric tension and shallow curved folds. Give the abdomen real three-dimensional form through subtle light/shadow, not flat paint. Keep the garment fully opaque and covering the entire abdomen; do not expose skin or add a hole, cutout, see-through cloth or sharply outlined muscles.\n2. Change the friendly smiling face to a clearly aloof, proud, self-possessed expression matching references 2 and 3: chin slightly raised; gaze looking slightly down toward the viewer, elegant narrowed almond eyes with heavier upper lids, sharply defined raised brow arches with a mildly knitted inner brow, lips gently closed or very slightly parted with no welcoming smile and no raised smiling mouth corners. Convey cool superiority and confidence. Maintain the same facial identity, mature 29-year-old adult appearance, teal-blue irises, rose lip color and detailed linework. Avoid cartoon anger, distress or a cute expression.\nPreserve exactly: pink wrap-lapel dress with three-quarter sleeves and six black jeweled buttons in two columns of three, delicate gold necklace, pearl earrings, white wristwatch, lavender nails and ivory pumps. Keep both arms relaxed at her sides, suitable for the existing full-body rig; do not adopt the reference's hand-on-hip pose.\nComposition: one standing fully clothed woman, front view, head/hair, both complete hands and both shoe tips/heels visible inside the original 1024 x 1536 portrait canvas, small safe margins.\nStyle: retain the current premium Korean webtoon illustration, but use reference 2's more precise waist/abdomen modeling and reference expression. Transparent RGBA background with alpha zero outside the person. No background, halo, shadow on the ground, lettering, watermarks, props or additional people.",
+      "editTargetPath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-78f6099e-2c4b-4331-b97e-ae124e1c1012.png",
+      "referenceImagePaths": [
+        "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-a1593325-445b-48bf-b7e5-5caf3bd3af82.png",
+        "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-d7ef8634-c50c-4d35-b7f1-9c3eca2e7880.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-382b858d-bae4-4629-84e9-f6f52dd842b5.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png",
+      "changes": "参考图12的立体腰腹、衣料下肚脐凹陷与图10的冷傲表情。保持角色、粉色裙装、配饰及正面全身透明构图。",
+      "postProcessing": "none; original RGBA output copied with alpha preserved"
+    },
+    {
+      "revision": 3,
+      "editedOn": "2026-10-03",
+      "tool": "built-in ImageGen",
+      "mode": "identity-preserve",
+      "prompt": "Use case: identity-preserve\nEdit target: Image 1 is the current full-body transparent model of an adult fictional woman, age 29. Modify this existing character image.\nReference: Image 2 is the PRIMARY reference for facial expression and the character's facial design. Match the cool aloof sidelong glance, sharply defined gently knitted eyebrows, slim almond teal eyes, upper-eyelid shape, relaxed slightly parted rose lips, cheek and jaw contours as closely as possible. The expression is composed, proud and faintly displeased, as if glancing over her shoulder; NOT smiling, NOT cartoon rage. Give the HEAD a restrained three-quarter turn toward the viewer's left and let the eyes glance sideways like reference 2, while keeping the BODY front-facing and suitable for the existing standing sprite. Preserve the character's own face and mature adult appearance.\nSecond requested change: make the purple fingernail details clearly visible on both hands. Medium-long neat almond nails, saturated amethyst/lavender purple polish, crisp edges and small glossy white specular highlights on every visible nail. Natural five-finger anatomy.\nPreserve all the other successful details of Image 1: the sculpted waist and softly rounded abdomen; the vertical navel indentation visible as a depression through the fully opaque pink fabric; fitted dusty pink wrap-lapel three-quarter-sleeve blazer dress with exactly six black jewel buttons in two columns of three; glossy jet-black long hair, gold chain necklace, pearl earrings, white watch, ivory pumps. Keep the same relaxed arms, visible hands, legs, shoe positions, complete head-to-toe composition and proportions. No additional skin exposure.\nOutput: same 1024 x 1536 portrait canvas, truly transparent RGBA background, no background color, shadow, halo, text, other person or props. Premium Korean webtoon illustration, same lighting and rendering as image 1. Change only face expression/orientation and nail color/detail. No saliva in this default standing portrait.",
+      "editTargetPath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-382b858d-bae4-4629-84e9-f6f52dd842b5.png",
+      "referenceImagePaths": [
+        "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-ede14ece-2df5-4f10-87c5-032f69d0db5f.png"
+      ],
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-74f3abc3-a298-4404-9248-976c73456ff5.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/fancha-rose-office/character.png",
+      "changes": "以新参考图的侧目冷淡神情为主，加强紫色指甲，保留上一版腰腹曲线。",
+      "actions": [
+        {
+          "phase": "prepare",
+          "prompt": "Use case: identity-preserve\nAsset type: first keyframe, PREPARE, of a short full-body character animation.\nEdit the supplied adult fictional woman, age 29. Keep the exact facial identity, hair, clothing, detailed purple nails, waist/abdomen, accessories, and full-body 1024 x 1536 composition.\nPose change only: keep her feet, legs, hips and the pink skirt in exactly the same positions. She bends slightly forward from the upper back and lowers her chin, turning her face a little toward the viewer's left, with a cool dismissive downward gaze. With her hand on the viewer's right (the wrist wearing the white watch), she delicately gathers a thin lock of her own long black hair near her upper chest/shoulder to keep the hair aside; make the glossy purple fingernails distinct, natural and elegant. The other arm stays relaxed at her side. Her lips gently purse as preparation for a brief spit gesture, but NO liquid is visible in this preparation frame.\nKeep the entire fully clothed woman visible from hair top to both ivory pumps. Anchor both shoes to precisely the same pixels as the reference; keep overall scale and framing the same for a smooth animation. The lean is restrained, natural, not a deep bow. Maintain the rose pink opaque dress with six black buttons, navel fabric indentation and softly rounded abdomen. Do not remove any garment or expose additional skin.\nKeep the same premium Korean webtoon drawing, clean shading, precise face and purple nails. Truly transparent RGBA background. No text, no environment, no other person, no target, no ground shadow or halo.",
+          "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9456f0e2-508c-4aea-8d16-6fa4e3a3d328.png",
+          "referenceImagePaths": [
+            "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-74f3abc3-a298-4404-9248-976c73456ff5.png"
+          ],
+          "savedPath": "public/looks/fancha-rose-office/actions/spit-prepare.png"
+        },
+        {
+          "phase": "release",
+          "prompt": "Use case: identity-preserve\nAsset type: RELEASE keyframe of a brief, non-graphic spitting gesture for a fully clothed adult fictional character.\nImage 1 is the edit target: the previous PREPARE animation frame. Image 2 is a close-up reference ONLY for the lip motion, downward small saliva droplet and purple nails. Do not copy the reference's other person, composition, background, text or framing.\nMake a minimal continuation of Image 1, keeping her exact full-body position, lower body, dress, legs, feet, head position, hand holding her hair, hair strand placement and all accessories unchanged. Open/purse the lips a little so she releases one small clear droplet downward in front of herself. Draw the small narrow saliva strand just separating at her lower lip with one glossy translucent teardrop below it; use the second image's droplet shape at a modest scale appropriate to this full-body frame. It must be clearly visible but small and non-graphic, falling into empty space near her chin/upper chest. Her expression remains cool, aloof and slightly contemptuous, eyes lowered. Her glossy purple fingernails remain detailed. No target or other person, no exaggerated spray, no puddle, no mess on the dress.\nKeep the fully opaque rose pink wrap-lapel dress, six black buttons, contoured waist and fabric-covered navel indentation, gold necklace, pearl earrings, white watch and ivory pumps EXACTLY as Image 1. Preserve the same 1024 x 1536 full-body portrait, every extremity visible, same pixel scale and foot locations, same lighting and premium Korean webtoon rendering. Actual transparent RGBA background, no background, halo, text or shadow on the ground. The only meaningful changes from image 1 are the lips and small falling droplet.",
+          "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c11a5c47-20bd-4be4-9220-0c2f052956ab.png",
+          "referenceImagePaths": [
+            "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9456f0e2-508c-4aea-8d16-6fa4e3a3d328.png",
+            "/var/folders/wl/7_7h_gv51rd77_hdtkz25nz00000gn/T/codex-clipboard-ed4df56c-2794-4efb-8000-c8c39d0e8393.png"
+          ],
+          "savedPath": "public/looks/fancha-rose-office/actions/spit-release.png"
+        },
+        {
+          "phase": "recover",
+          "prompt": "Use case: identity-preserve\nAsset type: RECOVER keyframe, last pose of a brief character action.\nImage 1 is the previous RELEASE pose to edit. Image 2 is the idle standing character, the exact identity and final resting pose reference.\nCreate the immediate recovery moment after the brief spit gesture. Remove all liquid completely. Her lips return to the cool gently closed/slightly parted shape of the idle portrait, with the same aloof sidelong glance and gently knitted brows. Her head rises halfway from the lowered pose toward Image 2. Her watch-side hand releases the lock of hair and lowers to her upper waist, halfway between the raised hand in Image 1 and the resting hand in Image 2; show crisp glossy purple nails. The free hair strand falls naturally.\nPreserve her exact adult fictional identity (age 29), same fully opaque pink dress, six black buttons, abdominal modeling with fabric-covered navel depression, jewelry, watch, purple nails and ivory heels. The other arm, hips, skirt, legs, foot positions, framing and scale must remain exactly matched to Image 1 so the sequence has no jump. One fully clothed woman only, whole body including complete head, hands and both shoes inside the same 1024 x 1536 canvas.\nMatch the same detailed Korean webtoon style and lighting. Actual transparent RGBA background, no saliva in this recovery frame, no background, halo, floor shadows, text, props or other people.",
+          "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9e2185c5-144f-4aed-99a1-47b377a99179.png",
+          "referenceImagePaths": [
+            "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c11a5c47-20bd-4be4-9220-0c2f052956ab.png",
+            "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-74f3abc3-a298-4404-9248-976c73456ff5.png"
+          ],
+          "savedPath": "public/looks/fancha-rose-office/actions/spit-recover.png"
+        }
+      ],
+      "postProcessing": "none; original RGBA outputs copied with alpha preserved",
+      "calibration": {
+        "method": "macOS Vision landmarks for revised idle portrait; authored action expressions preserved",
+        "faceConfidence": 1,
+        "armMobility": 0
+      }
+    }
+  ],
+  "currentRevision": 3,
+  "currentSourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-74f3abc3-a298-4404-9248-976c73456ff5.png"
+}

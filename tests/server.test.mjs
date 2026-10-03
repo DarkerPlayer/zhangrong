@@ -17,7 +17,7 @@ async function fixture(t) {
   await writeFile(join(site, "index.html"), "<h1>沐语</h1>");
   await writeFile(join(dir, "secret.txt"), "PRIVATE");
   await symlink(join(dir, "secret.txt"), join(site, "leak.txt"));
-  const app = await module.startServer({ prewarm: false, port: 0, staticDir: site, voiceDirectory: join(dir, "voices") });
+  const app = await module.startServer({ prewarm: false, port: 0, staticDir: site, voiceDirectory: join(dir, "voices"), studioDirectory: join(dir, "studio") });
   t.after(async () => {
     await app.close();
     await rm(dir, { recursive: true, force: true });
@@ -25,6 +25,20 @@ async function fixture(t) {
   return { url: `http://127.0.0.1:${app.port}`, app };
 }
 const opts = { skip: !module };
+
+test('streamed chat emits deltas and a final result and validates companion context', opts, async t => {
+  const {url} = await fixture(t);
+  const post = value => fetch(url+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'你好',provider:'offline',stream:true,...value})});
+  const response = await post({companionContext:{memories:[{kind:'plan',text:'周六看电影',status:'active'}],personality:'温柔且有主见',mood:'calm',relationship:{stage:'new',label:'初识',completedCount:0}}});
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type'),/ndjson/);
+  const events = (await response.text()).trim().split('\n').map(JSON.parse);
+  assert.equal(events.at(-1).done,true);
+  assert.equal(events.filter(e=>e.delta).map(e=>e.delta).join(''),events.at(-1).result.reply);
+  assert.equal((await post({stream:'yes'})).status,400);
+  assert.equal((await post({companionContext:{personality:'长'.repeat(501)}})).status,400);
+  assert.equal((await post({companionContext:{memories:Array(7).fill({kind:'fact',text:'很多',status:'active'})}})).status,400);
+});
 
 test(
   "health and model discovery return explicit local capability status",

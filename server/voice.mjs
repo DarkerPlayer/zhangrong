@@ -70,19 +70,44 @@ const defaultRoot = fileURLToPath(
 export function createVoiceService({
   runtimeRoot = defaultRoot,
   libraryDirectory,
+  workerFactory = createSpeechWorker,
+  workerIdleMs = 120000,
+  audioCacheBytes = 16 * 1024 * 1024,
 } = {}) {
   let worker,
     configuration,
     closed = false;
   const cache = new Map();
-  let cacheBytes = 0,
-    workerVoice,
-    warming;
-  const reset = (clearWarm = true) => {
+  let cacheBytes = 0, warming, active, revision = 0;
+  const queue = [];
+  const aborted = () => Object.assign(new Error("已停止朗读。"), { name: "AbortError" });
+  const unavailable = () => Object.assign(new Error("语音服务已关闭。"), { status: 503 });
+  function cancelTask(task, error = aborted()) {
+    task.options.signal?.removeEventListener("abort", task.cancel);
+    task.controller.abort();
+    const index = queue.indexOf(task);
+    if (index >= 0) queue.splice(index, 1);
+    task.reject(error);
+  }
+  function pump() {
+    if (closed || active || !queue.length) return;
+    const task = active = queue.shift();
+    service.synthesizeRequest(task.text, { ...task.options, signal: task.controller.signal }, task)
+      .then(task.resolve, task.reject)
+      .finally(() => {
+        task.options.signal?.removeEventListener("abort", task.cancel);
+        active = undefined;
+        pump();
+      });
+  }
+  const reset = () => {
+    revision++;
+    const error = closed ? unavailable() : aborted();
+    for (const task of [...queue]) cancelTask(task, error);
+    if (active) cancelTask(active, error);
     worker?.close();
     worker = undefined;
-    workerVoice = undefined;
-    if (clearWarm) warming = undefined;
+    warming = undefined;
     cache.clear();
     cacheBytes = 0;
   };
@@ -190,17 +215,46 @@ export function createVoiceService({
     },
     library,
     reset,
+    invalidateVoice(id) {
+      revision++;
+      for (const [key, chunks] of cache) {
+        if (!key.startsWith(id + ":")) continue;
+        cacheBytes -= chunks.reduce((n, chunk) => n + chunk.length, 0);
+        cache.delete(key);
+      }
+      for (const task of [...queue, ...(active ? [active] : [])]) {
+        if ((task.voiceId || task.options.voiceProfileId) === id) cancelTask(task);
+      }
+    },
     async info() {
       const info = await config();
       if (!library) return info;
       const selected = await library.current();
       return { ...info, name: selected.name, id: selected.id };
     },
-    async synthesize(text, { signal, onChunk, warmup = false } = {}) {
+    synthesize(text, options = {}) {
+      if (closed) return Promise.reject(unavailable());
+      if (options.signal?.aborted) return Promise.reject(aborted());
+      if (queue.length >= 3)
+        return Promise.reject(Object.assign(new Error("正在准备声音，请稍后再试。"), { status: 503 }));
+      return new Promise((resolve, reject) => {
+        const task = { text, options, resolve, reject, controller: new AbortController() };
+        task.cancel = () => cancelTask(task);
+        options.signal?.addEventListener("abort", task.cancel, { once: true });
+        queue.push(task);
+        pump();
+      });
+    },
+    async synthesizeRequest(text, { signal, onChunk, warmup = false, voiceProfileId } = {}, task) {
+      const requestRevision = revision;
       if (closed)
         throw Object.assign(new Error("语音服务已关闭。"), { status: 503 });
       if (signal?.aborted)
         throw Object.assign(new Error("已停止朗读。"), { name: "AbortError" });
+      const voice = library
+        ? await (voiceProfileId == null ? library.current() : library.resolve(voiceProfileId))
+        : { id: "builtin", root: runtimeRoot };
+      if (task) task.voiceId = voice.id;
       const selected = await config();
       if (closed)
         throw Object.assign(new Error("语音服务已关闭。"), { status: 503 });
@@ -219,31 +273,28 @@ export function createVoiceService({
         throw Object.assign(new Error("参考音色文件不完整，请重新安装应用。"), {
           status: 503,
         });
-      const voice = library
-        ? await library.current()
-        : { id: "builtin", root: runtimeRoot };
       if (closed || signal?.aborted)
         throw Object.assign(new Error("已停止朗读。"), { name: "AbortError" });
       const cacheKey = voice.id + ":" + text;
       if (!warmup && cache.has(cacheKey)) {
         const chunks = cache.get(cacheKey);
+        cache.delete(cacheKey);
+        cache.set(cacheKey, chunks);
         if (onChunk) {
-          for (const chunk of chunks) onChunk(chunk);
+          for (const chunk of chunks) {
+            if (signal?.aborted) throw aborted();
+            onChunk(chunk);
+          }
           return;
         }
         return joinWav(chunks);
       }
-      if (workerVoice !== voice.id) {
-        reset(false);
-        workerVoice = voice.id;
-      }
-      worker ||= createSpeechWorker({
+      worker ||= workerFactory({
         command: join(runtimeRoot, "python/bin/python3"),
         args: [
           "-u",
           fileURLToPath(new URL("./reference-voice.py", import.meta.url)),
           runtimeRoot,
-          voice.root,
         ],
         env: {
           ...process.env,
@@ -253,19 +304,21 @@ export function createVoiceService({
           PYTHONDONTWRITEBYTECODE: "1",
         },
         cwd: runtimeRoot,
-        idleMs: 0,
+        idleMs: workerIdleMs,
       });
-      if (warmup) return worker.warmup();
+      if (warmup) return worker.warmup({ signal, voiceRoot: voice.root });
       const chunks = [];
       let bytes = 0;
       const audio = await worker.synthesize(text, {
         signal,
+        voiceRoot: voice.root,
         ...(onChunk
           ? {
               onChunk: (chunk) => {
                 onChunk(chunk);
                 bytes += chunk.length;
-                if (bytes <= 16 * 1024 * 1024) chunks.push(chunk);
+                if (bytes <= audioCacheBytes) chunks.push(chunk);
+                else chunks.length = 0;
               },
             }
           : {}),
@@ -274,12 +327,12 @@ export function createVoiceService({
         chunks.push(audio);
         bytes = audio.length;
       }
-      if (bytes <= 16 * 1024 * 1024 && !closed && workerVoice === voice.id) {
+      if (bytes <= audioCacheBytes && !closed && !signal?.aborted && revision === requestRevision) {
         if (cache.has(cacheKey))
           cacheBytes -= cache.get(cacheKey).reduce((n, c) => n + c.length, 0);
         cache.set(cacheKey, chunks);
         cacheBytes += bytes;
-        while (cacheBytes > 16 * 1024 * 1024) {
+        while (cacheBytes > audioCacheBytes) {
           const key = cache.keys().next().value;
           cacheBytes -= cache.get(key).reduce((n, c) => n + c.length, 0);
           cache.delete(key);
@@ -289,9 +342,7 @@ export function createVoiceService({
     },
     close() {
       closed = true;
-      worker?.close();
-      cache.clear();
-      cacheBytes = 0;
+      reset();
     },
   };
   return service;

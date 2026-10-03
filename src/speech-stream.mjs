@@ -6,6 +6,11 @@ export function createStreamPlayer({
   onEnd = () => {},
 }) {
   const sources = new Set();
+  const bufferWaiters = new Set();
+  const wakeBuffer = () => {
+    for (const wake of bufferWaiters) wake();
+    bufferWaiters.clear();
+  };
   let nextTime = 0,
     closed = false,
     complete = false,
@@ -30,6 +35,11 @@ export function createStreamPlayer({
       if (closed) return;
       if (typeof base64 !== "string" || base64.length > 4 * 1024 * 1024)
         throw Error("语音片段格式无效。");
+      // Keep only a short window of decoded PCM, even when synthesis/cache is
+      // much faster than playback. Stop must also release a waiting reader.
+      while (!closed && sources.size && nextTime - context.currentTime >= 5)
+        await new Promise(resolve => bufferWaiters.add(resolve));
+      if (closed) return;
       const binary = atob(base64),
         bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -42,6 +52,8 @@ export function createStreamPlayer({
       node.onended = () => {
         sources.delete(node);
         node.disconnect();
+        node.buffer = null;
+        wakeBuffer();
         settle();
       };
       const when = Math.max(context.currentTime + 0.025, nextTime);
@@ -66,8 +78,10 @@ export function createStreamPlayer({
           source.stop();
         } catch {}
         source.disconnect();
+        source.buffer = null;
       }
       sources.clear();
+      wakeBuffer();
       resolve();
     },
   };

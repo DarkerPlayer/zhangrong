@@ -74,6 +74,37 @@ test("stopping a stream stops queued sources and late chunks never start", async
   assert.equal(ended, 0);
 });
 
+test("long streams wait for playback before decoding more audio and cancellation releases the waiter", async () => {
+  const sources = [];
+  let decoded = 0;
+  const context = {
+    currentTime: 0,
+    async decodeAudioData() { decoded++; return { duration: 1 }; },
+    createBufferSource() {
+      const source = { connect() {}, disconnect() {}, start() {}, stop() {} };
+      sources.push(source);
+      return source;
+    },
+  };
+  const player = module.createStreamPlayer({ context, destination: {} });
+  for (let i = 0; i < 5; i++) await player.push("YWJj");
+  const sixth = player.push("YWJj");
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(decoded, 5, "a long utterance must not decode its whole future playback into memory");
+  context.currentTime = 1.025;
+  sources[0].onended();
+  await sixth;
+  assert.equal(decoded, 6);
+  assert.equal(sources[0].buffer, null, "finished PCM buffers are released");
+  const seventh = player.push("YWJj");
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(decoded, 6);
+  player.cancel();
+  await seventh;
+  await player.finished;
+  assert.ok(sources.every(source => source.buffer === null));
+});
+
 test("split NDJSON chunks play incrementally and truncated streams are reported", async () => {
   assert.equal(typeof module.consumeAudioStream, "function");
   let seen = [];

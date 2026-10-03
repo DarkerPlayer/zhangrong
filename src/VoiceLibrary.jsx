@@ -48,6 +48,8 @@ export default function VoiceLibrary({
   speaking,
   personaName = "当前女友",
   preferredVoiceId = "builtin",
+  mode = "manage",
+  protectedVoiceIds = [],
 }) {
   const [library, setLibrary] = useState({ voices: [], selectedId: "builtin" }),
     [error, setError] = useState(""),
@@ -90,10 +92,8 @@ export default function VoiceLibrary({
       const data = await api(path, body);
       if (!mounted.current) return;
       setLibrary(data);
-      onStop();
+      onStop?.();
       onChange?.();
-      if (path === "/select") onSelectedVoice?.(data.selectedId || body.id);
-      if (path === "/delete" && data.selectedId) onSelectedVoice?.(data.selectedId);
       setDeleteId(null);
       setRenameId(null);
     } catch (e) {
@@ -157,7 +157,7 @@ export default function VoiceLibrary({
       return;
     }
     setBusy(true);
-    onStop();
+    onStop?.();
     request.current = new AbortController();
     try {
       const context = new OfflineAudioContext(
@@ -181,7 +181,6 @@ export default function VoiceLibrary({
       );
       if (!mounted.current) return;
       setLibrary(result);
-      onSelectedVoice?.(result.selectedId || result.voice?.id || preferredVoiceId);
       setText(result.voice.referenceText);
       setNotice(
         `“${result.voice.name}”已保存。识别台词：${result.voice.referenceText}`,
@@ -206,10 +205,10 @@ export default function VoiceLibrary({
     <section className="voice-library" aria-label="音色库">
       <header>
         <div>
-          <h3>{personaName}的音色库</h3>
-          <p>这个选择只属于{personaName}，切换女友时会自动切换。</p>
+          <h3>{mode === "manage" ? "共享音色卡" : `选择${personaName}的声音`}</h3>
+          <p>{mode === "manage" ? "所有女友共用这份音色库。新音色会立即出现在上方朗读区；女友页仍可分别设置默认声音。" : `从共享音色库选择；只保存到${personaName}。试听不会改变选择。`}</p>
         </div>
-        <button
+        {mode === "manage" && <button
           type="button"
           disabled={busy}
           onClick={() => {
@@ -218,7 +217,7 @@ export default function VoiceLibrary({
           }}
         >
           {editing ? "收起" : "＋ 添加音色"}
-        </button>
+        </button>}
       </header>
       {error && (
         <p role="alert" className="voice-error">
@@ -235,7 +234,7 @@ export default function VoiceLibrary({
           <article
             className={
               "voice-card " +
-              (voice.id === library.selectedId ? "selected" : "")
+              (mode === "select" && voice.id === preferredVoiceId ? "selected" : "")
             }
             key={voice.id}
           >
@@ -249,16 +248,19 @@ export default function VoiceLibrary({
                   ? "内置参考"
                   : `${voice.duration?.toFixed(1)}秒参考`}{" "}
                 · 本机保存
+                {protectedVoiceIds.includes(voice.id) ? " · 使用中" : ""}
               </small>
             </div>
-            <button
+            <button type="button" disabled={busy} aria-label={`试听音色：${voice.name}`} onClick={() => onPreview?.(undefined, voice.id)}>试听</button>
+            {mode === "select" && <button
               type="button"
-              disabled={busy || voice.id === library.selectedId}
-              onClick={() => mutate("/select", { id: voice.id })}
+              aria-label={`使用音色：${voice.name}`}
+              disabled={busy || voice.id === preferredVoiceId}
+              onClick={() => { onStop?.(); onSelectedVoice?.(voice.id); }}
             >
-              {voice.id === library.selectedId ? "使用中" : "使用音色"}
-            </button>
-            {!voice.builtin && (
+              {voice.id === preferredVoiceId ? "使用中" : "使用音色"}
+            </button>}
+            {mode === "manage" && !voice.builtin && (
               <div className="voice-card-tools">
                 <button
                   type="button"
@@ -273,8 +275,13 @@ export default function VoiceLibrary({
                 </button>
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || protectedVoiceIds.includes(voice.id)}
                   aria-label={`删除${voice.name}`}
+                  title={
+                    protectedVoiceIds.includes(voice.id)
+                      ? "正在被女友或语料使用，请先更换默认音色或删除对应语料。"
+                      : undefined
+                  }
                   onClick={() => setDeleteId(voice.id)}
                 >
                   删除
@@ -306,7 +313,12 @@ export default function VoiceLibrary({
               <div className="voice-inline">
                 <span>删除这张音色卡？</span>
                 <button
-                  disabled={busy}
+                  disabled={busy || protectedVoiceIds.includes(voice.id)}
+                  title={
+                    protectedVoiceIds.includes(voice.id)
+                      ? "正在被女友或语料使用，不能删除。"
+                      : undefined
+                  }
                   onClick={() => mutate("/delete", { id: voice.id })}
                 >
                   确认删除
@@ -317,15 +329,16 @@ export default function VoiceLibrary({
           </article>
         ))}
       </div>
-      <button
+      {mode === "select" && <button
         className="voice-listen"
         type="button"
         disabled={busy}
-        onClick={speaking ? onStop : onPreview}
+        onClick={speaking ? onStop : () => onPreview?.(undefined, preferredVoiceId)}
       >
         {speaking ? "停止试听" : "试听当前音色"}
-      </button>
-      {editing && (
+      </button>}
+      {mode === "manage" && speaking && <button className="voice-listen" type="button" onClick={onStop}>停止试听</button>}
+      {mode === "manage" && editing && (
         <form className="voice-import" onSubmit={save}>
           <label>
             1. 选择录音
@@ -409,7 +422,7 @@ export default function VoiceLibrary({
         </form>
       )}
       <p className="voice-footnote">
-        录音与合成均留在本机。制作后点“使用音色”；打开应用时自动预热，边生成边朗读。
+        录音与合成均留在本机。共享音色卡独立保存，每个女友分别选择自己的声音。
       </p>
     </section>
   );

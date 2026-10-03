@@ -10,6 +10,7 @@ import {
 } from "../src/state.mjs";
 import { getLook } from "../src/looks.mjs";
 import {
+  addPersonaCorpus,
   appendPersonaMessage,
   exportablePersonaMessages,
   getActivePersona,
@@ -116,6 +117,26 @@ test("persona threads and appearance selections are orthogonal", () => {
   state = appendPersonaMessage(state, "user", "以后叫我队长");
   assert.equal(getPersonaThread(state).memories.userName, "队长");
   assert.equal(getPersonaThread(state, "older-sister").messages.length, 0);
+});
+
+test("saved persona corpus keeps the auditioned voice across restart", () => {
+  let state = restoreState(null);
+  state = addPersonaCorpus(
+    state,
+    state.activePersonaId,
+    "晚安，今晚也做个好梦。",
+    "睡前问候",
+    "goodnight",
+    "mature",
+    "older-voice",
+  );
+  assert.equal(getActivePersona(state).customCorpora[0].voiceProfileId, "older-voice");
+
+  const restored = restoreState(JSON.stringify(state));
+  assert.equal(
+    getActivePersona(restored).customCorpora[0].voiceProfileId,
+    "older-voice",
+  );
 });
 
 test("legacy global chat and corpus migrate to an independent Zhang Rong persona", () => {

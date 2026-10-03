@@ -2,19 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import { CaretDown, Sparkle } from "@phosphor-icons/react";
 
 const ACTIONS = [
+  { kind: "spit", label: "吐口水", requires: "spit" },
   { kind: "walk_feminine", label: "轻盈走路", requires: "sexyWalk" },
   { kind: "walk_confident", label: "自信走路", requires: "sexyWalk" },
   { kind: "crouch_enter", label: "自然蹲下", requires: "squat" },
   { kind: "crouch_exit", label: "慢慢起身", requires: "squat" },
   { kind: "idle_weight_shift", label: "变换重心" },
   { kind: "idle_hair_touch", label: "整理头发" },
+  { kind: "idle_neutral", label: "恢复待机" },
 ];
 
 export default function LookActionMenu({ look, onSelect }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const toggleRef = useRef(null);
-  const actions = ACTIONS.filter(({ requires }) => !requires || Array.isArray(look.actions?.[requires]));
+  const actions = ACTIONS.filter(({ requires }) => !requires || (Array.isArray(look.actions?.[requires]) && look.actions[requires].length));
 
   useEffect(() => {
     if (!open) return undefined;
@@ -43,8 +45,8 @@ export default function LookActionMenu({ look, onSelect }) {
         ref={toggleRef}
         className="look-action-toggle"
         type="button"
-        title="林薇的动作"
-        aria-label="林薇的动作"
+        title={`${look.character || "角色"}的动作`}
+        aria-label={`${look.character || "角色"}的动作`}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}

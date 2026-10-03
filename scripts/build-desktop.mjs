@@ -1,11 +1,14 @@
 import { packager } from '@electron/packager';
-import { access, rename, rm, readdir, readlink, unlink, symlink, realpath } from 'node:fs/promises';
+import { access, rename, rm, readdir, readlink, unlink, symlink, realpath, mkdir } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const release = path.join(root, 'release');
 const output = path.join(release, '母狗张容.app');
+const run = promisify(execFile);
 
 if (process.platform !== 'darwin') throw new Error('请在 macOS 上生成母狗张容桌面应用。');
 await access(path.join(root, 'dist', 'index.html')).catch(() => {
@@ -19,13 +22,29 @@ if (!modelManifests.some((entry) => entry.isFile())) {
   throw new Error('本地模型尚未下载完成，请等待模型准备就绪后再打包。');
 }
 
+// Compile once on the build machine. The delivered app calls this binary and
+// its bundled Python, never xcrun/swift/Office on the user's computer.
+const documentsRuntime = path.join(root, '.runtime', 'documents');
+await mkdir(documentsRuntime, { recursive: true });
+const pdfText = path.join(documentsRuntime, 'pdf-text');
+const swiftTarget = `${process.arch === 'arm64' ? 'arm64' : 'x86_64'}-apple-macos12.0`;
+await run('/usr/bin/xcrun', ['swiftc', '-O', '-target', swiftTarget, path.join(root, 'server', 'pdf-text.swift'), '-o', `${pdfText}.tmp`, '-framework', 'PDFKit'], { timeout: 120000 });
+await rename(`${pdfText}.tmp`, pdfText);
+await run(pdfText, ['--version'], { timeout: 5000 });
+await run(path.join(root, '.runtime', 'voice', 'python', 'bin', 'python3'), ['-I', '-B', '-c', 'import zipfile, xml.parsers.expat, html.parser'], { timeout: 10000 });
+
 function ignore(file) {
   if (!file) return false;
   const normalized = file.replaceAll('\\', '/');
   const parts = normalized.replace(/^\//, '').split('/');
   const first = parts[0];
+  if (first === 'scripts') {
+    if (parts.length === 1) return false;
+    return !['setup-local-image.py', 'local-image-worker.py', 'local-image-calibrate.swift', 'local_image_lock.py'].includes(parts[1]);
+  }
   if (first === '.runtime') {
     if (parts.length === 1) return false;
+    if (parts[1] === 'documents') return parts.length > 2 && parts[2] !== 'pdf-text';
     if (parts[1] === 'voice') {
       if (parts.length === 2) return false;
       return !['python', 'model', 'asr', 'reference.wav', 'profile.json', 'LICENSES.md'].includes(parts[2]) || parts.includes('.cache') || parts.includes('__pycache__');
@@ -93,6 +112,8 @@ for (const filename of packagedLinks) {
     throw new Error(`应用包包含外部文件链接：${filename}`);
   }
 }
+await run(path.join(packagedRoot, '.runtime', 'documents', 'pdf-text'), ['--version'], { timeout: 5000 });
+await run(path.join(packagedRoot, '.runtime', 'voice', 'python', 'bin', 'python3'), ['-I', '-B', '-c', 'import zipfile, xml.parsers.expat, html.parser'], { timeout: 10000 });
 await rm(output, { recursive: true, force: true });
 await rename(packagedApp, output);
 await rm(packagedDirectory, { recursive: true, force: true });

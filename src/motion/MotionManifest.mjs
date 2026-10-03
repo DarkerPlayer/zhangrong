@@ -48,6 +48,16 @@ export function createMotionManifest(look = {}) {
     shy: motion("shy", { category: "emote", source: "mesh", durationMs: 2900, loop: false, priority: MOTION_PRIORITIES.GESTURE }),
     look_back: motion("look_back", { category: "gesture", source: "mesh", durationMs: 2600, loop: false, priority: MOTION_PRIORITIES.GESTURE }),
   };
+  if (Array.isArray(actions.spit) && actions.spit.length) {
+    const frames = frameProfile(actions.spit);
+    motions.spit = motion("spit", {
+      category: "gesture", source: "frames", assets: "spit",
+      frames, durationMs: profileDuration(frames), loop: false,
+      priority: MOTION_PRIORITIES.EXPLICIT, blendInMs: 120, blendOutMs: 240,
+      groundAnchor: Object.freeze([0.5, 1506 / 1536]),
+      preserveExpression: true,
+    });
+  }
   if (Array.isArray(actions.sexyWalk) && actions.sexyWalk.length) {
     const feminineFrames = frameProfile(actions.sexyWalk);
     const confidentFrames = frameProfile(actions.sexyWalk, 1.125);

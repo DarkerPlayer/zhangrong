@@ -145,14 +145,15 @@ export function createSpeechWorker({
         text: active.text,
         stream: !!active.onChunk,
         operation: active.operation,
+        voiceRoot: active.voiceRoot,
       }) + "\n",
     );
   }
   const service = {
-    warmup() {
-      return service.synthesize("", { operation: "warmup" });
+    warmup(options = {}) {
+      return service.synthesize("", { ...options, operation: "warmup" });
     },
-    synthesize(text, { signal, onChunk, operation } = {}) {
+    synthesize(text, { signal, onChunk, operation, voiceRoot } = {}) {
       if (closed) return Promise.reject(failure("语音服务已关闭。"));
       if (signal?.aborted) return Promise.reject(aborted());
       if (queue.length >= 3)
@@ -166,6 +167,7 @@ export function createSpeechWorker({
           reject,
           onChunk,
           operation,
+          voiceRoot,
         };
         task.cancel = () => {
           if (active === task) {

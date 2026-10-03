@@ -1,4 +1,5 @@
 export const DEFAULT_MOTION_FALLBACKS = Object.freeze({
+  spit: Object.freeze([]),
   walk_confident: Object.freeze(["walk_feminine", "legacy_walk", "idle_neutral"]),
   walk_feminine: Object.freeze(["legacy_walk", "idle_neutral"]),
   walk_playful: Object.freeze(["walk_feminine", "legacy_walk", "idle_neutral"]),

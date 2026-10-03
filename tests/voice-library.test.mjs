@@ -81,3 +81,22 @@ test("invalid audio and failed transcription never create a saved voice", async 
   await assert.rejects(lib.add({ name: "x", audio: wav(), referenceText: "" }));
   assert.equal((await lib.list()).voices.length, 1);
 });
+
+test("resolving a preview profile and adding voices preserve the previous saved cards and selection", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "voice-preview-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const lib = api.createVoiceLibrary({ directory: dir, builtinRoot: "/builtin" });
+  const voices = [];
+  for (const name of ["旧音色一", "旧音色二", "旧音色三"])
+    voices.push(await lib.add({ name, audio: wav(), referenceText: "保留的录音台词。" }));
+  await lib.select(voices[0].id);
+  const original = await Promise.all(voices.map(v => readFile(join(dir, v.id, "reference.wav"))));
+  const preview = await lib.resolve(voices[1].id);
+  assert.equal(preview.root, join(dir, voices[1].id));
+  assert.equal(preview.referenceText, "保留的录音台词。");
+  await lib.add({ name: "新音色", audio: wav(), referenceText: "新的台词。" });
+  assert.equal((await lib.list()).selectedId, voices[0].id);
+  assert.equal((await lib.list()).voices.length, 5);
+  for (let i = 0; i < voices.length; i++) assert.deepEqual(await readFile(join(dir, voices[i].id, "reference.wav")), original[i]);
+  await assert.rejects(lib.resolve("../escape"), /音色不存在/);
+});

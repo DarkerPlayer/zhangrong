@@ -1,5 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { inflateSync } from "node:zlib";
+import { LOOKS } from "../src/looks.mjs";
+import { WARDROBE_FITS } from "../server/wardrobe.mjs";
 import * as glamMotion from "../src/glam-motion.mjs";
 import {
   blinkAt,
@@ -241,4 +245,118 @@ test("arm splitting follows the transparent gap so detached body and hair pixels
   const split = rows[60 * 4] / 255 * width;
   assert.ok(split > 78 && split < 84, "the body and arm must fall on opposite sides of the matte");
   assert.ok(rows[96 * 4] / 255 * width < 88, "all disconnected fingers belong to the same arm");
+});
+
+// Decode the real 8-bit RGBA assets so the regression follows changed artwork,
+// including fitted shoe variants, rather than a hand-authored shoulder guess.
+function readArtwork(file) {
+  const png = readFileSync(new URL(file, import.meta.url));
+  const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
+  assert.equal(png[24], 8);
+  assert.equal(png[25], 6);
+  const chunks = [];
+  for (let offset = 8; offset < png.length;) {
+    const length = png.readUInt32BE(offset);
+    if (png.toString("ascii", offset + 4, offset + 8) === "IDAT") {
+      chunks.push(png.subarray(offset + 8, offset + 8 + length));
+    }
+    offset += length + 12;
+  }
+  const raw = inflateSync(Buffer.concat(chunks));
+  const pixels = new Uint8Array(width * height * 4);
+  const stride = width * 4;
+  const paeth = (a, b, c) => {
+    const p = a + b - c;
+    const da = Math.abs(p - a), db = Math.abs(p - b), dc = Math.abs(p - c);
+    return da <= db && da <= dc ? a : db <= dc ? b : c;
+  };
+  for (let y = 0; y < height; y++) {
+    const filter = raw[y * (stride + 1)];
+    for (let x = 0; x < stride; x++) {
+      const i = y * stride + x;
+      const left = x >= 4 ? pixels[i - 4] : 0;
+      const up = y > 0 ? pixels[i - stride] : 0;
+      const corner = y > 0 && x >= 4 ? pixels[i - stride - 4] : 0;
+      const predictor = [0, left, up, Math.floor((left + up) / 2), paeth(left, up, corner)][filter];
+      assert.notEqual(predictor, undefined);
+      pixels[i] = raw[y * (stride + 1) + x + 1] + predictor;
+    }
+  }
+  return { pixels, width, height };
+}
+
+test("Linwei's connected top stays on one animated body throughout a wave", () => {
+  const { pixels, width, height } = readArtwork("../public/looks/linwei-white-bikini/character.png");
+  const rig = normalizeRig(JSON.parse(readFileSync(new URL("../public/looks/linwei-white-bikini/rig.json", import.meta.url))));
+  assert.ok(pixels[(Math.floor(height * 0.24) * width + 638) * 4 + 3] > 200,
+    "the old split passed through an opaque garment, not a transparent gap");
+  const separation = glamMotion.resolveArmSeparation(pixels, width, height, rig);
+  assert.equal(separation.separated, false);
+  const safeRig = { ...rig, armMobility: separation.armMobility };
+  const pose = glamPose({ time: 4160, action: { kind: "wave", elapsed: 950 } });
+  for (const [u, v] of [[638 / width, 0.24], [0.70, 0.40], [712 / width, 0.56]]) {
+    assert.deepEqual(deformArmPoint(u, v, pose, safeRig, width, height), deformPoint(u, v, pose, safeRig, width, height));
+  }
+  assert.ok(pose.blink > 0.9);
+  assert.ok(Math.abs(pose.breath) > 0.001);
+  assert.ok(pose.smile > 0);
+});
+
+test("a separated arm keeps every fingertip beyond the old fixed hand cutoff", () => {
+  const width = 128, height = 192;
+  const pixels = new Uint8Array(width * height * 4);
+  for (let y = 36; y <= 125; y++) {
+    for (let x = 64; x <= 77; x++) pixels[(y * width + x) * 4 + 3] = 255;
+    for (let x = 84; x <= 93; x++) pixels[(y * width + x) * 4 + 3] = 255;
+  }
+  for (let y = 126; y <= 130; y++) {
+    for (let x = 64; x <= 77; x++) pixels[(y * width + x) * 4 + 3] = 255;
+    for (const x of [84, 85, 88, 89, 93]) pixels[(y * width + x) * 4 + 3] = 255;
+  }
+  const rig = normalizeRig({ shoulders: { right: [0.625, 0.1875] } });
+  const separation = glamMotion.resolveArmSeparation(pixels, width, height, rig);
+  assert.equal(separation.separated, true);
+  assert.equal(separation.armMobility, 1);
+  for (const y of [60, 125, 126, 130]) {
+    const boundary = (separation.rows[y * 4] * 256 + separation.rows[y * 4 + 1]) / 65535 * width;
+    assert.ok(boundary > 77 && boundary < 84);
+    assert.equal(separation.rows[y * 4 + 2], 255, "the entire hand moves on the arm layer");
+  }
+  assert.equal(separation.rows[131 * 4 + 2], 0, "pixels beneath the hand remain on the body");
+  const wave = glamPose({ motion: false, action: { kind: "wave", elapsed: 950 } });
+  assert.ok(deformArmPoint(88 / width, 130 / height, wave, rig, width, height).y < 130 / height - 0.005);
+});
+
+test("an arm that reconnects to clothing uses the joined body instead of cutting an opaque seam", () => {
+  const width = 128, height = 192;
+  const pixels = new Uint8Array(width * height * 4);
+  for (let y = 36; y <= 125; y++) {
+    for (let x = 64; x <= 93; x++) {
+      if (y === 80 || x <= 77 || x >= 84) pixels[(y * width + x) * 4 + 3] = 255;
+    }
+  }
+  const separation = glamMotion.resolveArmSeparation(pixels, width, height,
+    normalizeRig({ shoulders: { right: [0.625, 0.1875] } }));
+  assert.equal(separation.separated, false);
+  assert.equal(separation.armMobility, 0);
+});
+
+test("all authored looks and fitted shoes avoid opaque arm cuts or use one joined body", () => {
+  for (const artwork of [...LOOKS, ...WARDROBE_FITS]) {
+    const { pixels, width, height } = readArtwork(`../public${artwork.asset}`);
+    const rigFile = artwork.rig || `/looks/${artwork.id}/rig.json`;
+    const rig = normalizeRig(JSON.parse(readFileSync(new URL(`../public${rigFile}`, import.meta.url))));
+    const separation = glamMotion.resolveArmSeparation(pixels, width, height, rig);
+    if (!separation.separated) {
+      assert.equal(separation.armMobility, 0, `${artwork.asset} must not separate connected source pixels`);
+      continue;
+    }
+    for (let y = 0; y < height; y++) {
+      if (!separation.rows[y * 4 + 2]) continue;
+      const boundary = (separation.rows[y * 4] * 256 + separation.rows[y * 4 + 1]) / 65535 * width;
+      for (const x of [Math.floor(boundary), Math.ceil(boundary)]) {
+        assert.equal(pixels[(y * width + x) * 4 + 3], 0, `${artwork.asset}: opaque cut at ${x},${y}`);
+      }
+    }
+  }
 });

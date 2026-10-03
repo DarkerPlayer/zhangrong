@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, Copy, Heart, Plus, Trash, UserCircle } from "@phosphor-icons/react";
 import VoiceLibrary from "./VoiceLibrary.jsx";
+import CompanionJournal from "./CompanionJournal.jsx";
+import { getPersonaTemplate } from "./personas.mjs";
 import "./persona.css";
 
 const LEVELS = [
@@ -27,6 +29,15 @@ export default function PersonaPage({
   activePersona,
   activeSnapshot,
   appearanceCaption,
+  boundAppearanceCaption,
+  onProfileChange,
+  onBindAppearance,
+  onSaveMemory,
+  onDeleteMemory,
+  onRecordExperience,
+  onUpdateExperience,
+  onDeleteExperience,
+  onStartActivity,
   selectPersona,
   setIntimacy,
   renamePersona,
@@ -34,17 +45,39 @@ export default function PersonaPage({
   clonePersona,
   removePersona,
   addCorpus,
+  onOpenTextWorkshop,
   toggleCorpus,
   deleteCorpus,
   voiceProps,
   onClose,
 }) {
   const [adultDialog, setAdultDialog] = useState(false);
-  const [corpusText, setCorpusText] = useState("");
-  const [corpusTitle, setCorpusTitle] = useState("");
-  const [category, setCategory] = useState("teasing");
-  const [level, setLevel] = useState(activePersona.intimacyLevel);
+  const [personalityDrafts, setPersonalityDrafts] = useState({});
+  const [corpusDrafts, setCorpusDrafts] = useState({});
+  const corpusDraft = corpusDrafts[activePersona.id] || { text: "", title: "", category: "teasing", level: activePersona.intimacyLevel };
+  const { text: corpusText, title: corpusTitle, category, level } = corpusDraft;
+  const setCorpusDraft = (patch) => setCorpusDrafts(current => ({ ...current, [activePersona.id]: { ...corpusDraft, ...patch } }));
+  const setCorpusText = text => setCorpusDraft({ text });
+  const setCorpusTitle = title => setCorpusDraft({ title });
+  const setCategory = category => setCorpusDraft({ category });
+  const setLevel = level => setCorpusDraft({ level });
+  const currentMood = activePersona.moodUpdatedAt && Date.now() - activePersona.moodUpdatedAt >= 24 * 60 * 60 * 1000
+    ? "calm" : activePersona.mood || "calm";
+  useEffect(() => setAdultDialog(false), [activePersona.id]);
   const profiles = Object.values(state.personas);
+  const previewCorpus = (
+    text,
+    voiceProfileId = activePersona.voiceProfileId || "builtin",
+  ) => voiceProps.onPreview(
+    text.replaceAll("{personaName}", activeSnapshot.name)
+      .replaceAll("{userName}", state.personaThreads?.[activePersona.id]?.memories?.userName || "你"),
+    voiceProfileId,
+  );
+  const builtinExamples = ["greeting", "affection", "comfort", "goodnight"].map(category => {
+    const source = activeSnapshot.corpora[category];
+    const lines = Array.isArray(source) ? source : source[activeSnapshot.intimacyLevel];
+    return { category, text: lines[0] };
+  });
 
   const chooseLevel = (next) => {
     if (next === "adult" && !activePersona.adultAcknowledged) {
@@ -58,8 +91,7 @@ export default function PersonaPage({
     event.preventDefault();
     if (!corpusText.trim()) return;
     addCorpus(corpusText, corpusTitle, category, level);
-    setCorpusText("");
-    setCorpusTitle("");
+    setCorpusDraft({ text: "", title: "" });
   };
 
   return (
@@ -71,7 +103,7 @@ export default function PersonaPage({
         <div>
           <p>GIRLFRIEND PERSONA STUDIO</p>
           <h1>女友本体</h1>
-          <span>性格、语言、记忆与声音都独立保存。</span>
+          <span>性格、记忆、声音和共同经历，组成她独有的角色档案。</span>
         </div>
         <div className="persona-skin-note">
           <UserCircle size={20} />
@@ -96,7 +128,7 @@ export default function PersonaPage({
               <span className="persona-card-mark"><Heart weight="fill" size={16} /></span>
               <span>
                 <strong>{profile.displayName}</strong>
-                <small>{profile.custom ? "自定义副本" : activeSnapshot.id === profile.id ? activeSnapshot.archetype : profile.templateId}</small>
+                <small>{profile.custom ? "自定义副本" : getPersonaTemplate(profile.templateId).archetype}</small>
               </span>
               <em>{profile.intimacyLevel === "sweet" ? "甜蜜" : profile.intimacyLevel === "adult" ? "成人" : "成熟"}</em>
             </button>
@@ -107,10 +139,39 @@ export default function PersonaPage({
         </aside>
 
         <main className="persona-editor">
+          <CompanionJournal
+            personaId={activePersona.id}
+            personaName={activePersona.displayName}
+            thread={state.personaThreads?.[activePersona.id]}
+            onSaveMemory={onSaveMemory}
+            onDeleteMemory={onDeleteMemory}
+            onRecordExperience={onRecordExperience}
+            onUpdateExperience={onUpdateExperience}
+            onDeleteExperience={onDeleteExperience}
+            onStartActivity={onStartActivity}
+          />
           <section className="persona-identity-card">
             <div className="persona-section-title">
-              <span>01</span>
-              <div><h2>身份与关系</h2><p>这是她最本源的设定，与画面模型无关。</p></div>
+              <span>03</span>
+              <div><h2>角色档案</h2><p>人格与外观分别保存，也可以记住一个常用组合。</p></div>
+            </div>
+            <div className="persona-profile-fields">
+              <label>自定义性格<textarea aria-label="自定义性格" maxLength={500} rows={3} value={personalityDrafts[activePersona.id] ?? activePersona.personality ?? ""} disabled={!onProfileChange} onChange={event => {
+                const personality = event.target.value;
+                setPersonalityDrafts(current => ({ ...current, [activePersona.id]: personality }));
+                onProfileChange({ personality });
+              }} onBlur={() => setPersonalityDrafts(current => {
+                const next = { ...current };
+                delete next[activePersona.id];
+                return next;
+              })} placeholder="她怎样说话、有什么兴趣、你希望怎样相处…" /><small>补充在原有性格之上，最多 500 字。</small></label>
+              <label>临时心情<select aria-label="临时心情" value={currentMood} disabled={!onProfileChange} onChange={event => onProfileChange({ mood: event.target.value })}>
+                <option value="calm">平静</option><option value="happy">开心</option><option value="tired">有些疲惫</option><option value="playful">俏皮</option>
+              </select><small>持续 24 小时，之后恢复平静；不会改变长期性格。</small></label>
+            </div>
+            <div className="persona-appearance-binding">
+              <div><small>这个角色记住的穿搭</small><strong>{boundAppearanceCaption || "还没有默认穿搭"}</strong><p>当前画面：{appearanceCaption}</p></div>
+              <button type="button" onClick={onBindAppearance} disabled={!onBindAppearance}>记住当前穿搭</button>
             </div>
             <div className="persona-fields">
               <label>
@@ -150,7 +211,7 @@ export default function PersonaPage({
 
           <section className="persona-intimacy-card">
             <div className="persona-section-title">
-              <span>02</span>
+              <span>04</span>
               <div><h2>亲密程度</h2><p>同一个本体，在不同程度下使用完全不同的亲密语料。</p></div>
             </div>
             <div className="persona-levels">
@@ -171,8 +232,9 @@ export default function PersonaPage({
 
           <section className="persona-corpus-card">
             <div className="persona-section-title">
-              <span>03</span>
+              <span>05</span>
               <div><h2>独立语言语料</h2><p>这里只影响当前女友，不会串到其他人格。</p></div>
+              {onOpenTextWorkshop && <button type="button" onClick={onOpenTextWorkshop}>文本工坊 · 导入书籍</button>}
             </div>
             <form className="persona-corpus-form" onSubmit={submitCorpus}>
               <input aria-label="人格语料标题" placeholder="名称（选填）" maxLength={60} value={corpusTitle} onChange={(event) => setCorpusTitle(event.target.value)} />
@@ -191,22 +253,33 @@ export default function PersonaPage({
               {!activePersona.customCorpora.length ? <p className="persona-empty">还没有自定义语料；内置本体语料已经生效。</p> : activePersona.customCorpora.map((item) => (
                 <article key={item.id}>
                   <div><strong>{item.title}</strong><small>{CATEGORY_LABELS[item.category]} · {LEVELS.find(([id]) => id === item.level)?.[1]}</small></div>
-                  <p>{item.text}</p>
+                <p>{item.text}</p>
+                {item.sourcePack && <small className="persona-corpus-source">来自《{item.sourcePack.title}》{item.sourcePack.chapter ? ` · ${item.sourcePack.chapter}` : ""}{item.sourcePack.page ? ` · 第${item.sourcePack.page}页` : ""}</small>}
                   <div className="persona-corpus-actions">
+                    <button type="button" aria-label={`试听语料：${item.title}`} onClick={() => previewCorpus(item.text, item.voiceProfileId)}>试听</button>
                     <button type="button" role="switch" aria-checked={item.enabled} aria-label={`启用语料：${item.title}`} onClick={() => toggleCorpus(item.id)}>{item.enabled ? "已启用" : "已停用"}</button>
                     <button type="button" aria-label={`删除人格语料：${item.title}`} onClick={() => deleteCorpus(item.id)}><Trash size={14} /> 删除</button>
                   </div>
                 </article>
               ))}
             </div>
+            <div className="persona-corpus-list persona-builtin-examples" aria-label="内置语料试听">
+              <h3>内置表达试听 · {LEVELS.find(([id]) => id === activeSnapshot.intimacyLevel)?.[1]}</h3>
+              {builtinExamples.map(({category, text}) => <article key={category}>
+                <div><strong>{CATEGORY_LABELS[category]}</strong><small>当前本体 · 内置语料</small></div>
+                <p>{text}</p>
+                <div className="persona-corpus-actions"><button type="button" aria-label={`试听内置语料：${CATEGORY_LABELS[category]}`} onClick={() => previewCorpus(text)}>试听</button></div>
+              </article>)}
+              {voiceProps.speaking && <div className="persona-corpus-actions"><button type="button" onClick={voiceProps.onStop}>停止语料试听</button></div>}
+            </div>
           </section>
 
           <section className="persona-voice-card">
             <div className="persona-section-title">
-              <span>04</span>
+              <span>06</span>
               <div><h2>专属音色</h2><p>选择结果只保存到当前女友。</p></div>
             </div>
-            <VoiceLibrary {...voiceProps} personaName={activePersona.displayName} preferredVoiceId={activePersona.voiceProfileId} />
+            <VoiceLibrary {...voiceProps} mode="select" personaName={activePersona.displayName} preferredVoiceId={activePersona.voiceProfileId} />
           </section>
         </main>
       </div>

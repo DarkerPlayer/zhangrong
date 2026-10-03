@@ -1,6 +1,6 @@
 # 原创人物立绘来源说明
 
-下列六套为 1.2 最初的人物立绘，于 2026-09-26 使用 Codex 内置 ImageGen 创作，用于“沐语”本地桌面陪伴应用。角色均为原创虚构成年女性：夜澜 28 岁、绯月 29 岁、霜华 27 岁。这部分保留原有素材与创作描述，不是原始生成提示词的逐字记录；1.3 的十六套、1.8 的美杜莎与 1.9、1.11、1.12 的林薇造型和动作另列于下文。
+下列六套为 1.2 最初的人物立绘，于 2026-09-26 使用 Codex 内置 ImageGen 创作，用于“沐语”本地桌面陪伴应用。后续新增的美杜莎、林薇、吴多慧、调教组长与反差婊造型另列于下文。
 
 | 角色 | 穿搭 | 图像 | 动画坐标 |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@
 
 ## 1.3 新增八位角色、十六套造型
 
-2026-09-26 的 1.3 扩展继续使用 Codex 内置 ImageGen 创作，新增以下原创虚构成年女性。每位先生成基础造型，再以其为编辑目标更换服装，保留同一身份的面部、发型与站姿。加上上表保留的六套，本目录共记录 11 位角色、22 套原创立绘。
+2026-09-26 的 1.3 扩展继续使用 Codex 内置 ImageGen 创作，新增以下原创虚构成年女性。每位先生成基础造型，再以其为编辑目标更换服装，保留同一身份的面部、发型与站姿。加上上表保留的六套，当时目录共记录 11 位角色、22 套原创立绘。
 
 | 角色 | 穿搭 | 图像 | 动画坐标 |
 | --- | --- | --- | --- |
@@ -44,7 +44,7 @@
 
 雪乃的“洛丽塔”表示成年人的服装风格；阿玛拉是受加纳文化启发的虚构成年公主，不是现实王室人物。新增造型仍为 1024 × 1536 RGBA PNG，沿用应用的二维网格与面部着色动画方式，不包含新的 Cubism 或三维模型。
 
-本次 16 张图片的逐字提示词和原始生成文件路径保存在项目源码的 [docs/wardrobe-asian-prompts.json](../../docs/wardrobe-asian-prompts.json) 与 [docs/wardrobe-world-prompts.json](../../docs/wardrobe-world-prompts.json)。记录包含生成/编辑方式、参考图和最终项目副本路径；原始生成文件保留在创作机器的 `.codex/generated_images/`。最初六套的历史创作描述仍保留在 [docs/glam-assets.md](../../docs/glam-assets.md)，当前 25 套清单见 [docs/wardrobe-expansion.md](../../docs/wardrobe-expansion.md)。这些源码文档与本文件共同提供来源追溯，本文件本身随静态构建进入桌面应用资源。
+本次 16 张图片的逐字提示词和原始生成文件路径保存在项目源码的 [docs/wardrobe-asian-prompts.json](../../docs/wardrobe-asian-prompts.json) 与 [docs/wardrobe-world-prompts.json](../../docs/wardrobe-world-prompts.json)。当前 43 套清单见 [docs/wardrobe-expansion.md](../../docs/wardrobe-expansion.md)。
 
 ## 1.8 新增美杜莎
 
@@ -95,3 +95,76 @@
 | 走路 8 个关键姿态 | `linwei-ivory-wrap/actions/walk-01.png` 至 `walk-04.png`，以及相邻帧间的 `walk-01-02.png` 至 `walk-04-01.png` |
 
 生成提示词、参考图、原始文件及项目内路径见 [docs/wardrobe-new-models.json](../../docs/wardrobe-new-models.json)。
+
+## 1.13 新增吴多慧
+
+吴多慧是 29 岁的虚构成年职场角色，于 2026-09-29 使用 Codex 内置 ImageGen 生成。用户提供的漫画截图仅作视觉参考；成品重新构图为正面全身、透明底的独立立绘，不包含漫画文字、气泡、背景、香烟或其他人物。
+
+| 角色 | 穿搭 | 图像 | 动画坐标 |
+| --- | --- | --- | --- |
+| 吴多慧，29 岁 | 格纹代理 | `wuduohui-plaid-agent/character.png` | `wuduohui-plaid-agent/rig.json` |
+
+成品为 1024 × 1536 RGBA PNG，面部坐标由 Vision 定位后按该图独立校准。逐字生成提示词、参考图与原始输出路径见 [docs/wardrobe-new-models.json](../../docs/wardrobe-new-models.json)。
+
+## 1.14 新增调教组长
+
+“调教组长”是 30 岁的虚构成年职场角色，于 2026-09-29 使用 Codex 内置 ImageGen 生成并更新服装与体型。用户提供的成人漫画附件未直接输入生成器；成品以安全版角色立绘为编辑目标，采用深栗色长卷发、黑色缎面眼罩、花卉蕾丝短上衣、装饰颈带、丰满收腰轮廓、清晰腹部 V 线，以及腰至脚尖的黑色连裤袜和漆皮尖头高跟鞋，并保持单人正面全身透明底构图。加强 V 线的预览版本经用户确认后提升为正式立绘。
+
+| 角色 | 穿搭 | 图像 | 动画坐标 |
+| --- | --- | --- | --- |
+| 调教组长，30 岁 | 黑金组长 | `discipline-lead-noir/character.png` | `discipline-lead-noir/rig.json` |
+
+成品为 1024 × 1536 RGBA PNG，不包含性行为、体液、裸露、牵引、身体束缚、漫画文字、背景或其他人物。面部坐标由 Vision 定位后按该图独立校准；逐字提示词、生成工具与原始输出路径见 [docs/wardrobe-new-models.json](../../docs/wardrobe-new-models.json)。
+
+## 全身衣柜白色比基尼安全底装
+
+2026-09-29 使用 Codex 内置 ImageGen，以 15 位人物各自的既有正面立绘为身份保持编辑目标，生成不透明白色两件式比基尼或等价的高覆盖运动海滩套装。成品保留成年角色、正面中立站姿、完整头脚取景和半写实插画风格，并完成透明背景提取与逐图 Vision 面部坐标校准。
+
+| 角色 | 穿搭 | 图像 | 动画坐标 |
+| --- | --- | --- | --- |
+| 绯月，29 岁 | 白色比基尼安全底装 | `ruby-white-bikini/character.png` | `ruby-white-bikini/rig.json` |
+| 调教组长，30 岁 | 白色比基尼安全底装 | `discipline-lead-white-bikini/character.png` | `discipline-lead-white-bikini/rig.json` |
+| 吴多慧，29 岁 | 白色比基尼安全底装 | `wuduohui-white-bikini/character.png` | `wuduohui-white-bikini/rig.json` |
+| 林薇，28 岁 | 白色比基尼安全底装 | `linwei-white-bikini/character.png` | `linwei-white-bikini/rig.json` |
+| 美杜莎，28 岁 | 白色比基尼安全底装 | `medusa-white-bikini/character.png` | `medusa-white-bikini/rig.json` |
+| 夜澜，28 岁 | 白色比基尼安全底装 | `yelan-white-bikini/character.png` | `yelan-white-bikini/rig.json` |
+| 霜华，27 岁 | 白色比基尼安全底装 | `shuanghua-white-bikini/character.png` | `shuanghua-white-bikini/rig.json` |
+| 樱奈，26 岁 | 白色比基尼安全底装 | `sakura-white-bikini/character.png` | `sakura-white-bikini/rig.json` |
+| 雪乃，27 岁 | 白色比基尼安全底装 | `yuki-white-bikini/character.png` | `yuki-white-bikini/rig.json` |
+| 知夏，28 岁 | 白色比基尼安全底装 | `zhixia-white-bikini/character.png` | `zhixia-white-bikini/rig.json` |
+| 灵玥，27 岁 | 白色比基尼安全底装 | `lingyue-white-bikini/character.png` | `lingyue-white-bikini/rig.json` |
+| 艾莉丝，28 岁 | 白色比基尼安全底装 | `elise-white-bikini/character.png` | `elise-white-bikini/rig.json` |
+| 米娅，27 岁 | 白色比基尼安全底装 | `mia-white-bikini/character.png` | `mia-white-bikini/rig.json` |
+| 阿玛拉，29 岁 | 白色比基尼安全底装 | `amara-white-bikini/character.png` | `amara-white-bikini/rig.json` |
+| 祖莉，30 岁 | 白色比基尼安全底装 | `zuri-white-bikini/character.png` | `zuri-white-bikini/rig.json` |
+
+## 2026-10-03 新增反差婊
+
+“反差婊”是 29 岁的虚构成年角色，稳定人物 ID 为 `fancha`。使用 Codex 内置 ImageGen 生成“玫瑰职场”主造型，以用户提供的 18 张漫画参考中的图 1 作为脸部参考、图 11 作为全身服装参考，采用黑色侧分长直发、青蓝眼睛、六颗黑扣的粉色双排扣连衣裙、金项链、珍珠耳饰、白色腕表、浅紫指甲与象牙白高跟鞋。
+
+| 角色 | 穿搭 | 图像 | 动画坐标 |
+| --- | --- | --- | --- |
+| 反差婊，29 岁 | 玫瑰职场 | `fancha-rose-office/character.png` | `fancha-rose-office/rig.json` |
+
+首次接入的成品为 1024 × 1536 RGBA PNG，透明底、正面站立、头脚完整；生成图原样复制到上述图像路径。动画坐标按本图使用 Vision 单独校准，`armMobility` 为 `0`。当时仅生成这一套主造型，未生成该角色的白色安全底装、额外鞋履适配或独立动作帧；同日修订 3 已补充三张“吐口水”动作关键帧。提示词、参考图、生成工具与原始输出路径见 [docs/wardrobe-new-models.json](../../docs/wardrobe-new-models.json)。
+
+## 2026-10-03 玫瑰职场进一步修订
+
+按用户进一步要求，使用 Codex 内置 ImageGen 编辑 `fancha-rose-office`，参考图 12（文件名前缀 `a159`）的腰腹与表情、图 10（文件名前缀 `d7ef`）的面部，更新腰腹立体曲线、衣料下的肚脐凹陷和高傲冷淡表情。保留不透明粉色职场裙、配饰、站姿与透明全身构图；本轮原始输出为 `exec-382b858d-bae4-4629-84e9-f6f52dd842b5.png`。
+
+## 2026-10-03 玫瑰职场修订 3：表情与动作关键帧
+
+使用 Codex 内置 ImageGen，按用户补充的第二张参考图（文件名前缀 `ede`）编辑主立绘的侧目挑眉与冷淡神情，更新为清晰亮紫指甲，并保留腰腹曲线、衣料下的肚脐凹陷、不透明粉色职场裙、配饰、站姿和透明全身构图。第一张补充参考图（文件名前缀 `ed4`）用于“吐口水”动作。
+
+| 阶段 | 图像 | 时长 |
+| --- | --- | --- |
+| 准备 | `fancha-rose-office/actions/spit-prepare.png` | 550 毫秒 |
+| 吐出 | `fancha-rose-office/actions/spit-release.png` | 350 毫秒 |
+| 恢复 | `fancha-rose-office/actions/spit-recover.png` | 700 毫秒 |
+
+这三张内置 ImageGen 动作 PNG 组成一次 1.6 秒的关键帧短动画，由主窗口与桌宠共用，通过动作菜单“吐口水”或明确文字指令触发；结束后恢复待机，也可通过“恢复待机”或切换角色取消。未配置此动作的角色会提示不支持。完整提示词、参考图和原始输出见 [docs/wardrobe-new-models.json](../../docs/wardrobe-new-models.json)。
+
+
+## 2026-10-03 玫瑰职场独立单品
+
+通过 Codex 内置 ImageGen，以当前 `fancha-rose-office/character.png` 为唯一参考，分别重建独立粉色裙装、象牙白高跟鞋、白色腕表、黑色侧分长发、珍珠耳环五张透明 PNG，保存于 `public/wardrobe/items/fancha-*.png`。它们用于共享库存与角色适配的参考，不是从原画无损分离的骨骼图层。紫色指甲作为 `#A45BEF` 色值保存。生成原图未做后处理，保留原始 alpha；完整提示词、源文件和哈希见 [单品生成记录](../wardrobe/items/fancha-extraction-provenance.json)。

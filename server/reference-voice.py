@@ -1,6 +1,5 @@
 """Private local TTS worker: JSON lines over pipes; never opens a network port."""
 import base64
-import contextlib
 import io
 import json
 import os
@@ -28,15 +27,20 @@ import mlx.core as mx
 import numpy as np
 import soundfile as sf
 from mlx_audio.tts.utils import load_model
+from reference_cache import ReferenceCache
 
 root = Path(sys.argv[1]).resolve()
-reference_root = Path(sys.argv[2]).resolve() if len(sys.argv)>2 else root
-profile = json.loads((reference_root / 'profile.json').read_text())
+default_reference_root = Path(sys.argv[2]).resolve() if len(sys.argv)>2 else root
 model = load_model(str(root / 'model'))
-reference, rate = sf.read(reference_root / 'reference.wav', dtype='float32')
-if rate != model.sample_rate:
-    raise ValueError('Reference sample rate must match model')
-reference = mx.array(reference)
+
+def load_reference(reference_root):
+    profile = json.loads((reference_root / 'profile.json').read_text())
+    reference, rate = sf.read(reference_root / 'reference.wav', dtype='float32')
+    if rate != model.sample_rate:
+        raise ValueError('Reference sample rate must match model')
+    return profile, mx.array(reference)
+
+references = ReferenceCache(model, load_reference, capacity=3)
 
 # Keep a small allocator cache and compiled kernels warm across utterances.
 mx.set_cache_limit(128 * 1024 * 1024)
@@ -81,6 +85,7 @@ while True:
         if not text or len(text) > 1500:
             raise ValueError('invalid text length')
         streaming = request.get('stream', False)
+        profile, reference = references.select(request.get('voiceRoot') or default_reference_root)
         mx.random.seed(42)
         chunks = []
         for result in model.generate(

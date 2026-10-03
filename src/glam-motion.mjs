@@ -140,47 +140,66 @@ export function createGlamActionQueue() {
   };
 }
 
-/** A tiny 1×height matte locates the actual transparent gap beside the arm. */
-export function armSplitRows(pixels, width, height, rig) {
+/**
+ * A split is safe only if the arm has a real transparent gap from the shoulder
+ * through every fingertip. Connected clothing cannot be rotated as two images
+ * without exposing a hole, so it keeps the complete animated body mesh.
+ * RG stores a 16-bit boundary; B enables only rows that actually contain arm art.
+ */
+export function resolveArmSeparation(pixels, width, height, rig) {
   const rows = new Uint8Array(height * 4);
-  const shoulder = rig.shoulders.right;
   for (let y = 0; y < height; y++) {
-    const v = y / height;
-    let boundary = shoulder[0] - 0.019 +
-      0.020 * smooth(shoulder[1] + 0.11, shoulder[1] + 0.17, v) +
-      0.070 * smooth(shoulder[1] + 0.17, shoulder[1] + 0.30, v);
-    if (v > shoulder[1] + 0.025 && v < shoulder[1] + 0.36) {
-      const runs = [];
-      let start = -1;
-      for (let x = Math.floor(width * 0.5); x <= width; x++) {
-        const opaque = x < width && pixels[(y * width + x) * 4 + 3] > 205;
-        if (opaque && start < 0) start = x;
-        if (!opaque && start >= 0) {
-          if (x - start >= 3) runs.push({ start, end: x - 1 });
-          start = -1;
-        }
-      }
-      let armIndex = runs.findLastIndex((run) =>
-        run.start > width * (shoulder[0] - 0.045) &&
-        run.end > width * (shoulder[0] + 0.015) &&
-        run.end - run.start > width * 0.009 &&
-        run.end - run.start < width * 0.15);
-      // Fingers form several disconnected opaque runs. Keep all of them on
-      // the arm layer rather than treating the adjacent finger as the torso.
-      if (v > shoulder[1] + 0.25) {
-        const handIndex = runs.findIndex((run) => run.start > width * (shoulder[0] + 0.04));
-        if (handIndex >= 0) armIndex = handIndex;
-      }
-      if (armIndex >= 0) {
-        const arm = runs[armIndex];
-        const previous = runs[armIndex - 1];
-        boundary = (previous ? (previous.end + arm.start) / 2 : arm.start - 4) / width;
+    rows[y * 4] = rows[y * 4 + 1] = rows[y * 4 + 3] = 255;
+  }
+  const joined = () => ({ rows, separated: false, armMobility: 0 });
+  if (!rig.armMobility || width < 1 || height < 1 || pixels.length < width * height * 4) return joined();
+  const shoulder = rig.shoulders.right;
+  const firstRow = Math.floor(shoulder[1] * height);
+  const gapWidth = Math.max(3, Math.ceil(width * 0.006));
+  let previousBoundary;
+  let armRows = 0;
+  for (let y = firstRow; y < height; y++) {
+    const runs = [];
+    let start = -1;
+    for (let x = Math.floor(width * 0.5); x <= width; x++) {
+      // Even translucent antialias pixels must stay with their source limb.
+      const opaque = x < width && pixels[(y * width + x) * 4 + 3] > 0;
+      if (opaque && start < 0) start = x;
+      if (!opaque && start >= 0) {
+        runs.push({ start, end: x - 1 });
+        start = -1;
       }
     }
-    rows[y * 4] = Math.round(clamp(boundary) * 255);
-    rows[y * 4 + 3] = 255;
+    // The first external run starts the arm; every later run on this row is
+    // another finger, rather than another candidate for the body boundary.
+    const armIndex = runs.findIndex((run, index) => index > 0 &&
+      run.start > width * (shoulder[0] - 0.045) &&
+      run.end < width * (shoulder[0] + 0.23) &&
+      run.end - run.start < width * 0.16 &&
+      run.start - runs[index - 1].end >= gapWidth);
+    if (armIndex < 0) {
+      if (!armRows || runs.some((run) => run.end > previousBoundary)) return joined();
+      break; // Actual end of the hand, not a fixed offset from the shoulder.
+    }
+    const body = runs[armIndex - 1];
+    const arm = runs[armIndex];
+    const boundary = (body.end + arm.start) / 2;
+    // A jump to a different detached object is not reliable limb tracking.
+    if (previousBoundary !== undefined && Math.abs(boundary - previousBoundary) > width * 0.025) return joined();
+    previousBoundary = boundary;
+    const encoded = Math.round(boundary / width * 65535);
+    rows[y * 4] = encoded >> 8;
+    rows[y * 4 + 1] = encoded & 255;
+    rows[y * 4 + 2] = 255;
+    armRows++;
   }
-  return rows;
+  if (armRows < height * 0.08 || rows[(height - 1) * 4 + 2]) return joined();
+  return { rows, separated: true, armMobility: rig.armMobility };
+}
+
+/** Compatibility helper for consumers that only need the 1×height matte. */
+export function armSplitRows(pixels, width, height, rig) {
+  return resolveArmSeparation(pixels, width, height, rig).rows;
 }
 
 /** A bounded pose, independent of previous vertices and the display refresh rate. */

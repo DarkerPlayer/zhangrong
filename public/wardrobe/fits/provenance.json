@@ -1,0 +1,29 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "identity-preserve edit",
+  "fitPolicy": "imagegen-adapt",
+  "postprocessing": "macOS Vision foreground alpha extraction via scripts/background-cutout.swift; no change to the source files; face landmarks detected and rigs calibrated separately",
+  "variants": [
+    {
+      "lookId": "xuanling-golden-crown",
+      "itemId": "black-pointed-heels",
+      "asset": "public/wardrobe/fits/xuanling-golden-crown/black-pointed-heels/character.png",
+      "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a0ec0b-53c9-7d41-9215-9bd65503ad22/exec-179a7c6b-734b-4609-920e-6dcdae68cac7.png",
+      "prompt": "Use case: identity-preserve. Edit target: image 1 is an adult fictional 28-year-old fantasy queen full-body standing character. Image 2 is supporting footwear reference. Create an actual fitted try-on variant: replace ONLY her original white/gold pointed shoes with a matching pair of black smooth-leather pointed-toe stiletto pumps like image 2, worn on her feet with natural correct perspective, feet fitted inside shoes, both black shoes clearly visible beneath the gown hem. Preserve her EXACT face and identity, black hair, elaborate gold branching crown, sapphire jewelry, white high-neck floor-length gold embroidered gown, arms, body proportions, frontal standing pose and position. Keep head to feet fully in canvas. Keep the hem design and height, slightly lifting only the tiny central hem if needed to show footwear. Composition same as image 1, portrait 1024x1536. Remove the original brown backdrop: actual transparent background and no cast background halo. High-end realistic fantasy character art matching input. No other subject or objects, no text, logo or watermark."
+    },
+    {
+      "lookId": "xuanling-golden-crown",
+      "itemId": "ivory-soft-slippers",
+      "asset": "public/wardrobe/fits/xuanling-golden-crown/ivory-soft-slippers/character.png",
+      "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a0ec0b-53c9-7d41-9215-9bd65503ad22/exec-8a3403b2-45f1-46c0-b7dd-1e0848c7cffa.png",
+      "prompt": "Use case: identity-preserve. Edit target: image 1 is an adult fictional 28-year-old fantasy queen full-body standing character. Image 2 is supporting footwear reference. Create an actual fitted try-on variant: replace ONLY her original white/gold pointed shoes with a matching pair of ivory plush cross-band open-toe flat house slippers like image 2, physically worn by the queen with visible natural toes and correctly fitted feet, both broad soft slippers clearly visible beneath the gown hem. Slippers must visibly differ from her original closed pointed court shoes: wide rounded sole, fluffy ivory crossed bands and open front exposing toes. Preserve her EXACT face and identity, black hair, elaborate gold branching crown, sapphire jewelry, white high-neck floor-length gold embroidered gown, arms, body proportions, frontal standing pose and position. Keep head to feet fully in canvas. Preserve hem details and general length; slightly lift only the tiny central hem if needed to clearly see both slippers. Composition same as image 1, portrait 1024x1536. Remove original brown backdrop: actual transparent background and no cast background halo. High-end realistic fantasy character art matching input. No other subject or objects, no text, logo or watermark."
+    },
+    {
+      "lookId": "ruby-white-bikini",
+      "itemId": "ivory-soft-slippers",
+      "asset": "public/wardrobe/fits/ruby-white-bikini/ivory-soft-slippers/character.png",
+      "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a0ec0b-53c9-7d41-9215-9bd65503ad22/exec-a0604e52-b24b-4f42-88d8-5c93dbc1340e.png",
+      "prompt": "Use case: identity-preserve. Edit target image 1: adult fictional 29-year-old red-haired woman, full-body neutral standing wardrobe mannequin in opaque white swimsuit. Supporting footwear input image 2: ivory plush cross-band slippers. Primary request: fit these ivory soft flat house slippers onto her feet, naturally worn with correctly fitted feet, soft crossed fluffy bands and rounded cushioned soles. Preserve the exact face, red wavy hair, body proportions, white opaque swimsuit coverage, neutral standing pose, arms, hands, camera and image style. No sexualized pose. Match existing lighting and detail. Keep complete body and both slippers fully in frame, centered on portrait 1024x1536 transparent background with original generous margins. No text, watermark, additional people or objects."
+    }
+  ]
+}

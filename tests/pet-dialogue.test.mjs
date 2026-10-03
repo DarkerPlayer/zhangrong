@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { offlineReply, createMessages } from '../server/dialogue.mjs';
 import { modelReply } from '../server/ollama.mjs';
 import { startServer } from '../server/index.mjs';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 test('Live2D explicit requests return renderer actions and a short reply', () => {
   for (const [message, petAction] of [
@@ -110,8 +113,9 @@ test('free chat still uses the selected local model and never executes generated
 });
 
 test('chat API preserves avatar mode and rejects unsupported mode values', async (t) => {
-  const app = await startServer({ prewarm: false, port: 0 });
-  t.after(() => app.close());
+  const directory=await mkdtemp(join(tmpdir(),'muyu-pet-api-'));
+  const app = await startServer({ prewarm: false, port: 0, studioDirectory:join(directory,'studio') });
+  t.after(async() => {await app.close();await rm(directory,{recursive:true,force:true});});
   const post = (body) => fetch(`http://127.0.0.1:${app.port}/api/chat`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   });

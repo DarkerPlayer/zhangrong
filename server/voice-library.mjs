@@ -121,6 +121,7 @@ export function createVoiceLibrary({ directory, builtinRoot, transcribe }) {
   }
   return {
     list: () => serial(list),
+    resolve: (id) => serial(async () => ({ ...(await profile(id)), root: root(id) })),
     current: () =>
       serial(async () => {
         const id = await selected();

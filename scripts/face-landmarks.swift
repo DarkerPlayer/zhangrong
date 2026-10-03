@@ -3,11 +3,18 @@
 import Foundation
 import Vision
 
-for path in CommandLine.arguments.dropFirst() {
+let fullBody = CommandLine.arguments.contains("--full-body")
+for path in CommandLine.arguments.dropFirst().filter({ $0 != "--full-body" }) {
     do {
         let request = VNDetectFaceLandmarksRequest()
         try VNImageRequestHandler(url: URL(fileURLWithPath: path), options: [:]).perform([request])
-        guard let face = request.results?.max(by: { $0.confidence < $1.confidence }),
+        let candidates = (request.results ?? []).filter {
+            !fullBody || (1 - $0.boundingBox.midY < 0.45 && $0.boundingBox.height > 0.035)
+        }
+        guard let face = candidates.max(by: {
+            fullBody ? $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width * $1.boundingBox.height
+                     : $0.confidence < $1.confidence
+        }),
               let landmarks = face.landmarks else {
             throw NSError(domain: "RigCalibration", code: 1, userInfo: [NSLocalizedDescriptionKey: "No face detected"])
         }

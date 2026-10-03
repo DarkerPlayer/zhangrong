@@ -1,5 +1,6 @@
 import {
   DEFAULT_LOOK_ID,
+  LOOKS,
   cleanRemovedLookIds,
   getAvailableLookId,
   getLook,
@@ -7,8 +8,10 @@ import {
 } from "./looks.mjs";
 import {
   CHARACTERS,
+  GARMENT_SLOT_IDS,
   getCharacterForLook,
   getDefaultBackgroundId,
+  getWardrobeItem,
   isBackgroundId,
 } from "./wardrobe.mjs";
 import {
@@ -23,6 +26,11 @@ import { DEFAULT_PERSONA_TEMPLATE_ID } from "./personas.mjs";
 
 export const STORAGE_KEY = "muyu-state-v2";
 export const LEGACY_STORAGE_KEY = "muyu-state-v1";
+
+const APPEARANCE_ARCHIVE_VERSION = 1;
+const ARCHIVED_APPEARANCE_LOOK_IDS = LOOKS.filter((look) =>
+  ["amara", "zuri"].includes(look.characterId),
+).map((look) => look.id);
 
 const makeId = () =>
   globalThis.crypto?.randomUUID?.() ||
@@ -95,7 +103,16 @@ export function restoreState(raw) {
   }
   if (!p || typeof p !== "object") p = {};
   const settings = restoreSettings(p.settings);
-  const removedLookIds = cleanRemovedLookIds(p.removedLookIds);
+  const appearanceArchiveVersion = Number.isInteger(p.appearanceArchiveVersion)
+    ? Math.max(APPEARANCE_ARCHIVE_VERSION, p.appearanceArchiveVersion)
+    : APPEARANCE_ARCHIVE_VERSION;
+  const removedLookIds = cleanRemovedLookIds([
+    ...(Array.isArray(p.removedLookIds) ? p.removedLookIds : []),
+    ...(Number.isInteger(p.appearanceArchiveVersion) &&
+    p.appearanceArchiveVersion >= APPEARANCE_ARCHIVE_VERSION
+      ? []
+      : ARCHIVED_APPEARANCE_LOOK_IDS),
+  ]);
   const savedLookId = isLookId(p.lookId) ? p.lookId : DEFAULT_LOOK_ID;
   const lookId = getAvailableLookId(removedLookIds, savedLookId);
   const activeCharacterId = getCharacterForLook(lookId).id;
@@ -133,6 +150,23 @@ export function restoreState(raw) {
       if (!CHARACTERS.some((item) => item.id === characterId)) return false;
       if (!isLookId(candidateLookId) || candidateLookId === "haru-original") return false;
       return getLook(candidateLookId).characterId === characterId;
+    }),
+  );
+  const rawWardrobeSelections =
+    p.wardrobeSelections && typeof p.wardrobeSelections === "object"
+      ? p.wardrobeSelections
+      : {};
+  const wardrobeSelections = Object.fromEntries(
+    CHARACTERS.flatMap((character) => {
+      const rawSelection = rawWardrobeSelections[character.id];
+      if (!rawSelection || typeof rawSelection !== "object") return [];
+      const selection = Object.fromEntries(
+        GARMENT_SLOT_IDS.flatMap((slotId) => {
+          const item = getWardrobeItem(rawSelection[slotId]);
+          return item?.slot === slotId ? [[slotId, item.id]] : [];
+        }),
+      );
+      return Object.keys(selection).length ? [[character.id, selection]] : [];
     }),
   );
   if (lookId !== "haru-original") lastLookByCharacter[activeCharacterId] = lookId;
@@ -219,6 +253,7 @@ export function restoreState(raw) {
 
   return syncPersonaAliases({
     schemaVersion: 2,
+    appearanceArchiveVersion,
     activePersonaId,
     personas,
     personaThreads,
@@ -230,6 +265,7 @@ export function restoreState(raw) {
       : getDefaultBackgroundId(),
     characterProfiles,
     lastLookByCharacter,
+    wardrobeSelections,
     customEnabled: p.customEnabled === true,
     scene: SCENES.some((s) => s.id === p.scene) ? p.scene : "home",
     settings,

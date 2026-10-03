@@ -27,7 +27,9 @@ import WardrobeFilters, { WardrobeEmpty } from "./WardrobeFilters.jsx";
 import LookActionMenu from "./LookActionMenu.jsx";
 
 export default function PetShell({
+  characterName = "张容",
   lookId,
+  appearance,
   removedLookIds = [],
   chooseLook,
   removeLook,
@@ -62,7 +64,7 @@ export default function PetShell({
   useLayoutEffect(() => {
     if (wardrobeResults.current) wardrobeResults.current.scrollTop = 0;
   }, [wardrobeView, wardrobeQuery, wardrobeCategory]);
-  const currentLook = getLook(lookId);
+  const currentLook = appearance?.id === lookId ? appearance : getLook(lookId);
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
     query: wardrobeQuery,
@@ -121,7 +123,7 @@ export default function PetShell({
           onLostPointerCapture={endDrag}
         >
           <DotsSix size={18} />
-          <span>张容</span>
+          <span>{characterName}</span>
           <i />
         </div>
         <button
@@ -302,8 +304,9 @@ export default function PetShell({
         <i />
       </div>
       <div className="pet-character">
-        <LivePet
-          lookId={lookId}
+      <LivePet
+        lookId={lookId}
+        appearance={appearance}
           mood={mood}
           action={action}
           motion={motion}
@@ -345,7 +348,7 @@ export default function PetShell({
           >
             <input
               ref={inputRef}
-              aria-label="对张容说点什么"
+              aria-label={`对${characterName}说点什么`}
               placeholder="我在，慢慢说…"
               value={input}
               maxLength={1000}

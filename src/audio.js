@@ -1,15 +1,26 @@
 import { createStreamPlayer, consumeAudioStream } from "./speech-stream.mjs";
 import { speechLevel } from "./speech-level.mjs";
-let context, source, gain, audio, blobUrl;
+let context, source, rainFilter, gain, audio, blobUrl;
+let rainGeneration = 0;
 export async function setRain(enabled, volume = 0.35) {
+  const generation = ++rainGeneration;
   if (!enabled) {
-    if (gain && context) {
-      gain.gain.setTargetAtTime(0, context.currentTime, 0.25);
+    if (source) {
+      source.stop();
+      source.disconnect();
+      source.buffer = null;
+      source = null;
     }
+    rainFilter?.disconnect();
+    gain?.disconnect();
+    rainFilter = gain = null;
+    if (context && !speechRequest && !streamPlayer && !audio)
+      await context.suspend();
     return;
   }
   context ||= new (window.AudioContext || window.webkitAudioContext)();
   await context.resume();
+  if (generation !== rainGeneration) return;
   if (!source) {
     const length = context.sampleRate * 4,
       buffer = context.createBuffer(2, length, context.sampleRate);
@@ -24,13 +35,13 @@ export async function setRain(enabled, volume = 0.35) {
     source = context.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
-    const low = context.createBiquadFilter();
-    low.type = "lowpass";
-    low.frequency.value = 2800;
+    rainFilter = context.createBiquadFilter();
+    rainFilter.type = "lowpass";
+    rainFilter.frequency.value = 2800;
     gain = context.createGain();
     gain.gain.value = 0;
-    source.connect(low);
-    low.connect(gain);
+    source.connect(rainFilter);
+    rainFilter.connect(gain);
     gain.connect(context.destination);
     source.start();
   }
@@ -73,7 +84,7 @@ export function stopSpeech() {
   releaseSpeechAudio();
   window.speechSynthesis?.cancel();
 }
-export async function speak(text, onEnd = () => {}, onStart = () => {}) {
+export async function speak(text, onEnd = () => {}, onStart = () => {}, { voiceProfileId } = {}) {
   stopSpeech();
   const generation = speechGeneration;
   const request = new AbortController();
@@ -86,6 +97,7 @@ export async function speak(text, onEnd = () => {}, onStart = () => {}) {
       body: JSON.stringify({
         text: text.slice(0, 1500),
         stream: !!(window.AudioContext || window.webkitAudioContext),
+        ...(voiceProfileId ? { voiceProfileId } : {}),
       }),
     });
     if (!response.ok) {
