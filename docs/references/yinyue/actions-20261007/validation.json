@@ -1,0 +1,116 @@
+[
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/giggle.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1171880,
+    "bounds": [
+      49,
+      11,
+      1010,
+      1504
+    ],
+    "sha256": "5da2c872c1360d79728e37c65a70c8348bc8de496ba32a92deebca8d1d2542d7"
+  },
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/paws.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1159218,
+    "bounds": [
+      65,
+      0,
+      1010,
+      1505
+    ],
+    "sha256": "5bd763d16745daad0aafb27ba2f6df4aecba5af92e291cf693003335c6823a05"
+  },
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/heart.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1159842,
+    "bounds": [
+      49,
+      13,
+      1010,
+      1504
+    ],
+    "sha256": "f5cd61703bf2e6aa06728640a850add6d98f0349521d57838f72a4de24c0487c"
+  },
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/finger-heart.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1134198,
+    "bounds": [
+      49,
+      12,
+      962,
+      1504
+    ],
+    "sha256": "c18f092df7df8a4c462515345252910a8a1487919d7e3e31d4fd5c2f5baf0d94"
+  },
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/cheeks.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1191398,
+    "bounds": [
+      65,
+      11,
+      1010,
+      1504
+    ],
+    "sha256": "4abb6a8f096f3fe388ec2ade42d2a773c03a79a0a183668cb73005e5b692cdc2"
+  },
+  {
+    "file": "public/looks/yinyue-silver-fox/actions/tail-hug.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1218549,
+    "bounds": [
+      49,
+      6,
+      1012,
+      1503
+    ],
+    "sha256": "04f579e5c9d6a38f760bff2537b705d028edff4ff04c97bde0c0e6ba562ed1ab"
+  }
+]

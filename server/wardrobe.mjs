@@ -1,5 +1,6 @@
 import { DEFAULT_LOOK_ID, LOOKS, getLook } from "./looks.mjs";
 import { SHOE_FITS, SHOE_FIT_ISSUES } from "./wardrobe-fits.mjs";
+import { HOSIERY_COLLECTION_CHARACTER_IDS, HOSIERY_ITEMS, HOSIERY_FITS } from "./hosiery-fits.mjs";
 
 const DEFAULT_BACKGROUND_ID = "moon-room";
 
@@ -129,7 +130,31 @@ const fanchaItem = (id, slot, name, description, details = {}) => wardrobeItem(
     embeddedLookIds: Object.freeze(["fancha-rose-office"]), ...details},
 );
 
+const wanhongItem = (id, slot, name, description, details = {}) => wardrobeItem(
+  id, name, description, slot === "nails" ? null : `/wardrobe/items/${id}.png`,
+  {slot, sourceLookId: "wanhong-vermilion-robes", sourceCharacterId: "wanhong",
+    embeddedLookIds: Object.freeze(["wanhong-vermilion-robes"]), ...details},
+);
+
+const songyuItem = (id, slot, name, description, details = {}) => wardrobeItem(
+  id, name, description, slot === "nails" ? null : `/wardrobe/items/${id}.png`,
+  {slot, sourceLookId: "songyu-azure-robes", sourceCharacterId: "songyu",
+    embeddedLookIds: Object.freeze(["songyu-azure-robes"]), ...details},
+);
+
 export let WARDROBE_ITEMS = Object.freeze([
+  songyuItem("songyu-azure-dress", "dress", "蓝白刺绣仙衣", "交叠 V 领、露肩长袖与蓝白渐层长裙，保留银白卷草刺绣和轻纱飘带。"),
+  songyuItem("songyu-halfup-hair", "hair", "深棕半束长发", "深棕近黑半束长发与两侧柔软额发；冠与羽形发夹另列配饰。"),
+  songyuItem("songyu-white-hair-ornaments", "accessories", "白玉冠与羽形发饰", "云纹白冠及成对羽形发夹，发夹各带一颗圆珠；属于发饰。"),
+  songyuItem("songyu-red-cord-jade", "accessories", "红绳白玉项饰", "红橙色细绳、白玉双卷纹小牌，以及两颗金珠连接的下层红绳。"),
+  songyuItem("songyu-silver-sash", "accessories", "青绸银叶腰封", "多层深青交叠腰封，配银色弧线叶形金属装饰。"),
+  songyuItem("songyu-green-jade-tassel", "accessories", "绿玉金环流苏", "绿色圆形雕花玉牌、金色连接件和大圆环，下接深绿长流苏，佩于角色左腰。"),
+  songyuItem("songyu-natural-nails", "nails", "宋玉自然甲色", "参考图中的短自然裸粉指甲。", {color:"#DEC2B9",kind:"color"}),
+  ...HOSIERY_ITEMS.map(({ id, name, description }) => wardrobeItem(
+    id, name, description, `/wardrobe/items/${id}.png`,
+    { slot: "hosiery", collectionCharacterIds: HOSIERY_COLLECTION_CHARACTER_IDS,
+      sourceLabel: "共享袜类 · 已加入六位角色衣橱" },
+  )),
   wardrobeItem(
     "black-pointed-heels",
     "黑色尖头高跟鞋",
@@ -148,6 +173,14 @@ export let WARDROBE_ITEMS = Object.freeze([
   fanchaItem("fancha-white-watch", "watch", "白色腕表", "白色表带与精致金属表盘，作为独立腕部配饰。"),
   fanchaItem("fancha-sidepart-hair", "hair", "侧分黑长直发", "侧分光泽黑色长直发，顺着肩部垂落。"),
   fanchaItem("fancha-pearl-earrings", "earrings", "珍珠耳饰", "简洁白色珍珠耳饰，带小巧金属连接细节。"),
+  wanhongItem("wanhong-vermilion-dress", "dress", "朱绡暗纹长裙", "朱红暗纹交叠 V 领裙，保留收腰腰封、金色菱形腰扣、双侧分片开衩和中央长裙片；三角内搭作为独立单品搭配。"),
+  wanhongItem("wanhong-vermilion-briefs", "underwear", "朱红系带三角内搭", "不透明朱红三角内搭，沿用产品参考的完整遮覆剪裁与两侧系带，作为独立内搭单品复用。"),
+  wanhongItem("wanhong-ivory-robe", "outerwear", "象牙白云袖外披", "象牙白宽袖长外披与桃粉披帛，保留衣料褶皱和袖缘细节。"),
+  wanhongItem("wanhong-ornamented-hair", "hair", "红金饰半盘长发", "黑棕半盘长发、红金弧形发饰与细垂链作为完整发型复用。"),
+  wanhongItem("wanhong-drop-earrings", "earrings", "水滴垂耳饰", "成对浅色水滴耳坠，配精细金属连接与柔和珠光。"),
+  wanhongItem("wanhong-beaded-necklace", "accessories", "细珠长项链", "银色细链与细小珠粒，自然垂落的长项链。"),
+  wanhongItem("wanhong-jade-waist-pendants", "accessories", "粉绿垂珠腰饰", "腰部两侧各三枚细长梨形垂珠，分别悬挂于细珠链上的独立挂点，配贴颈绿色窄带与长环；按画面从左至右，左组为浅黄绿、粉、浅绿，右组为浅绿、粉、粉，作为独立腰饰复用。"),
+  wanhongItem("wanhong-nude-nails", "nails", "自然裸粉指甲", "接近参考图自然甲色的柔和裸粉，保留原有甲形与长度。", {color: "#D4ACA0", kind: "color"}),
 ]);
 
 const BUILT_IN_ITEMS = WARDROBE_ITEMS;
@@ -216,9 +249,8 @@ export function getWardrobeSelectionStatus(lookId, selection = {}) {
   return {status: "pending", message: "这套组合待适配，当前外观保持不变"};
 }
 
-export let WARDROBE_FITS = Object.freeze(
-  SHOE_FITS.map((fit) => Object.freeze(fit)),
-);
+const BUILT_IN_FITS = Object.freeze([...SHOE_FITS, ...HOSIERY_FITS].map(Object.freeze));
+export let WARDROBE_FITS = BUILT_IN_FITS;
 
 export function getWardrobeFit(lookId, itemId) {
   const item = getWardrobeItem(itemId);
@@ -397,7 +429,7 @@ export function setLocalWardrobe({items = [], fits = []} = {}) {
     try {const selection = fitSelection(fit); if (selection === null) return false; wardrobeSelectionKey(selection, {lookId: fit.lookId}); return true;} catch {return false;}
   }) : [];
   const key = fit => `${fit.lookId}:${wardrobeSelectionKey(fitSelection(fit), {lookId: fit.lookId})}`;
-  const combined = new Map([...SHOE_FITS, ...localFits].map(fit => [key(fit), Object.freeze({...fit})]));
+  const combined = new Map([...BUILT_IN_FITS, ...localFits].map(fit => [key(fit), Object.freeze({...fit})]));
   WARDROBE_FITS = Object.freeze([...combined.values()]);
   const groups = new Map();
   for(const look of LOOKS) {const list=groups.get(look.characterId) || [];list.push(look);groups.set(look.characterId,list);}

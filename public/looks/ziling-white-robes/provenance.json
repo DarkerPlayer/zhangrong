@@ -1,0 +1,95 @@
+{
+  "createdAt": "2026-10-07",
+  "characterId": "ziling",
+  "lookId": "ziling-white-robes",
+  "method": "built-in ImageGen",
+  "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4f16bdfe-9303-4b11-bb47-046300d0b40e.png",
+  "prompt": "Create a full-body transparent sprite of the exact adult Zi Ling in images1and2, wearing her EARLY WHITE OUTER ROBE costume shown in image1 and image2. This is NOT a white recolor of the gold-armored purple gown. Costume authority images1and2: pale ivory-white very wide hanging outer sleeves and white ankle-length outer robe, deep purple inner cuffs, tall layered purple folded collar/scarf wrapping around neck, purple fitted inner gown and waist sash; long black hair in half-up style with two long narrow braided face-framing strands, small subtle violet hair ornaments and purple earrings. Lavender-pink translucent embroidered face veil with thin gold upper edge, violet floral fastening near ears. Show the source's distinctive large violet eyes and delicate face visible above/through veil. Image3 is same person's clearer FACE reference ONLY: keep large eyes, thick brows, delicate nose, soft cheeks and small lips, not a generic human model. Use natural standing pose with relaxed arms at sides, hands visible outside wide sleeves. Preserve original robe construction, not sexier redesign; white outfit primarily white with purple collar/cuffs/inner panels, light fabric details. Complete crown/head, long hair, both hands and whole hem and shoes inside frame.1024x1536 transparentPNG with safe24px margins. Exactly one character, no background haze, halo, floor, captions, logos, other people or props. Source-faithful face/expression is priority over studio lighting. Keep existing source face light and shadows.",
+  "generationRecord": "docs/references/ziling/refinement-20261007/generation.json",
+  "facePriority": "Original 180s unveiled face: wide violet eyes, brows, oval cheeks, mole and expression. Generative reconstruction, not pixel copy.",
+  "referenceAssignment": {
+    "face": "BV1pyTVzLEu2_180s_摘面纱后正面.png",
+    "purpleVeil": "BV1pyTVzLEu2_025s_蒙面正面.png",
+    "whiteCostume": [
+      "10_BV1814y1W7qM-30s.png",
+      "09_BV1dW4y1s7fX-70s.png"
+    ]
+  },
+  "asset": {
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 953086,
+    "bounds": [
+      0,
+      16,
+      1010,
+      1536
+    ],
+    "sha256": "750fb203607e61d61a1fd60a9b3e0a04a82353d89e9b42400984ad8f7d6c8c57",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010678407387924471,
+          "ry": 0.0024331888167150595,
+          "x": 0.48104375989642123,
+          "y": 0.08391197094868774
+        },
+        {
+          "rx": 0.009435250419196128,
+          "ry": 0.0026775715669369315,
+          "x": 0.527550617416807,
+          "y": 0.08201004551954916
+        }
+      ],
+      "face": {
+        "bottom": 0.1370372772216797,
+        "left": 0.4475337266921997,
+        "right": 0.5619977191090584,
+        "top": 0.06072794646024704
+      },
+      "mouth": {
+        "rx": 0.014471633650965932,
+        "ry": 0.0041651101892487,
+        "x": 0.5068313203909479,
+        "y": 0.11482091486372392
+      },
+      "path": "public/looks/ziling-white-robes/character.png"
+    }
+  },
+  "voice": {
+    "id": "7e774f36-81e4-4813-8b88-b1dd2fb4a23b",
+    "name": "紫灵",
+    "referenceText": "诸位前辈道友，许久未见，可还记得紫灵？今日相助之情，小女子铭感五内。",
+    "referenceDuration": 13.490791666666667,
+    "createdAt": "2026-10-07T07:49:17.926Z",
+    "version": 1,
+    "referenceFile": "docs/audio/ziling-reference.wav",
+    "previewFile": "docs/audio/ziling-voice-preview.wav",
+    "sourceType": "original scene audio; background music may remain",
+    "sourceProof": [
+      "docs/references/ziling/voice-source-proof.png",
+      "docs/references/ziling/voice-ending-proof.png"
+    ],
+    "previewASR": "你好，我是紫玲。今天过得怎么样？陪我聊一会儿吧。",
+    "source": "/Users/yunfeikong/Codex/抓取神器/data/exports/紫灵_模型参考素材_2026-10-05/05_音频候选_待听音核验/紫灵角色来电_完整原声候选.wav",
+    "sourceRangeSeconds": [
+      0,
+      13.4907916667
+    ]
+  },
+  "validation": {
+    "tests": "58 passed: catalog, wardrobe, model archive, names, assets, motion and real renderer with covered/uncovered mouth speech input",
+    "build": "Vite production build passed",
+    "runtime": "Packaged desktop restarted; all three outfits selected and rendered successfully",
+    "screenshot": "docs/screenshots/ziling-white-20261007.jpg"
+  },
+  "mouthCovered": true,
+  "referenceLimitation": "White robe interpreted as early pale outer sleeves/robe with purple collar in provided low-resolution clips; not asserted as a pure white alternative."
+}

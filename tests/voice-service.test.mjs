@@ -192,3 +192,46 @@ test("resource reset drains the service queue before future speech can restart",
   assert.equal((await service.synthesize("new request")).length, 48);
   assert.equal(created, 2);
 });
+
+test("idle speech drops cached audio while recent replay stays warm", async t => {
+  let calls = 0;
+  const { service } = await fixtureService(t, { workerIdleMs: 120000, workerFactory: () => ({
+    close() {}, async synthesize() { calls++; return wavFixture(); }
+  }) });
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  await service.synthesize("remember");
+  await Promise.resolve();
+  t.mock.timers.tick(119999);
+  await service.synthesize("remember");
+  assert.equal(calls, 1, "recent playback should reuse its existing audio");
+  await Promise.resolve();
+  t.mock.timers.tick(120000);
+  await service.synthesize("remember");
+  assert.equal(calls, 2, "idle audio should be released with the idle speech model");
+});
+
+test("cache expiry waits until queued speech finishes and reset leaves no idle timer", async t => {
+  let calls = 0, release;
+  const { service } = await fixtureService(t, { workerIdleMs: 120000, workerFactory: () => ({
+    close() {}, synthesize(text) {
+      calls++;
+      return text === "long response" ? new Promise(resolve => { release = () => resolve(wavFixture()); }) : Promise.resolve(wavFixture());
+    }
+  }) });
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  await service.synthesize("keep");
+  await Promise.resolve();
+  const long = service.synthesize("long response");
+  // Resolving the selected voice involves real filesystem access.
+  while (!release) await new Promise(resolve => setImmediate(resolve));
+  t.mock.timers.tick(120000);
+  const replay = service.synthesize("keep");
+  release();
+  await Promise.all([long, replay]);
+  assert.equal(calls, 2, "active and queued speech must not discard reusable audio");
+  await Promise.resolve();
+  service.reset();
+  t.mock.timers.tick(120000);
+  await service.synthesize("keep");
+  assert.equal(calls, 3);
+});

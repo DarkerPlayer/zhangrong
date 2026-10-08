@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "sourceReferences": [
+    "温夫人/WF01/截图/02_BV1Lm411k72k_00019.200s.png",
+    "温夫人/WF01/截图/01_BV1gm421n7vC_00018.000s.png",
+    "温夫人/WF01/截图/01_BV1gm421n7vC_00012.000s.png"
+  ],
+  "retainedReferences": [
+    "docs/references/three-characters-20261008/wen-furen-black-gold/source-1.png",
+    "docs/references/three-characters-20261008/wen-furen-black-gold/source-2.png",
+    "docs/references/three-characters-20261008/wen-furen-black-gold/source-3.png"
+  ],
+  "referencePriorities": {
+    "face": "source-1.png: exact source expression, proportions, texture and shading; no relighting",
+    "outfit": "source-2.png and source-3.png: supplied outfit construction; unseen detail remains inferred"
+  },
+  "generator": "builtin-imagegen",
+  "generatedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4a886e39-d87d-4e5a-b9a6-a34aa74deeca.png",
+  "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the floor-length closed skirt with a fitted black-gold above-knee cocktail dress and a single modest side slit. Retain long black cape falling behind the legs rather than covering them. Knee and calf areas should be clearly visible. Elegant closed-toe black court heels. Keep gold belt, collar, shoulder mantle and cuffs.",
+  "adopted": "character.png",
+  "image": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "sha256": "175a8381ddc544dd58a0ace7ddf057b05d72e2729b2da88720266210fbf7e679"
+  },
+  "rigCalibration": {
+    "method": "macOS Vision landmarks, checked against adopted image",
+    "report": ".runtime/three-characters-20261008/wen-face.json",
+    "speechStrength": 0.16,
+    "blushStrength": 0
+  },
+  "dialoguePolicy": "provided-corpus-only",
+  "limitations": [
+    "Generated adaptation, not pixel-identical face copy",
+    "Only one source outfit adopted; no new separately detachable parts",
+    "No new voice clone; only verified original wording is enforced"
+  ],
+  "initialGeneratedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c534a733-7977-479e-964b-4ad3cd40502d.png",
+  "userOutfitRevision": "More visible legs: above-knee dress, side opening or shortened skirt; original face, upper outfit and accessories preserved",
+  "revisionPrompts": "docs/references/three-characters-20261008/leg-variation.json"
+}

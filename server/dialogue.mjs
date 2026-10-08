@@ -1,7 +1,9 @@
+import { AUTHORED_ACTIONS, supportedAuthoredActions } from "./authored-actions.mjs";
 import { CHARACTER_NAMES, ORIGINAL_LOOK, getAvailableLooks, getLook, matchLookAlias, summarizeLooks } from './looks.mjs';
 import { resolvePersonaProfile, normalizePersonaSnapshot } from './personas.mjs';
 import { choosePersonaLine, detectDialogueIntent, selectPersonaReferences } from './persona-dialogue.mjs';
 import { extractCompanionMemories, isCompletedPlanQuery, normalizeCompanionContext } from './companion-memory.mjs';
+import { isExclusiveCorpusCharacter, selectExclusiveCorpusReply } from './exclusive-corpus.mjs';
 
 export const SCENES = Object.freeze(['home', 'date', 'cozy', 'wedding']);
 export const AVATAR_MODES = Object.freeze(['photo', 'live2d']);
@@ -69,6 +71,11 @@ export function detectMotionCommand(message = '') {
   let command = null;
   for (const clause of message.split(/[，,。.!！?？;；\n]+|但是|不过|而是|但/)) {
     if (/什么意思|是什么|怎么(?:说|写|翻译)|如何理解|这个词|这句话/.test(clause)) continue;
+    const authored = AUTHORED_ACTIONS.find(({label}) => {
+      const value = clause.trim().replace(/^(?:请|麻烦)?(?:你|给我|让我看看|我想看你)?/, '').replace(/(?:一下|一次|给我看|吧|好吗|可以吗)*$/, '');
+      return value === label;
+    });
+    if (authored) command = {intent:'motion', motion:authored.kind, args:{}};
     if (/跳(?:个|一段|一支)?舞|转(?:个|一)?圈|跑起来/.test(clause)) continue;
     for (const match of clause.matchAll(/摸摸(?:你的)?(?:头|脑袋)|摸(?:一下)?头|挥挥手|挥(?:个|一下)手|打个招呼|开心一?点|害羞一?点|吐(?:一下)?口水|恢复待机|回到待机|回到默认动作|安静待着|下蹲|蹲下|蹲一蹲|蹲一下|蹲给我看|屈膝|站起来|起身|(?<![动跑])起来|撩(?:一下)?头发|摸(?:一下)?头发|整理(?:一下)?头发|回头(?:看看)?|转过头|走秀(?:给我看)?|优雅.{0,4}走(?:路|一下|两步|过来|给我看)|自信.{0,4}走(?:路|一下|两步|过来|给我看)|性感[的地]?走路|性感.{0,3}走(?:路|两步|给我看)|走路.{0,6}性感|向?[左右]走(?:一下|两步|过来)?|走一下|走过来|走动|走两步|走给我看|走一走|猫步|高跟鞋.{0,6}走(?:路|两步|给我看)/g)) {
       const before = clause.slice(0, match.index).replace(/能不能/g, '能');
@@ -154,6 +161,10 @@ export function capabilityReply(message = '', avatarMode = 'photo', lookId = ORI
       ? `我不能生成或拍摄新视频。现在的${dynamicName}可以眨眼、呼吸和回应预设动作；你也可以通过“导入素材”播放自己已有的视频。`
       : '我不能生成或拍摄新视频。现在可以陪你聊天、朗读和切换已有图片穿搭；你也可以通过“导入素材”播放自己已有的视频。';
   }
+  if (AUTHORED_ACTIONS.some(({kind}) => kind === requestedAction)) {
+    if (!live || !look.actions?.[requestedAction]?.length) return '当前造型没有这个预设动作。请在衣橱中选择带此动作的动态造型。';
+    return null;
+  }
   if (requestedAction === 'spit') {
     if (!live) return '现在是图片模式，不能直接做吐口水动作。切换到玫瑰职场动态造型后可以播放这个动作。';
     if (look.renderer !== 'glam' || !look.actions?.spit?.length) return '这套造型还没有吐口水动作。玫瑰职场造型有这个预设动作。';
@@ -166,7 +177,7 @@ export function capabilityReply(message = '', avatarMode = 'photo', lookId = ORI
   }
   if (/动一动|动起来|动一下|你能动|真的会动|会不会动|你会动|你能做什么|你会做什么|有哪些动作|有哪些功能/.test(message) && (!live || !detectPetAction(message))) {
     return live
-      ? `可以呀，我会眨眼、呼吸和跟随鼠标转头，也能做摸头回应、${greeting}、开心或害羞这些预设动作${look.actions?.squat ? `；林薇还能下蹲和做${walkStyle}` : ''}${look.actions?.spit?.length ? '；当前造型还能播放一次简短的吐口水动作' : ''}。自由走动、跳舞和生成视频暂不支持。`
+      ? `可以呀，我会眨眼、呼吸和跟随鼠标转头，也能做摸头回应、${greeting}、开心或害羞这些预设动作${look.actions?.squat ? `；林薇还能下蹲和做${walkStyle}` : ''}${look.actions?.spit?.length ? '；当前造型还能播放一次简短的吐口水动作' : ''}${supportedAuthoredActions(look).length ? '；当前造型另有' + supportedAuthoredActions(look).map(item => item.label).join('、') : ''}。自由走动、跳舞和生成视频暂不支持。`
       : '现在是图片模式，轻动态只是缓慢镜头移动，不能让图片角色自行活动。切换到 Live2D 桌宠后，可以体验眨眼、呼吸和预设动作。';
   }
   if (/(?:你|亲自|现在).{0,6}(?:来|到).{0,6}(?:我家|我这里|我身边|找我)|线下见面|现实中.{0,6}(?:抱|亲|见面)/.test(message)) {
@@ -197,7 +208,24 @@ function choose(replies, history, message) {
   return replies.slice(start).concat(replies.slice(0, start)).find(reply => !last.includes(reply)) || replies[start];
 }
 
+export function exclusiveDialogueCharacter({ message = '', lookId = ORIGINAL_LOOK.id, removedLookIds = [] } = {}) {
+  const targetLookId = detectWardrobeAction(message, removedLookIds).lookAction;
+  const targetCharacter = targetLookId ? getLook(targetLookId).characterId : null;
+  if (isExclusiveCorpusCharacter(targetCharacter)) return targetCharacter;
+  const currentCharacter = getLook(lookId).characterId;
+  return isExclusiveCorpusCharacter(currentCharacter) ? currentCharacter : null;
+}
+
 export function offlineReply({ message = '', history = [], name = '', persona = null, personaMemory = null, companionContext = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] } = {}) {
+  const corpusReply = selectExclusiveCorpusReply({ characterId: exclusiveDialogueCharacter({ message, lookId, removedLookIds }), message, history });
+  if (corpusReply) {
+    // Keep explicit renderer commands, but never add a stock acknowledgement,
+    // persona phrase, generated capability explanation or remembered nickname.
+    const capability = capabilityReply(message, avatarMode, lookId);
+    const { action, lookAction } = capability ? { action: null, lookAction: null } : detectWardrobeAction(message, removedLookIds);
+    const motionCommand = !capability && !action && !lookAction && avatarMode === 'live2d' ? detectMotionCommand(message) : null;
+    return { ...corpusReply, action, lookAction, motionCommand, petAction: motionCommand?.motion || null };
+  }
   history = normalizeHistory(history);
   const companion = normalizeCompanionContext(companionContext);
   // A supplied current memory snapshot is authoritative, including deletions.
@@ -228,6 +256,7 @@ export function offlineReply({ message = '', history = [], name = '', persona = 
       : [`换成${look.name}了。${look.description}继续陪你聊。`];
   } else if (petAction) {
     const petReplies = {
+      ...Object.fromEntries(AUTHORED_ACTIONS.map(({kind,label}) => [kind, '好，我做一次' + label + '，然后恢复待机。'])),
       pat: '收到摸摸头啦，轻轻晃一下脑袋回应你。',
       wave: getLook(lookId).greetingMotion === 'nod' ? '嗨，朝你笑了笑，轻轻点头。很高兴在这里陪你。' : '嗨，向你挥挥手。很高兴在这里陪你。',
       happy: '好呀，开心地晃一晃，把一点好心情送给你。',
@@ -316,6 +345,7 @@ export function offlineReply({ message = '', history = [], name = '', persona = 
 }
 
 export function createMessages({ message, history = [], name = '', persona = null, personaMemory = null, companionContext = null, scene = 'home', avatarMode = 'photo', lookId = ORIGINAL_LOOK.id, removedLookIds = [] }) {
+  if (exclusiveDialogueCharacter({ message, lookId, removedLookIds })) throw new Error('该角色只使用已核验的语料原句，不进入生成模型。');
   const companion = normalizeCompanionContext(companionContext);
   const safeName = normalizeName(name);
   const activePersona = resolveActivePersona(persona);
@@ -333,7 +363,7 @@ export function createMessages({ message, history = [], name = '', persona = nul
   const live = !action && (avatarMode === 'live2d' || Boolean(lookAction));
   const description = live ? (look.renderer === 'glam' ? `原创动态造型：${look.name}（${look.age}岁），${look.description}` : 'Live2D 桌宠，Haru 原始造型') : `${{home:'日常针织穿搭',date:'黑色礼服约会穿搭',cozy:'紫色毛衣居家穿搭',wedding:'虚拟婚纱换装纪念场景'}[action || scene] || '日常针织穿搭'}（图片模式）`;
   const visualCapabilities = live && look.renderer === 'glam'
-    ? `当前原创动态角色使用已有插画的二维网格动画，可以眨眼、呼吸、跟随鼠标，并回应摸头、${greeting}、开心、害羞、整理头发和恢复待机这些预设动作。${look.actions?.squat ? '林薇另有分阶段下蹲、起身、自然走姿和自信走姿，可按明确指令播放。' : ''}${look.actions?.spit?.length ? '当前造型另有准备、吐口水、恢复站姿三个阶段的一次性预设动作，仅按明确指令播放。' : ''}它不是 Cubism Live2D 模型。可以切换衣橱中的已有动态造型，不能按文字生成新服装、新模型或任意动作，也不能转圈、跑步或跳舞。`
+    ? `当前原创动态角色使用已有插画的二维网格动画，可以眨眼、呼吸、跟随鼠标，并回应摸头、${greeting}、开心、害羞、整理头发和恢复待机这些预设动作。${look.actions?.squat ? '林薇另有分阶段下蹲、起身、自然走姿和自信走姿，可按明确指令播放。' : ''}${look.actions?.spit?.length ? '当前造型另有准备、吐口水、恢复站姿三个阶段的一次性预设动作，仅按明确指令播放。' : ''}${supportedAuthoredActions(look).length ? '当前造型支持以下一次性动作：' + supportedAuthoredActions(look).map(item => item.label).join('、') + '。' : ''}它不是 Cubism Live2D 模型。可以切换衣橱中的已有动态造型，不能按文字生成新服装、新模型或任意动作，也不能转圈、跑步或跳舞。`
     : live ? '当前 Live2D 角色可以实时眨眼、呼吸、跟随鼠标转头，并通过统一动作接口回应摸头、挥手、走路、下蹲、起身、开心、害羞和恢复待机等预设动作与明确指令；缺少专用 Cubism 动作时会使用最接近的已有动作。不能转圈、跑步、跳舞或按文字生成新动作，其模型服装不能自定义更换。'
     : '当前图片模式的轻动态只是已有图片的缓慢镜头移动，不能让图片角色自行活动。用户可切换到 Live2D 桌宠使用其已有动作。';
   const intent = detectDialogueIntent(message);

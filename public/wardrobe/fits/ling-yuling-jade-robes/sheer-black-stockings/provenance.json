@@ -1,0 +1,84 @@
+{
+  "lookId": "ling-yuling-jade-robes",
+  "itemId": "sheer-black-stockings",
+  "selection": {
+    "hosiery": "sheer-black-stockings"
+  },
+  "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-0385d7bc-edab-4926-94f3-298812da48e2.png",
+  "references": [
+    "public/looks/ling-yuling-jade-robes/character.png"
+  ],
+  "provider": "builtin-imagegen",
+  "pixelProcessing": "none; generated PNG copied byte-for-byte",
+  "asset": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/character.png",
+  "rig": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/rig.json",
+  "sourceSha256": "aed28cc24d4860c9e877b5565f49978e516cc906cce97b1fec2266fdf059c17a",
+  "generatedSha256": "fd5fa74559b7d11249c12f6475bfe4ac4fdd0644f9ab3d2327a1741d2ef24848",
+  "assetSha256": "fd5fa74559b7d11249c12f6475bfe4ac4fdd0644f9ab3d2327a1741d2ef24848",
+  "rigSha256": "4bbb85031d3f119dc19a7f04b7a105eecbf2c560e8684fcaa9d497402018bdf8",
+  "faceConfidence": 1,
+  "calibration": {
+    "tool": "Apple Vision via scripts/face-landmarks.swift --full-body",
+    "method": "Every output independently detected. Original head offsets mapped to its new face box; eyes and mouth replaced with output landmarks; colors sampled read-only; alpha bounds measured per output. Original non-coordinate face behavior preserved."
+  },
+  "qa": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaMin": 0,
+    "alphaMax": 254,
+    "fullyTransparentFraction": 0.710150400797526,
+    "opaqueBoundsPixels": [
+      289,
+      22,
+      746,
+      1503
+    ],
+    "alphaThresholdForRigBounds": 127,
+    "visualReview": {
+      "hosieriesOnBothVisibleLegs": true,
+      "originalSkirtHemAndShoesRetained": true,
+      "facePoseHairAccessoriesRetained": true,
+      "noGarterOrNewAccessories": true,
+      "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+    },
+    "faceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010525065199980643,
+          "ry": 0.002317737354685656,
+          "x": 0.5162404228753619,
+          "y": 0.08573152992191768
+        },
+        {
+          "rx": 0.008000955900415718,
+          "ry": 0.0021907384840191835,
+          "x": 0.5573088144710985,
+          "y": 0.08664169077074813
+        }
+      ],
+      "face": {
+        "bottom": 0.1412818431854248,
+        "left": 0.4793957471847534,
+        "right": 0.5939365178346634,
+        "top": 0.06492132693529129
+      },
+      "mouth": {
+        "rx": 0.014049297400678507,
+        "ry": 0.005185803717856208,
+        "x": 0.5360205611963822,
+        "y": 0.11969325325164143
+      },
+      "path": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/character.png"
+    },
+    "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+    "preservedRigSettings": [
+      "armMobility",
+      "mouthCovered",
+      "expression"
+    ],
+    "runtimePreview": "pending parent integration"
+  }
+}

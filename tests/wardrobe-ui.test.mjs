@@ -7,6 +7,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { getLook, getAvailableLooks, ORIGINAL_LOOK } from "../src/looks.mjs";
 import { getCharacterForLook, GARMENT_SLOT_LABELS, getEmbeddedWardrobeItems } from "../src/wardrobe.mjs";
+import { HOSIERY_LOOK_IDS, HOSIERY_ITEMS } from "../server/hosiery-fits.mjs";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost:4317" });
 for (const name of ["window", "document", "navigator", "HTMLElement", "Event", "MouseEvent"])
@@ -44,7 +45,17 @@ function mount({ lookId = "ruby-velvet", removedLookIds = [], view = "active", s
     setBackground() {}, selectWardrobeItem: (slot, id) => { worn.push([slot, id]); return selectResult; }, requestEmptyOutfit: () => ({ message: "已清空" }),
     onClose() {}, petProps: {},
   };
-  return { ...render(React.createElement(WardrobePage, props)), choices, restored, worn };
+  const ui = render(React.createElement(WardrobePage, props));
+  return { ...ui, choices, restored, worn, changeCharacter(lookId) {
+    const nextState = { ...state, lookId };
+    ui.rerender(React.createElement(WardrobePage, { ...props, state: nextState,
+      currentLook: bundled.resolveWardrobeAppearance(lookId, {}), activeCharacter: getCharacterForLook(lookId) }));
+  } };
+}
+
+function showAllInventory(ui) {
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  fireEvent.click(ui.getByRole("button", { name: /^全部衣橱/ }));
 }
 
 test("outfit choices cannot switch the selected model or expose its removed outfits", () => {
@@ -77,7 +88,7 @@ test("removed-view recovery can restore another archived model without switching
 
 test("single-item inventory contains real assets and an empty clothing category has no pretend try-on", () => {
   const ui = mount();
-  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllInventory(ui);
   const inventory = ui.getByRole("region", { name: "鞋履独立库存" });
   assert.equal(within(inventory).getAllByRole("button", { name: /鞋履库存：/ }).length, 3);
   fireEvent.click(ui.getByRole("button", { name: "筛选单品：上装" }));
@@ -152,7 +163,7 @@ test("adapting a shared nail color keeps the currently worn shoe selection in th
   const service = mockStudioService();
   try {
     const ui = mount({ lookId: "ruby-white-bikini", selection });
-    fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+    showAllInventory(ui);
     fireEvent.click(ui.getByRole("button", { name: "筛选单品：指甲颜色" }));
     assert.equal(ui.getByRole("button", { name: "指甲颜色库存：亮紫色指甲" }).disabled, true);
     fireEvent.click(ui.getByRole("button", { name: "本地适配：亮紫色指甲" }));
@@ -208,7 +219,7 @@ test("an unavailable remembered combination is not treated as currently worn", (
 
 test("pending items offer available exact-fit alternatives only within the same character", () => {
   const ui = mount({ lookId: "ruby-white-bikini" });
-  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllInventory(ui);
   const choices = ui.getAllByRole("button", { name: /^切换到.*适配黑色尖头高跟鞋$/ });
   assert.ok(choices.length);
   assert.ok(choices.every(button => button.getAttribute("aria-label").startsWith("切换到绯月 · ")));
@@ -228,7 +239,7 @@ test("an alternative is hidden when switching there would drop an existing worn 
     fitted("ruby-velvet", next),
   ] });
   const ui = mount({ lookId: "ruby-white-bikini", selection });
-  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllInventory(ui);
   assert.equal(ui.queryByRole("button", { name: /^切换到.*适配黑色尖头高跟鞋$/ }), null);
 });
 
@@ -244,8 +255,78 @@ test("an alternative appears when both the retained and desired combinations are
     fitted("ruby-velvet", next),
   ] });
   const ui = mount({ lookId: "ruby-white-bikini", selection });
-  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllInventory(ui);
   fireEvent.click(ui.getByRole("button", { name: "切换到绯月 · 酒红丝绒适配黑色尖头高跟鞋" }));
   assert.deepEqual(ui.choices, ["ruby-velvet"]);
+  assert.deepEqual(ui.worn, []);
+});
+
+test("the default character wardrobe hides other sources and all inventory is still available", () => {
+  const ui = mount({ lookId: "fancha-rose-office" });
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+  assert.equal(ui.getAllByRole("button", { name: /鞋履库存：/ }).length, 1);
+  assert.ok(ui.getByRole("button", { name: "鞋履库存：象牙白细跟鞋" }));
+  assert.equal(ui.queryByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }), null);
+  fireEvent.click(ui.getByRole("button", { name: "筛选单品：指甲颜色" }));
+  assert.equal(ui.getAllByRole("button", { name: /指甲颜色库存：/ }).length, 1);
+  fireEvent.click(ui.getByRole("button", { name: /^全部衣橱/ }));
+  assert.equal(ui.getAllByRole("button", { name: /指甲颜色库存：/ }).length, 3);
+  assert.deepEqual(ui.worn, []);
+});
+
+test("switching character resets all inventory to that character's own wardrobe", () => {
+  const ui = mount({ lookId: "fancha-rose-office" });
+  showAllInventory(ui);
+  ui.changeCharacter("songyu-azure-robes");
+  assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+  assert.ok(ui.getByRole("heading", { name: "宋玉的专属衣橱" }));
+  // The first non-empty category is selected instead of an empty shoe shelf.
+  assert.ok(ui.getByRole("button", { name: "连身装库存：蓝白刺绣仙衣" }));
+  assert.equal(ui.queryByRole("button", { name: "连身装库存：玫瑰粉双排扣连衣裙" }), null);
+  ui.changeCharacter("fancha-rose-office");
+  assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+});
+
+test("an empty character category keeps access to the full collection even when other slots have assigned items", () => {
+  const ui = mount({ lookId: "yinyue-silver-fox" });
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  fireEvent.click(ui.getByRole("button", { name: "筛选单品：鞋履" }));
+  assert.ok(ui.getByText("银月还没有独立鞋履"));
+  assert.equal(ui.queryByRole("button", { name: /库存：/ }), null);
+  fireEvent.click(ui.getByRole("button", { name: "查看全部鞋履" }));
+  assert.equal(ui.getAllByRole("button", { name: /鞋履库存：/ }).length, 3);
+  assert.deepEqual(ui.worn, []);
+});
+
+test("all eight assigned outfits offer three immediately wearable stockings in their own default collection", () => {
+  for (const lookId of HOSIERY_LOOK_IDS) {
+    const ui = mount({ lookId });
+    fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+    assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+    fireEvent.click(ui.getByRole("button", { name: "筛选单品：袜类" }));
+    assert.equal(ui.getAllByRole("button", { name: /^袜类库存：/ }).length, 3);
+    for (const item of HOSIERY_ITEMS) {
+      const button = ui.getByRole("button", { name: `袜类库存：${item.name}` });
+      assert.equal(button.disabled, false, `${lookId}:${item.id}`);
+      fireEvent.click(button);
+    }
+    assert.deepEqual(ui.worn, HOSIERY_ITEMS.map(item => ["hosiery", item.id]));
+    assert.equal(ui.queryByRole("button", { name: /^本地适配：/ }), null);
+    if (lookId === "songyu-azure-robes") assert.equal(ui.getAllByText("及地长裙遮住袜子，当前造型不会露出袜面。").length, 3);
+    cleanup();
+  }
+});
+
+test("unassigned characters see stockings only in all inventory and receive a genuine adaptation entry", () => {
+  const ui = mount({ lookId: "ruby-velvet" });
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  fireEvent.click(ui.getByRole("button", { name: "筛选单品：袜类" }));
+  assert.equal(ui.queryByRole("button", { name: /^袜类库存：/ }), null);
+  fireEvent.click(ui.getByRole("button", { name: /^全部衣橱/ }));
+  for (const item of HOSIERY_ITEMS) {
+    assert.equal(ui.getByRole("button", { name: `袜类库存：${item.name}` }).disabled, true);
+    assert.ok(ui.getByRole("button", { name: `本地适配：${item.name}` }));
+  }
   assert.deepEqual(ui.worn, []);
 });

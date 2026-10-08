@@ -1,0 +1,114 @@
+{
+  "createdAt": "2026-10-07",
+  "characterId": "yinyue",
+  "lookId": "yinyue-silver-fox",
+  "method": "built-in ImageGen",
+  "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-14b0e73e-f124-417c-b38a-f876ab1492fd.png",
+  "references": [
+    "docs/references/yinyue/source-1.png",
+    "docs/references/yinyue/source-2.png",
+    "docs/references/yinyue/source-3.png"
+  ],
+  "facePriority": "source-1.png face proportions, expression and source shading; no forced 3D relighting",
+  "generationRecord": "docs/references/yinyue-ziling-generation-20261007.json",
+  "asset": {
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1128147,
+    "bounds": [
+      57,
+      7,
+      1012,
+      1514
+    ],
+    "sha256": "bc18327b404d2c7cb361e97a11f083f50f098060d6d5ae5dbf956ed1eb565cd8"
+  },
+  "calibration": {
+    "method": "Vision landmarks plus visual inspection and original color sampling",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.009514166951530623,
+          "ry": 0.003275028738400909,
+          "x": 0.5041898575619448,
+          "y": 0.11061704602187827
+        },
+        {
+          "rx": 0.010167099481144248,
+          "ry": 0.002653187590569983,
+          "x": 0.551232123768088,
+          "y": 0.11785112854348712
+        }
+      ],
+      "face": {
+        "bottom": 0.16725873947143555,
+        "left": 0.46863746643066406,
+        "right": 0.5782633125782013,
+        "top": 0.0941748395562172
+      },
+      "mouth": {
+        "rx": 0.016338871193440685,
+        "ry": 0.004974727549094948,
+        "x": 0.5190052173415505,
+        "y": 0.14510848959994543
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png"
+    },
+    "armMobilityReason": "Continuous sleeve/garment silhouette; retain intact single image"
+  },
+  "voice": {
+    "id": "01c17741-a048-499a-865c-95b73fec96ee",
+    "name": "银月",
+    "referenceText": "不过呢，连伴生之物都是乾蓝冰焰这等级的。",
+    "referenceDuration": 7.2,
+    "createdAt": "2026-10-07T07:49:17.904Z",
+    "version": 1,
+    "referenceFile": "docs/audio/yinyue-reference.wav",
+    "previewFile": "docs/audio/yinyue-voice-preview.wav",
+    "sourceType": "original scene audio; background music may remain",
+    "sourceProof": [
+      "docs/references/yinyue/voice-source-proof.png",
+      "docs/references/yinyue/voice-ending-proof.png"
+    ],
+    "previewASR": "你好，我是银月。今天过得怎么样？陪我聊一会儿吧。",
+    "source": "/Users/yunfeikong/Codex/抓取神器/data/exports/银月_模型参考素材_2026-10-05/03_场景原声_待分离/银月相关片段_场景原声合辑_非纯台词.wav",
+    "sourceRangeSeconds": [
+      329.226667,
+      336.426667
+    ]
+  },
+  "validation": {
+    "runtime": "Packaged desktop restarted: wardrobe card, full-body transparent render, rename control, voice card and reading voice option confirmed",
+    "tests": "39 passed: catalog, wardrobe domain, assets, model names, archive, renderer",
+    "build": "Vite production build passed",
+    "voice": "local synthesis successful; ASR matches preview text (紫灵 transcribed homophone 紫玲)",
+    "screenshot": "docs/screenshots/yinyue-desktop-20261007.jpg"
+  },
+  "cuteActions": {
+    "createdAt": "2026-10-07",
+    "meshCount": 10,
+    "authoredCount": 6,
+    "generationRecord": "docs/references/yinyue/actions-20261007/generation.json",
+    "assetValidation": "docs/references/yinyue/actions-20261007/validation.json",
+    "reference": "Existing approved yinyue-silver-fox/character.png",
+    "expressionHandling": "Independent left/right eyelids for procedural wink; authored frame expressions preserved, speech and blink overlays disabled for those frames",
+    "playback": "Each explicit action plays once and returns to idle. Five small mesh gestures rotate during idle; manual interactions interrupt them.",
+    "rigHandling": "Original idle rig retained; all six authored frames preserve their own expressions and use matching planted feet.",
+    "validation": {
+      "tests": "93 passed, 0 failed",
+      "build": "Vite production build passed",
+      "desktop": "Packaged desktop restarted; 16 menu entries confirmed; heart and tail hug visibly rendered; heart returned to idle. Wink triggered from menu; independent eyelid behavior verified by tests.",
+      "screenshots": [
+        "docs/screenshots/yinyue-heart-20261007.jpg",
+        "docs/screenshots/yinyue-tail-hug-20261007.jpg"
+      ]
+    }
+  }
+}

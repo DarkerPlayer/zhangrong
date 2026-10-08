@@ -644,6 +644,8 @@ test("entering local fit generation from a lower wardrobe row starts at the top 
   await act(async () => {});
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+  fireEvent.click(ui.getByRole("button", { name: /^全部衣橱/ }));
   const page = ui.getByRole("region", { name: "选一种，陪你的模样" });
   page.scrollTop = 700;
   fireEvent.click(ui.getAllByRole("button", { name: /本地适配：/ })[0]);

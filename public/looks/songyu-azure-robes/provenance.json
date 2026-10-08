@@ -1,0 +1,493 @@
+{
+  "createdAt": "2026-10-05",
+  "characterId": "songyu",
+  "lookId": "songyu-azure-robes",
+  "name": "宋玉 · 冰绡青衣",
+  "method": "built-in ImageGen",
+  "sourceDirectory": "/Users/yunfeikong/Codex/抓取神器/data/exports/宋玉_模型素材_2026-10-05/",
+  "referenceAssignments": "docs/songyu-model.md",
+  "generationRecord": "docs/references/songyu/generation.json",
+  "assets": [
+    {
+      "path": "public/looks/songyu-azure-robes/character.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 781763,
+      "bounds": [
+        62,
+        0,
+        1010,
+        1536
+      ],
+      "sha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/spell.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 726669,
+      "bounds": [
+        55,
+        24,
+        995,
+        1497
+      ],
+      "sha256": "2f9df918704abf33e453130e77b8e6ca9cca82851ad77dc12a031c5944f9c817"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/talisman-ready.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 785134,
+      "bounds": [
+        56,
+        29,
+        992,
+        1504
+      ],
+      "sha256": "a09faa38a94b67614a5ecf8581f595e1d6669214cee59d4ce6de6456e345342b"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/guzheng-ready.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 661037,
+      "bounds": [
+        13,
+        85,
+        1023,
+        1485
+      ],
+      "sha256": "063f62b04cac8ad5e93f6dd99f078d0c7580c7b9c565b87bacd6c61fbe3401e0"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/guzheng.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 647169,
+      "bounds": [
+        12,
+        85,
+        1024,
+        1484
+      ],
+      "sha256": "cdabb2281ea91c340214ca0373571f21b37839274f4998714f14f2c8c9a1c0cb"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/salute.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 788621,
+      "bounds": [
+        67,
+        15,
+        968,
+        1512
+      ],
+      "sha256": "4695fec588d8381b1cc8bcc8c6e253410d65323f9905e7e1950e72f3d62d07e6"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/flight.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 648317,
+      "bounds": [
+        57,
+        20,
+        1004,
+        1511
+      ],
+      "sha256": "07ea1163c0a1bc693b4905bc00e47841487bb8f7707b95618672917ecc3f4e1f"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/scroll-ready.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 850694,
+      "bounds": [
+        52,
+        18,
+        977,
+        1499
+      ],
+      "sha256": "1d432529cbd0fdd6ec3e4f57ee56241eda19ed47bb009ebed44be7fd6bd07ffc"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/talisman.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 742437,
+      "bounds": [
+        57,
+        29,
+        990,
+        1503
+      ],
+      "sha256": "a60f90291050d2f10e9fed3e782030bdbeb06519748156d9af79bc9b7b407bba"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/turn.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 849684,
+      "bounds": [
+        27,
+        15,
+        1000,
+        1522
+      ],
+      "sha256": "be16b7f9849feb25b21af97bbe7107be8c8da6114887d7826d07bd709079ec05"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/tea-ready.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 851714,
+      "bounds": [
+        59,
+        9,
+        971,
+        1518
+      ],
+      "sha256": "bef165ee2862fc92e8ee2abf241fe70dd1988989d06564244d02a8b8094580c4"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/salute-ready.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 874113,
+      "bounds": [
+        86,
+        10,
+        966,
+        1489
+      ],
+      "sha256": "f415acd6f81aec1203cbdf534a490cd10bb8e23eaf9240cb1dc461f9fa28cd5a"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/scroll.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 799185,
+      "bounds": [
+        46,
+        26,
+        983,
+        1499
+      ],
+      "sha256": "1f05881e0e57e387b7c034fde3e229350f381b04cf1fcca526fa26acf33b94a2"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/meditate.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 1069778,
+      "bounds": [
+        22,
+        448,
+        1012,
+        1487
+      ],
+      "sha256": "2f3c7d7ebf638f8be57deab7a85afc89b9ab3ecd68cc948532cea57d1955f11e"
+    },
+    {
+      "path": "public/looks/songyu-azure-robes/actions/tea.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 845057,
+      "bounds": [
+        60,
+        12,
+        969,
+        1517
+      ],
+      "sha256": "31f5f32dbd19ed587fc4d7322d1b8e531adead52eb0e2593a981868ffefad1ac"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-white-hair-ornaments.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 1195221,
+      "bounds": [
+        47,
+        157,
+        1208,
+        1068
+      ],
+      "sha256": "4e86bc84f5af61d1eddaf49e6b3dc89043c7c63912cafc52b8d3bdfbdbfe5034"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-halfup-hair.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 1090190,
+      "bounds": [
+        311,
+        24,
+        1033,
+        1228
+      ],
+      "sha256": "dcfa03c2968015a053cacc8189e077f4837287849b8f9b148bfcba9e1cb60032"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-silver-sash.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 1015707,
+      "bounds": [
+        32,
+        236,
+        1225,
+        1027
+      ],
+      "sha256": "a454dd02205dd83750f9dee1a8431c182cfdce1b05aacb68b13c22b3f03c09d2"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-azure-dress.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 661715,
+      "bounds": [
+        42,
+        23,
+        1223,
+        1235
+      ],
+      "sha256": "8756b1a6bb4d4762234deda160eb21bc9aff005f5bc4149e53063ae0dc6d6776"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-red-cord-jade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 1448630,
+      "bounds": [
+        123,
+        160,
+        1131,
+        975
+      ],
+      "sha256": "e8a809c71deef3939c3a0f28686d63914df502205472bef1201eb2b1477ba239"
+    },
+    {
+      "path": "public/wardrobe/items/songyu-green-jade-tassel.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 1433156,
+      "bounds": [
+        517,
+        41,
+        748,
+        1221
+      ],
+      "sha256": "f59016dfa4d4cc10dee75143580fc49bcac0662f0729db5067b0d48c7e2a81d5"
+    }
+  ],
+  "calibration": {
+    "method": "Vision landmarks + visual check + sampled face colors",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010128083709403213,
+          "ry": 0.0019228787326055485,
+          "x": 0.45669772869237424,
+          "y": 0.097675833923488
+        },
+        {
+          "rx": 0.009955024476942631,
+          "ry": 0.0019558440743996375,
+          "x": 0.5047010550130773,
+          "y": 0.09810435985372856
+        }
+      ],
+      "face": {
+        "bottom": 0.15426069498062134,
+        "left": 0.42113420367240906,
+        "right": 0.5394794270396233,
+        "top": 0.0753638818860054
+      },
+      "mouth": {
+        "rx": 0.013300836892340961,
+        "ry": 0.005647773075022733,
+        "x": 0.4802585047871747,
+        "y": 0.1328700313696073
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+    },
+    "armMobility": 0,
+    "actionExpression": "preserve authored face; no idle eye/mouth overlay"
+  },
+  "voice": {
+    "id": "ec6e64f4-9704-4d8c-abbd-8b3c31ce2bbd",
+    "name": "宋玉",
+    "referenceText": "师兄只管专心闭关，六峰上下一定全力为师兄护法。",
+    "referenceDuration": 6.700666666666667,
+    "createdAt": "2026-10-05T12:01:04.686Z",
+    "version": 1
+  },
+  "validation": {
+    "tests": "202 related tests passed; renderer action-sequence regression and final frontend/menu suite: 63 passed; final catalog/resource suite: 10 passed",
+    "build": "Vite build passed; .runtime/songyu-import-20261005/build.log",
+    "runtime": "All 9 actions reached authored perform phase in browser; idle recovery and expression preservation covered by real-renderer tests with GPU boundary stub. Long menu overlap fixed and tea click verified. Switching to wardrobe interrupted action cleanly. Desktop Songyu selected; existing model rename map preserved. Songyu voice card and dropdown option verified in native app.",
+    "limitations": [
+      "Key-pose animations reconstructed from references, not original video frame extraction",
+      "Cross-character wardrobe combinations require a fitted result",
+      "Unaligned open-eye meditation candidates excluded"
+    ],
+    "desktop": {
+      "path": "release/母狗张容.app",
+      "distFiles": 377,
+      "serviceModules": [
+        "looks.mjs",
+        "wardrobe.mjs",
+        "dialogue.mjs",
+        "authored-actions.mjs"
+      ],
+      "hashCheck": "matched",
+      "backup": ".runtime/songyu-import-20261005/app-before",
+      "screenshot": "docs/screenshots/songyu-desktop-20261005.jpg"
+    }
+  },
+  "faceRevision": {
+    "acceptedAt": "2026-10-05",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9a1dee49-c25a-46dc-bb2f-6451a9137af6.png",
+    "reference": "docs/references/songyu/user-selected-frontal-primary-20261005.png",
+    "generationRecord": "docs/references/songyu/face-preview-frontal-20261005.json",
+    "backup": ".runtime/songyu-face-refinement-20261005/adoption-before",
+    "scope": "accepted main portrait only; action frames unchanged",
+    "validation": {
+      "assets": "1024x1536 RGBA; real alpha and source hash verified",
+      "calibration": "Vision confidence 1; updated eye/mouth/head/shoulder/bounds values; sampled facial colors",
+      "tests": "21 asset, motion and renderer tests passed",
+      "build": "Vite build passed",
+      "desktop": "Three matching assets synced, app restarted via Quit menu, accepted front face visually confirmed on companion screen",
+      "actions": "Existing action frames unchanged"
+    }
+  }
+}

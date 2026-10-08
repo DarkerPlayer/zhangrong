@@ -321,7 +321,59 @@
       ],
       "currentRevision": 3,
       "currentSourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-74f3abc3-a298-4404-9248-976c73456ff5.png"
+    },
+    {
+      "id": "songyu-azure-robes",
+      "name": "宋玉",
+      "outfit": "冰绡青衣",
+      "tool": "built-in ImageGen",
+      "prompt": "Create a production character sprite for a desktop companion app. Portrait 1024x1536, actual transparent alpha background. ONE adult female Song Yu from supplied Chinese fantasy animation references, fully clothed, full body head-to-hem, all hair and long robe completely inside frame, crown top y~55 bottom hem y~1480. Reproduce the exact face from image1: soft oval tapered face, gray blue eyes, restrained rose lips, calm composed warm-neutral gaze, subtle natural makeup. Long dark brown almost black half-up hair, white carved swirling cloud/phoenix crown and two white feather fan side hair clips with pearl studs EXACTLY as reference. Source2/3 define outfit: pale icy blue embroidered wrap V-bodice, exposed shoulder cutouts, long gradient blue-white bell sleeves, translucent pale chiffon streamers, dark teal layered broad wrap sash with silver curved leaf/vine framework, layered full-length blue/white silk skirt with pointed ivory front panels. Small ivory double-scroll jade plaque on orange-red cord at neck, lower red cord with two gold beads across chest. Green circular carved jade disk with gold connector, large gold ring and dark green tassel hangs at HER left waist (viewer right). Natural nude nails, no watch. Standing centered relaxed pose, hands separated gently by sides, slight elbow bend, no props, no other people, no background, no captions. High quality faithful 3D animation render, soft neutral studio light, original clothing coverage and face proportions, not chibi. Dress covers legs to floor; don't invent conspicuous shoes. Preserve layered textile construction and silver embroidery. No shadow floor, no checkerboard.",
+      "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c58321e3-5b58-4576-9b7d-dd5cab237a57.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png",
+      "provenance": "public/looks/songyu-azure-robes/provenance.json",
+      "actionCount": 9,
+      "wardrobeItemCount": 7,
+      "faceRevisionRecord": "docs/references/songyu/face-preview-frontal-20261005.json",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9a1dee49-c25a-46dc-bb2f-6451a9137af6.png"
+    },
+    {
+      "id": "yinyue-silver-fox",
+      "name": "银月",
+      "outfit": "银狐红绦",
+      "tool": "built-in ImageGen",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-14b0e73e-f124-417c-b38a-f876ab1492fd.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png",
+      "provenance": "public/looks/yinyue-silver-fox/provenance.json",
+      "generationRecord": "docs/references/yinyue-ziling-generation-20261007.json"
+    },
+    {
+      "id": "ziling-violet-dress",
+      "name": "紫灵",
+      "outfit": "紫绡金饰",
+      "tool": "built-in ImageGen",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8315d471-dd66-4105-9935-28b89006c69c.png",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png",
+      "provenance": "public/looks/ziling-violet-dress/provenance.json",
+      "generationRecord": "docs/references/ziling/refinement-20261007/generation.json"
+    },
+    {
+      "id": "ziling-violet-veil",
+      "name": "紫灵",
+      "tool": "built-in ImageGen",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4acb0725-1a48-4dbe-903f-d6d4960eb8f0.png",
+      "generationRecord": "docs/references/ziling/refinement-20261007/generation.json",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png",
+      "provenance": "public/looks/ziling-violet-veil/provenance.json"
+    },
+    {
+      "id": "ziling-white-robes",
+      "name": "紫灵",
+      "tool": "built-in ImageGen",
+      "sourcePath": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4f16bdfe-9303-4b11-bb47-046300d0b40e.png",
+      "generationRecord": "docs/references/ziling/refinement-20261007/generation.json",
+      "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png",
+      "provenance": "public/looks/ziling-white-robes/provenance.json"
     }
   ],
-  "updatedOn": "2026-10-03"
+  "updatedOn": "2026-10-07"
 }

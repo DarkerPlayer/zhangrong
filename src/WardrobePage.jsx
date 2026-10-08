@@ -4,6 +4,7 @@ import {
   Check,
   CoatHanger,
   ImageSquare,
+  PencilSimple,
   Sparkle,
   Trash,
   X,
@@ -12,6 +13,8 @@ import LivePet from "./LivePet.jsx";
 import WardrobeFilters, { WardrobeEmpty } from "./WardrobeFilters.jsx";
 import LocalStudio from "./LocalStudio.jsx";
 import { SCENES } from "./state.mjs";
+import { getModelName, withModelName } from "./model-names.mjs";
+import { getWardrobeInventory } from "./wardrobe-inventory.mjs";
 import { getAvailableLooks, getRemovedLooks, getLook, ORIGINAL_LOOK } from "./looks.mjs";
 import {
   BACKGROUNDS,
@@ -19,7 +22,6 @@ import {
   GARMENT_SLOT_IDS,
   GARMENT_SLOT_LABELS,
   getOutfitVariant,
-  getWardrobeItemsBySlot,
   getWardrobeCombinationFit,
   getEmbeddedWardrobeItems,
   normalizeWardrobeSelection,
@@ -47,6 +49,7 @@ export default function WardrobePage({
   setView,
   chooseLook,
   chooseCharacter,
+  renameModel,
   removeLook,
   restoreLook,
   chooseScene,
@@ -57,16 +60,23 @@ export default function WardrobePage({
   onClose,
   petProps,
 }) {
+  const inventoryCharacterId = currentLook.characterId || activeCharacter.id;
   const [tab, setTab] = useState("outfits");
-  const [selectedSlot, setSelectedSlot] = useState("shoes");
+  const [selectedSlot, setSelectedSlot] = useState(() =>
+    getWardrobeInventory(inventoryCharacterId).find(item => item.slot === "shoes")?.slot ||
+    getWardrobeInventory(inventoryCharacterId)[0]?.slot || "shoes");
+  const [inventoryView, setInventoryView] = useState({ characterId: inventoryCharacterId, scope: "character" });
   const [adaptationNotice, setAdaptationNotice] = useState("");
   const [studio, setStudio] = useState(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
   const pageRef = useRef();
   const background =
     BACKGROUNDS.find((item) => item.id === state.backgroundId) || BACKGROUNDS[0];
-  const availableLooks = getAvailableLooks(removedLookIds);
+  const availableLooks = getAvailableLooks(removedLookIds).map((look) => withModelName(look, state.modelNames));
   const removedLooks = getRemovedLooks(removedLookIds);
   const isOriginal = state.lookId === ORIGINAL_LOOK.id;
+  const originalName = getModelName(ORIGINAL_LOOK.characterId, ORIGINAL_LOOK.character, state.modelNames);
   const modelLooks = isOriginal ? [] : availableLooks.filter((look) => look.characterId === activeCharacter.id);
   // Removed looks remain a global recovery view so fully archived models can return.
   const scopedLooks = visibleLooks.filter((look) => view === "removed"
@@ -76,7 +86,10 @@ export default function WardrobePage({
     availableLooks.some((look) => look.characterId === character.id),
   );
   const currentVariant = isOriginal ? null : getOutfitVariant(state.lookId);
-  const inventoryItems = getWardrobeItemsBySlot(selectedSlot);
+  const inventoryScope = inventoryView.characterId === inventoryCharacterId ? inventoryView.scope : "character";
+  const scopedInventory = getWardrobeInventory(inventoryCharacterId, { scope: inventoryScope });
+  const inventoryItems = scopedInventory.filter(item => item.slot === selectedSlot);
+  const ownItemCount = getWardrobeInventory(inventoryCharacterId).length;
   const selection = currentLook.wardrobeSelection || {};
   const selectedItemId = selection[selectedSlot] || "";
   const embeddedItems = getEmbeddedWardrobeItems(state.lookId);
@@ -102,8 +115,14 @@ export default function WardrobePage({
 
   useLayoutEffect(() => {
     if (pageRef.current) pageRef.current.scrollTop = 0;
-  }, [view, query, category, studio, tab, activeCharacter.id, isOriginal]);
+  }, [view, query, category, studio, tab, activeCharacter.id, isOriginal, inventoryScope]);
+  useEffect(() => {
+    setInventoryView({ characterId: inventoryCharacterId, scope: "character" });
+    const items = getWardrobeInventory(inventoryCharacterId);
+    setSelectedSlot(items.find(item => item.slot === "shoes")?.slot || items[0]?.slot || "shoes");
+  }, [inventoryCharacterId]);
   useEffect(() => setAdaptationNotice(""), [activeCharacter.id, isOriginal]);
+  useEffect(() => setEditingName(false), [currentLook.characterId]);
 
   return (
     <section
@@ -125,7 +144,7 @@ export default function WardrobePage({
       </header>
 
       {studio ? <LocalStudio
-        baseLook={getLook(state.lookId)}
+        baseLook={withModelName(getLook(state.lookId), state.modelNames)}
         items={WARDROBE_ITEMS}
         initialKind={studio.kind}
         initialItemId={studio.itemId}
@@ -139,7 +158,7 @@ export default function WardrobePage({
           <p className="wardrobe-kicker">外观模型 · 选择人物</p>
           <div className="wardrobe-character-list">
             {availableCharacters.map((character) => {
-              const name = character.defaultName;
+              const name = getModelName(character.id, character.defaultName, state.modelNames);
               const look = availableLooks.find((look) => look.id === character.defaultLookId) ||
                 availableLooks.find((look) => look.characterId === character.id);
               const selected = !isOriginal && character.id === activeCharacter.id;
@@ -166,7 +185,7 @@ export default function WardrobePage({
             <button
               type="button"
               className={isOriginal ? "selected" : ""}
-              aria-label="选择外观模特：Haru"
+              aria-label={`选择外观模特：${originalName}`}
               aria-pressed={isOriginal}
               onClick={() => {
                 chooseLook(ORIGINAL_LOOK.id);
@@ -176,7 +195,7 @@ export default function WardrobePage({
               }}
             >
               <span className="wardrobe-original-icon"><Sparkle size={24} /></span>
-              <span>Haru</span>
+              <span>{originalName}</span>
               <small>原始 Live2D</small>
             </button>
           </div>
@@ -192,7 +211,33 @@ export default function WardrobePage({
           </div>
           <div className="wardrobe-preview-caption">
             <span>{background.name}</span>
-            <strong>{currentLook.character}</strong>
+            {editingName ? (
+              <form className="model-name-form" onSubmit={(event) => {
+                event.preventDefault();
+                if (!nameDraft.trim()) return;
+                renameModel(currentLook.characterId, nameDraft);
+                setEditingName(false);
+              }} onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.stopPropagation();
+                  setEditingName(false);
+                }
+              }}>
+                <input aria-label="模型名称" value={nameDraft} maxLength={24} autoFocus
+                  onFocus={(event) => event.target.select()}
+                  onChange={(event) => setNameDraft(event.target.value)} />
+                <button type="submit" disabled={!nameDraft.trim()} aria-label="保存模型名称">保存</button>
+                <button type="button" aria-label="取消改名" onClick={() => setEditingName(false)}>取消</button>
+              </form>
+            ) : (
+              <div className="model-name-row">
+                <strong>{currentLook.character}</strong>
+                <button type="button" className="model-rename-button" aria-label="修改模型名称"
+                  onClick={() => { setNameDraft(currentLook.character); setEditingName(true); }}>
+                  <PencilSimple size={14} />改名
+                </button>
+              </div>
+            )}
             <small>{currentLook.outfit} · 全身预览</small>
           </div>
         </div>
@@ -237,7 +282,7 @@ export default function WardrobePage({
                 searchPlaceholder={view === "active" ? "搜索当前模型的穿搭或风格" : "搜索已移除的模型或造型"}
                 resultHint={view === "active" ? "仅当前模型" : "恢复后在对应模型下选择"}
               />}
-              {isOriginal && view === "active" ? <div className="wardrobe-empty-note"><strong>Haru · 原始 Live2D 造型</strong><p>这个模型使用自带造型，暂不支持独立单品适配。</p><button type="button" className="safe-empty-button" onClick={() => setView("removed")}>管理已移除造型</button></div> : !scopedLooks.length && (
+              {isOriginal && view === "active" ? <div className="wardrobe-empty-note"><strong>{originalName} · 原始 Live2D 造型</strong><p>这个模型使用自带造型，暂不支持独立单品适配。</p><button type="button" className="safe-empty-button" onClick={() => setView("removed")}>管理已移除造型</button></div> : !scopedLooks.length && (
                 <WardrobeEmpty
                   title={view === "removed" && !removedLookIds.length ? "目前没有已移除的造型" : undefined}
                   actionLabel={view === "removed" && !removedLookIds.length ? "返回可用造型" : undefined}
@@ -286,8 +331,20 @@ export default function WardrobePage({
             <div className="wardrobe-tab-panel wardrobe-parts-panel" role="tabpanel">
               <div className="wardrobe-section-card">
                 <CoatHanger size={24} />
-                <h3>独立单品衣橱</h3>
-                <p>衣服、指甲颜色、鞋履、手表、发型和耳环可独立收藏，供不同角色复用。每次替换保留其余已选单品，适配完成后即可穿上。</p>
+                <h3>{inventoryScope === "character" ? `${currentLook.character}的专属衣橱` : "全部单品衣橱"}</h3>
+                <p>{inventoryScope === "character"
+                  ? "展示来源于这个角色的独立部件，以及已分配给这个角色的共享单品。其他库存保留在全部衣橱中，可随时切换查看。"
+                  : "这里保留所有角色和通用单品，可为当前角色适配；每次替换保留其余已选部件。"}</p>
+              </div>
+              <div className="wardrobe-inventory-scope" role="group" aria-label="单品衣橱范围">
+                <button type="button" aria-pressed={inventoryScope === "character"}
+                  onClick={() => setInventoryView({ characterId: inventoryCharacterId, scope: "character" })}>
+                  角色专属 <span>{ownItemCount}</span>
+                </button>
+                <button type="button" aria-pressed={inventoryScope === "all"}
+                  onClick={() => setInventoryView({ characterId: inventoryCharacterId, scope: "all" })}>
+                  全部衣橱 <span>{WARDROBE_ITEMS.length}</span>
+                </button>
               </div>
               <div className="part-slot-grid" aria-label="独立单品分类">
                 {GARMENT_SLOT_IDS.map((slotId) => (
@@ -305,7 +362,7 @@ export default function WardrobePage({
                     <CoatHanger size={16} />
                     <span>{GARMENT_SLOT_LABELS[slotId]}</span>
                     <small>
-                      {getWardrobeItemsBySlot(slotId).length} 件独立单品
+                      {scopedInventory.filter(item => item.slot === slotId).length} 件独立单品
                     </small>
                   </button>
                 ))}
@@ -343,7 +400,7 @@ export default function WardrobePage({
                 <section className="wardrobe-inventory" aria-label={`${slotLabel}独立库存`}>
                   <div className="wardrobe-inventory-heading">
                     <h3>独立{slotLabel}库存</h3>
-                    <small>{inventoryItems.length} 件单品 · 所有角色共享</small>
+                    <small>{inventoryItems.length} 件单品 · {inventoryScope === "character" ? `${currentLook.character}专属` : "所有角色共享"}</small>
                   </div>
                   {!isOriginal && inventoryItems.some(item => !getWardrobeCombinationFit(state.lookId, candidateSelection(item.slot, item.id))) && <p className="wardrobe-context-note">只推荐当前模特已适配的造型，并保留当前单品组合。</p>}
                   <div className="wardrobe-item-grid">
@@ -353,7 +410,8 @@ export default function WardrobePage({
                       const original = embedded && !selectedItemId;
                       const next = candidateSelection(item.slot, item.id);
                       const fit = !isOriginal && getWardrobeCombinationFit(state.lookId, next);
-                      const sourceLook = item.sourceLookId ? getLook(item.sourceLookId) : null;
+                      const source = item.sourceLookId ? getLook(item.sourceLookId) : null;
+                      const sourceLook = source && source.id === item.sourceLookId ? withModelName(source, state.modelNames) : null;
                       const alternatives = !isOriginal && !fit ? modelLooks.filter(look =>
                         look.id !== state.lookId &&
                         getWardrobeCombinationFit(look.id, selection) &&
@@ -379,6 +437,7 @@ export default function WardrobePage({
                               <small>{item.description}</small>
                               <span className="wardrobe-item-source">来源：{sourceLook ? `${sourceLook.character} · ${sourceLook.outfit}` : item.sourceLabel || "独立单品库存"}</span>
                               <em>{original ? "原配 · 当前造型自带" : selected ? "已穿上" : fit ? embedded ? "恢复此原配" : "点击穿上" : "当前组合待适配"}</em>
+                              {fit?.visibilityNote && <small>{fit.visibilityNote}</small>}
                             </span>
                             {(selected || original) && <Check size={18} />}
                           </button>
@@ -396,8 +455,12 @@ export default function WardrobePage({
                   </div>
                 </section>
               ) : <div className="wardrobe-empty-note">
-                <strong>还没有独立{slotLabel}</strong>
-                <p>上传{slotLabel}参考图片，适配后会保存在共享单品库存，供其他角色继续使用。</p>
+                <strong>{inventoryScope === "character" ? `${currentLook.character}还没有独立${slotLabel}` : `还没有独立${slotLabel}`}</strong>
+                <p>{inventoryScope === "character"
+                  ? `可以在全部衣橱中挑选${slotLabel}，或上传新部件适配到当前角色。完整造型中的衣物仍保留在原造型里。`
+                  : `上传${slotLabel}参考图片，适配后会保存在单品库存，供其他角色继续使用。`}</p>
+                {inventoryScope === "character" && <button type="button" className="safe-empty-button"
+                  onClick={() => setInventoryView({ characterId: inventoryCharacterId, scope: "all" })}>查看全部{slotLabel}</button>}
               </div>}
               {currentVariant?.slots[selectedSlot]?.length > 0 && !embeddedItems.some(item => item.slot === selectedSlot) && <details className="wardrobe-source-notes">
                 <summary>造型参考（需生成适配）</summary>

@@ -4,10 +4,20 @@ import React, {
   useLayoutEffect,
   useRef,
   useCallback,
+  useMemo,
   lazy,
   Suspense,
 } from "react";
 import { createPortal } from "react-dom";
+import { CUTE_ACTIONS } from "../server/cute-actions.mjs";
+import { AUTHORED_ACTIONS } from "../server/authored-actions.mjs";
+import {
+  getExclusiveCorpusStatus,
+  getExclusiveCorpusEntries,
+  isExclusiveCorpusCharacter,
+  isAllowedExclusiveCorpusText,
+  selectExclusiveCorpusReply,
+} from "../server/exclusive-corpus.mjs";
 import {
   Heart,
   ChatCircleDots,
@@ -117,6 +127,7 @@ import PetShell from "./PetShell.jsx";
 import LookActionMenu from "./LookActionMenu.jsx";
 import MotionDebugPanel from "./MotionDebugPanel.jsx";
 import WardrobePage from "./WardrobePage.jsx";
+import { withModelName, normalizeModelNames } from "./model-names.mjs";
 import PersonaPage from "./PersonaPage.jsx";
 import ModelTrial from "./ModelTrial.jsx";
 import { importTextPackEntries } from "./text-pack-import.mjs";
@@ -320,8 +331,15 @@ function AppContent() {
   const activeVoiceRef = useRef(activePersona.voiceProfileId || "builtin");
   activeVoiceRef.current = activePersona.voiceProfileId || "builtin";
   const activeThread = getPersonaThread(state, state.activePersonaId);
-  const messages = activeThread.messages;
-  const savedMessages = activeThread.savedMessages;
+  const speechCharacterId = getLook(state.lookId).characterId;
+  const exclusiveCorpus = isExclusiveCorpusCharacter(speechCharacterId);
+  const exclusiveEntries = useMemo(() => getExclusiveCorpusEntries(speechCharacterId), [speechCharacterId]);
+  const messages = useMemo(() => activeThread.messages.filter(message =>
+    message.role !== "assistant" || isAllowedExclusiveCorpusText(speechCharacterId, message.content)),
+  [activeThread.messages, speechCharacterId]);
+  const savedMessages = useMemo(() => activeThread.savedMessages.filter(message =>
+    message.role !== "assistant" || isAllowedExclusiveCorpusText(speechCharacterId, message.content)),
+  [activeThread.savedMessages, speechCharacterId]);
   const favorites = savedMessages.map((item) => item.id);
   const personaCorpora = activePersona.customCorpora || [];
   const protectedVoiceIds = [
@@ -334,21 +352,45 @@ function AppContent() {
   ].filter((id) => id && id !== "builtin");
   const animated = state.avatarMode !== "photo";
   const activeCharacter = getCharacterForLook(state.lookId);
-  const currentLook = resolveWardrobeAppearance(
+  const currentLook = withModelName(resolveWardrobeAppearance(
     state.lookId,
     state.wardrobeSelections?.[activeCharacter.id],
-  );
+  ), state.modelNames);
   const removedLookIds = state.removedLookIds || [];
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
+    modelNames: state.modelNames,
     query: wardrobeQuery,
     category: wardrobeCategory,
     removedLookIds,
     view: wardrobeView,
   });
-  const [sceneLine, setSceneLine] = useState(
-    "你来啦，等你好久了。\n今天，有什么想和我分享的吗？",
-  );
+  const dialogueOwner = `${state.activePersonaId}:${speechCharacterId}`;
+  const speechLookRef = useRef(state.lookId);
+  speechLookRef.current = state.lookId;
+  const dialogueOwnerRef = useRef(dialogueOwner);
+  const [sceneContent, setSceneContent] = useState(() => ({
+    owner: dialogueOwner,
+    text: exclusiveCorpus ? selectExclusiveCorpusReply({ characterId: speechCharacterId, intent: "greeting" }).reply
+      : "你来啦，等你好久了。\n今天，有什么想和我分享的吗？",
+  }));
+  const [corpusStatus, setCorpusStatus] = useState(null);
+  const sceneLine = !exclusiveCorpus || sceneContent.owner === dialogueOwner && isAllowedExclusiveCorpusText(speechCharacterId, sceneContent.text)
+    ? sceneContent.text : "";
+  const corpusNotice = exclusiveCorpus
+    ? (corpusStatus?.owner === dialogueOwner ? corpusStatus.notice : getExclusiveCorpusStatus(speechCharacterId).notice)
+    : "";
+  const setSceneLine = useCallback((text, { lookId = speechLookRef.current, intent, notice } = {}) => {
+    const characterId = getLook(lookId).characterId;
+    const restricted = isExclusiveCorpusCharacter(characterId);
+    const match = restricted && intent ? selectExclusiveCorpusReply({ characterId, intent }) : null;
+    const allowed = restricted ? (isAllowedExclusiveCorpusText(characterId, text) ? text : match?.reply || "") : text;
+    setSceneContent({ owner: dialogueOwnerRef.current, text: allowed });
+    setCorpusStatus(restricted ? { owner: dialogueOwnerRef.current,
+      notice: notice || match?.corpusNotice || (allowed ? "本次回复来自已核验的素材原句。" : "当前操作没有匹配的已核验素材原句，角色保持安静。"),
+    } : null);
+    return allowed;
+  }, []);
   const [lineKind, setLineKind] = useState("welcome");
   const inputRef = useRef(),
     mediaRef = useRef(),
@@ -376,9 +418,20 @@ function AppContent() {
     toastTimer.current = setTimeout(() => setToast(""), 4000);
   }, []);
   const readAloud = useCallback(
-    (text, voiceProfileId = activeVoiceRef.current) => {
+    (text, voiceProfileId = activeVoiceRef.current, { standalone = false } = {}) => {
       speechQueueRef.current?.cancel();
       speechQueueRef.current = null;
+      const look = getLook(speechLookRef.current);
+      if (!standalone && !isAllowedExclusiveCorpusText(look.characterId, text)) {
+        stopSpeech();
+        setSpeaking(false);
+        setSpeechPreparing(false);
+        const notice = "这段内容不属于当前角色已核验的素材原句，未朗读。";
+        setSceneLine("", { notice });
+        notify(notice);
+        return false;
+      }
+      if (!text) return false;
       setSpeaking(true);
       setSpeechPreparing(true);
       speak(
@@ -389,10 +442,11 @@ function AppContent() {
           if (error) notify(error.message);
         },
         () => setSpeechPreparing(false),
-        { voiceProfileId },
+        { voiceProfileId, ...(!standalone ? { lookId: look.id } : {}) },
       );
+      return true;
     },
-    [notify],
+    [notify, setSceneLine],
   );
   const stopVoice = () => {
     speechQueueRef.current?.cancel();
@@ -401,6 +455,27 @@ function AppContent() {
     setSpeaking(false);
     setSpeechPreparing(false);
   };
+  function updateDialogueContext(lookId, personaId, { keepRequest = false } = {}) {
+    const owner = `${personaId}:${getLook(lookId).characterId}`;
+    speechLookRef.current = lookId;
+    if (owner === dialogueOwnerRef.current) return false;
+    dialogueOwnerRef.current = owner;
+    if (!keepRequest) {
+      requestEpoch.current++;
+      requestRef.current?.abort();
+      requestRef.current = null;
+      sendLock.current = false;
+      setBusy(false);
+    }
+    stopVoice();
+    setStreamingText("");
+    setSceneLine("", { lookId, intent: "greeting" });
+    return true;
+  }
+  useLayoutEffect(() => {
+    // Covers restored/imported appearances and persona deletion as well as clicks.
+    updateDialogueContext(state.lookId, state.activePersonaId);
+  }, [state.lookId, state.activePersonaId]);
   const changeSettings = (patch) =>
     setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
   const currentScene = SCENES.find((s) => s.id === scene) || SCENES[0];
@@ -450,9 +525,10 @@ function AppContent() {
         "{userName}",
         getPersonaThread(state, personaId).memories.userName || "你",
       );
-    setSceneLine(greeting);
-    setLineKind("welcome");
     const appearanceState = switchPersonaAppearance(state, personaId);
+    updateDialogueContext(appearanceState.lookId, personaId);
+    setSceneLine(greeting, { lookId: appearanceState.lookId, intent: "greeting" });
+    setLineKind("welcome");
     preparePersonaAppearance(appearanceState);
     setState((current) =>
       setActivePersona(switchPersonaAppearance(current, personaId), personaId),
@@ -681,16 +757,17 @@ function AppContent() {
           );
           focusSessionRef.current = null;
         }
-        setSceneLine(
+        const focusLine = setSceneLine(
           "做得很好，这一段专注完成了。起来伸个懒腰，我们休息一下吧。",
+          { intent: "focus" },
         );
         setLineKind("focus");
         notify("专注完成，休息一下吧。");
-        if (settings.voice) readAloud("做得很好，休息一下吧。");
+        if (settings.voice && focusLine) readAloud(isExclusiveCorpusCharacter(getLook(speechLookRef.current).characterId) ? focusLine : "做得很好，休息一下吧。");
       }
     }, 250);
     return () => clearInterval(id);
-  }, [focusRunning, settings.voice, notify, readAloud]);
+  }, [focusRunning, settings.voice, notify, readAloud, setSceneLine]);
   const chooseScene = useCallback(
     (id, { quiet = false } = {}) => {
       const s = SCENES.find((s) => s.id === id);
@@ -704,20 +781,20 @@ function AppContent() {
       }));
       setCustomEnabled(false);
       if (!quiet) {
-        setSceneLine(s.line);
+        const line = setSceneLine(s.line, { intent: "action:outfit" });
         setLineKind("outfit");
-        if (settings.voice) {
-          readAloud(s.line);
+        if (settings.voice && line) {
+          readAloud(line);
         }
       }
     },
-    [settings.voice, readAloud],
+    [settings.voice, readAloud, setSceneLine],
   );
-  function say(text) {
-    setSceneLine(text);
+  function say(text, options = {}) {
+    const line = setSceneLine(text, options);
     setLineKind("reply");
-    if (settingsRef.current.voice) {
-      readAloud(text);
+    if (settingsRef.current.voice && line) {
+      readAloud(line);
     }
   }
   async function send(text = input) {
@@ -736,7 +813,10 @@ function AppContent() {
     stopSpeech();
     setSpeaking(false);
     const sourcePersonaId = state.activePersonaId;
-    const sourceHistory = activeThread.messages
+    const sourceLookId = state.lookId;
+    const sourceCharacterId = getLook(sourceLookId).characterId;
+    const sourceExclusive = isExclusiveCorpusCharacter(sourceCharacterId);
+    const sourceHistory = messages
       .slice(-24)
       .map(({ role, content }) => ({ role, content }));
     const sourceMemory = activeThread.memories;
@@ -786,6 +866,7 @@ function AppContent() {
       );
       if (
         streamed &&
+        !sourceExclusive &&
         settingsRef.current.voice &&
         epoch === requestEpoch.current
       ) {
@@ -793,6 +874,7 @@ function AppContent() {
           speak,
           stop: stopSpeech,
           voiceProfileId: activeVoiceRef.current,
+          lookId: sourceLookId,
           onStart: () => {
             if (epoch === requestEpoch.current) {
               setSpeaking(true);
@@ -831,20 +913,23 @@ function AppContent() {
                 setSpeechPreparing(true);
               }
               receivedText += delta;
-              setStreamingText(receivedText);
-              sentenceQueue?.push(delta);
+              if (!sourceExclusive) {
+                setStreamingText(receivedText);
+                sentenceQueue?.push(delta);
+              }
             },
           })
         : await r.json();
       if (
         epoch !== requestEpoch.current ||
-        state.activePersonaId !== sourcePersonaId
+        currentStateRef.current.activePersonaId !== sourcePersonaId ||
+        getLook(speechLookRef.current).characterId !== sourceCharacterId
       )
         return;
       if (!r.ok || typeof data.reply !== "string")
         throw Error(data.error || "连接暂时中断");
       if (isLookAvailable(data.lookAction, removedLookIdsRef.current)) {
-        chooseLook(data.lookAction);
+        chooseLook(data.lookAction, { fromReply: true });
       } else if (data.action) {
         if (petModeRef.current) await togglePetMode(false);
         if (epoch !== requestEpoch.current) return;
@@ -861,24 +946,48 @@ function AppContent() {
           args: data.motionCommand?.args,
           nonce: Date.now(),
         });
+      const targetCharacterId = getLook(speechLookRef.current).characterId;
+      // The request owner was checked before applying commands. A successful
+      // look change now speaks as its target; otherwise this is still source.
+      const replyAllowed = isAllowedExclusiveCorpusText(targetCharacterId, data.reply);
+      if (!replyAllowed || !data.reply.trim()) {
+        sentenceQueue?.cancel();
+        stopVoice();
+        const statusCharacterId = isExclusiveCorpusCharacter(targetCharacterId) ? targetCharacterId : sourceCharacterId;
+        const status = selectExclusiveCorpusReply({ characterId: statusCharacterId, message: value });
+        const notice = status?.reply
+          ? "收到的内容不属于当前角色已核验的素材原句，未显示或朗读。"
+          : status?.corpusNotice || "当前没有可用的素材原句。";
+        setSceneLine("", { notice });
+        if (!isExclusiveCorpusCharacter(targetCharacterId)) notify(notice);
+        setLineKind("status");
+        return;
+      }
       setState((current) =>
         current.activePersonaId === sourcePersonaId
           ? appendPersonaMessage(current, "assistant", data.reply, {
               provider: data.provider,
+              characterId: targetCharacterId,
             })
           : current,
       );
-      if (streamed) {
+      if (streamed && !sourceExclusive && !isExclusiveCorpusCharacter(targetCharacterId)) {
         setSceneLine(data.reply);
         setLineKind("stream");
         sentenceQueue?.finish();
       } else say(data.reply);
-      if (data.error) notify("本地模型暂不可用，已切换为内置互动。");
+      if (data.error) notify(sourceExclusive || isExclusiveCorpusCharacter(targetCharacterId)
+        ? "素材原句服务暂不可用，请重试。" : "本地模型暂不可用，已切换为内置互动。");
     } catch (error) {
       sentenceQueue?.cancel();
       if (epoch !== requestEpoch.current) return;
       setSpeaking(false);
       setSpeechPreparing(false);
+      if (sourceExclusive || isExclusiveCorpusCharacter(getLook(speechLookRef.current).characterId)) {
+        setSceneLine("", { notice: error.name === "AbortError" ? "已停止检索素材原句。" : "素材原句服务暂不可用，未生成替代台词。" });
+        setLineKind("status");
+        return;
+      }
       if (error.name === "AbortError") {
         notify("已停止生成。");
         setSceneLine("我在这里。想好了，再慢慢说。");
@@ -943,9 +1052,10 @@ function AppContent() {
       notify("移除失败，请重试。");
     }
   }
-  function chooseLook(id) {
+  function chooseLook(id, { fromReply = false } = {}) {
     if (!isLookAvailable(id, removedLookIdsRef.current)) return;
     const look = getLook(id);
+    updateDialogueContext(id, state.activePersonaId, { keepRequest: fromReply });
     if (id !== state.lookId || !animated) setPetReady(false);
     setState((s) => ({
       ...s,
@@ -957,7 +1067,7 @@ function AppContent() {
           : { ...(s.lastLookByCharacter || {}), [look.characterId]: id },
     }));
     setPetAction({ kind: "wave", nonce: Date.now() });
-    setSceneLine(`换好${look.outfit}了。今晚，继续陪在你身边。`);
+    setSceneLine(`换好${look.outfit}了。今晚，继续陪在你身边。`, { lookId: id, intent: "action:outfit" });
     setLineKind("outfit");
   }
   function chooseCharacter(characterId) {
@@ -1077,6 +1187,7 @@ function AppContent() {
   function interact(kind, args = {}) {
     if (busy) return;
     const lines = {
+      ...Object.fromEntries([...AUTHORED_ACTIONS,...CUTE_ACTIONS].map(({ kind, label }) => [kind, [`好，我做一次${label}，然后恢复待机。`]])),
       pat: [
         "唔，头发都被你揉乱啦。再摸一下也可以。",
         "嘿嘿，摸摸头，今天的疲惫就少一点。",
@@ -1124,7 +1235,7 @@ function AppContent() {
     setPetAction({ kind, args, nonce: Date.now() });
     if (args.silent) return;
     setMood(kind === "shy" ? "shy" : "happy");
-    say(choices[Math.floor(Math.random() * choices.length)]);
+    say(choices[Math.floor(Math.random() * choices.length)], { intent: `action:${kind}` });
   }
   async function togglePetMode(enabled = !petMode) {
     setPanel(null);
@@ -1255,15 +1366,16 @@ function AppContent() {
       .replaceAll("{userName}", activeThread.memories.userName || "你");
   }
   function playCorpus(text, voiceProfileId = activeVoiceRef.current) {
-    const resolvedText = resolveCorpusText(text);
+    const resolvedText = isExclusiveCorpusCharacter(getLook(speechLookRef.current).characterId) ? text : resolveCorpusText(text);
     const availableVoiceId = voiceProfiles.some(
       (voice) => voice.id === voiceProfileId,
     )
       ? voiceProfileId
       : activeVoiceRef.current;
-    setSceneLine(resolvedText);
+    const line = setSceneLine(resolvedText);
     setLineKind("corpus");
-    readAloud(resolvedText, availableVoiceId);
+    if (line) readAloud(line, availableVoiceId);
+    else notify("这段语料不属于当前角色已核验的素材原句，未播放。");
   }
   function deleteCorpus(id) {
     setState((s) => deletePersonaCorpus(s, s.activePersonaId, id));
@@ -1385,10 +1497,13 @@ function AppContent() {
     }
     deadline.current = Date.now() + duration * 1000;
     setFocusRunning(true);
-    setSceneLine(`接下来的 ${Math.ceil(duration / 60)} 分钟，我安静地陪着你。`);
+    setSceneLine(`接下来的 ${Math.ceil(duration / 60)} 分钟，我安静地陪着你。`, { intent: "focus" });
     setLineKind("focus");
   }
   function nav(id) {
+    // These routes unmount the current portrait. A previous click is not a
+    // persistent command to replay when that renderer is mounted again.
+    if (id === "voices" || id === "wardrobe") setPetAction(null);
     setPanel((p) => (p === id ? null : id));
     setImmersive(false);
   }
@@ -1405,7 +1520,8 @@ function AppContent() {
   if (petMode)
     return (
       <PetShell
-        characterName={activePersonaName}
+        characterName={exclusiveCorpus ? currentLook.character : activePersonaName}
+        modelNames={state.modelNames}
         lookId={state.lookId}
         appearance={currentLook}
         removedLookIds={removedLookIds}
@@ -1416,6 +1532,7 @@ function AppContent() {
         action={petAction}
         motion={settings.motion}
         line={sceneLine}
+        dialogueStatus={exclusiveCorpus ? (busy ? "正在检索已核验的素材原句…" : corpusNotice) : ""}
         busy={busy}
         speaking={speaking}
         voice={settings.voice}
@@ -1434,6 +1551,7 @@ function AppContent() {
     );
   return (
     <div
+      data-corpus-only={exclusiveCorpus || undefined}
       className={`app ${animated ? "animated-world" : "photo-world"} ${compact ? "compact" : ""} ${immersive ? "immersive" : ""} ${panel ? "panel-open" : ""} ${panel === "wardrobe" ? "wardrobe-open" : ""} ${settings.motion ? "motion-on" : ""} ${settings.fontSize === "large" ? "large-text" : ""} ${window.desktop ? "native" : ""}`}
     >
       <div className="scene-backdrop" aria-hidden="true">
@@ -1497,7 +1615,7 @@ function AppContent() {
           </div>
         )}
       </div>
-      {animated && panel !== "wardrobe" && (
+      {animated && panel !== "wardrobe" && panel !== "voices" && (
         <div
           className="live-stage"
           inert={panel === "voices" ? true : undefined}
@@ -1710,23 +1828,36 @@ function AppContent() {
         <div className="character-note">
           <span className="little-star">✧</span>
           <div>
-            <span>{activePersonaName}</span>
+            <span>{exclusiveCorpus ? currentLook.character : activePersonaName}</span>
             <small>
               {speaking
                 ? "正在轻声回应"
                 : busy
                   ? "在认真想你的话"
-                  : "今天也很高兴见到你"}
+                  : exclusiveCorpus ? "仅使用已核验的素材原句" : "今天也很高兴见到你"}
             </small>
           </div>
           <span className="character-online" />
         </div>
         <section className="conversation" aria-label="对话">
+          {exclusiveCorpus && <p className="adaptation-notice" role="status" aria-label="角色语料状态">
+            {busy ? "正在检索已核验的素材原句…" : corpusNotice}
+          </p>}
+          {exclusiveCorpus && <details className="source-dialogue-picker" key={speechCharacterId}>
+            <summary>素材原句（{exclusiveEntries.length}）</summary>
+            {exclusiveEntries.length ? <ul>
+              {exclusiveEntries.map(entry => <li key={entry.id}>
+                <span>{entry.text}</span>
+                <button type="button" disabled={busy} aria-label={`说这句：${entry.text}`} onClick={() => say(entry.text)}>说这句</button>
+              </li>)}
+            </ul> : <p>{currentLook.character}目前有 0 条已核验的本人台词，核验完成后会显示在这里。</p>}
+          </details>}
+          {(!exclusiveCorpus || Boolean(sceneLine) && !busy) && <>
           <div className="reply-heading">
             <span className="reply-avatar">
               <Moon size={14} weight="fill" />
             </span>
-            <span>{activePersonaName}</span>
+            <span>{exclusiveCorpus ? currentLook.character : activePersonaName}</span>
             <span className="reply-divider" />
             <span className="reply-mood">
               {busy
@@ -1770,6 +1901,7 @@ function AppContent() {
               />
             )}
           </p>
+          </>}
           {!busy && (
             <div className="suggestions">
               {[
@@ -1931,6 +2063,13 @@ function AppContent() {
             setView={setWardrobeView}
             chooseLook={chooseLook}
             chooseCharacter={chooseCharacter}
+            renameModel={(characterId, name) => setState((current) => ({
+              ...current,
+              modelNames: {
+                ...current.modelNames,
+                ...normalizeModelNames({ [characterId]: name }),
+              },
+            }))}
             removeLook={removeLook}
             restoreLook={restoreLook}
             chooseScene={chooseScene}
@@ -2164,7 +2303,7 @@ function AppContent() {
                         onClick={
                           speaking
                             ? stopVoice
-                            : () => readAloud(corpusDraft, auditionVoiceId)
+                            : () => readAloud(corpusDraft, auditionVoiceId, { standalone: true })
                         }
                       >
                         {speaking ? (
@@ -2215,7 +2354,7 @@ function AppContent() {
                               type="button"
                               aria-label={`用${replayVoiceName}朗读语料：${item.title}`}
                               onClick={() =>
-                                playCorpus(item.text, replayVoiceId)
+                                readAloud(resolveCorpusText(item.text), replayVoiceId, { standalone: true })
                               }
                             >
                               <Play size={15} weight="fill" /> 朗读
@@ -2247,6 +2386,7 @@ function AppContent() {
                     readAloud(
                       text || "你好，这是这张音色卡的试听。今天过得怎么样？",
                       voiceProfileId,
+                      { standalone: true },
                     )
                   }
                   onChange={() => setVoiceRevision((revision) => revision + 1)}
@@ -2421,7 +2561,7 @@ function AppContent() {
                   <Sparkle size={26} />
                 </span>
                 <span>
-                  <strong>{ORIGINAL_LOOK.name}</strong>
+                  <strong>{withModelName(ORIGINAL_LOOK, state.modelNames).name}</strong>
                   <small>原始造型</small>
                 </span>
                 {animated && state.lookId === ORIGINAL_LOOK.id ? (
@@ -2626,7 +2766,7 @@ function AppContent() {
                   <article key={m.id} className={`memory-message ${m.role}`}>
                     <div>
                       <strong>
-                        {m.role === "user" ? "我" : activePersonaName}
+                        {m.role === "user" ? "我" : exclusiveCorpus ? currentLook.character : activePersonaName}
                       </strong>
                       <time>
                         {new Date(m.createdAt).toLocaleTimeString("zh-CN", {

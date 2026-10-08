@@ -1,0 +1,24 @@
+{
+  "generator": "builtin-imagegen",
+  "userDirection": "要求尽可能性感，多露出腿",
+  "assets": [
+    {
+      "id": "wen-furen-black-gold",
+      "detail": "Replace the floor-length closed skirt with a fitted black-gold above-knee cocktail dress and a single modest side slit. Retain long black cape falling behind the legs rather than covering them. Knee and calf areas should be clearly visible. Elegant closed-toe black court heels. Keep gold belt, collar, shoulder mantle and cuffs.",
+      "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the floor-length closed skirt with a fitted black-gold above-knee cocktail dress and a single modest side slit. Retain long black cape falling behind the legs rather than covering them. Knee and calf areas should be clearly visible. Elegant closed-toe black court heels. Keep gold belt, collar, shoulder mantle and cuffs.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4a886e39-d87d-4e5a-b9a6-a34aa74deeca.png"
+    },
+    {
+      "id": "ling-yuling-jade-robes",
+      "detail": "Replace the ankle-length robe skirt with a structured gray-white and gold above-knee wrap skirt. Keep the original golden waist belt, long sleeves and shoulder ornaments, with a flowing rear robe panel behind the body. Knees and calves visibly unobstructed. Gold closed-toe court heels. Preserve every other detail of the adult character.",
+      "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the ankle-length robe skirt with a structured gray-white and gold above-knee wrap skirt. Keep the original golden waist belt, long sleeves and shoulder ornaments, with a flowing rear robe panel behind the body. Knees and calves visibly unobstructed. Gold closed-toe court heels. Preserve every other detail of the adult character.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8d841d87-aa83-4bdd-853a-81da2473fc0f.png"
+    },
+    {
+      "id": "mei-ning-teal-attire",
+      "detail": "Replace the long trousers with an opaque teal A-line above-knee skirt with maroon trim, matching her existing tunic. Keep the shoulder mantle, wrist wraps, sash and flower ornaments. Boots should be shortened to ankle boots so knees and calves are visible. Preserve every other detail of the adult character.",
+      "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the long trousers with an opaque teal A-line above-knee skirt with maroon trim, matching her existing tunic. Keep the shoulder mantle, wrist wraps, sash and flower ornaments. Boots should be shortened to ankle boots so knees and calves are visible. Preserve every other detail of the adult character.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-151c326c-6044-4327-9eaa-cbec2713b601.png"
+    }
+  ]
+}

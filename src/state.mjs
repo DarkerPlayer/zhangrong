@@ -23,6 +23,7 @@ import {
   syncPersonaAliases,
 } from "./persona-state.mjs";
 import { DEFAULT_PERSONA_TEMPLATE_ID } from "./personas.mjs";
+import { normalizeModelNames } from "./model-names.mjs";
 
 export const STORAGE_KEY = "muyu-state-v2";
 export const LEGACY_STORAGE_KEY = "muyu-state-v1";
@@ -264,6 +265,7 @@ export function restoreState(raw) {
       ? p.backgroundId
       : getDefaultBackgroundId(),
     characterProfiles,
+    modelNames: normalizeModelNames(p.modelNames),
     lastLookByCharacter,
     wardrobeSelections,
     customEnabled: p.customEnabled === true,

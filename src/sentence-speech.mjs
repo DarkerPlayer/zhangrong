@@ -1,6 +1,6 @@
 /** Speak complete sentences in order while the rest of a reply is arriving. */
 export function createSentenceSpeechQueue({
-  speak, stop = () => {}, onStart = () => {}, onEnd = () => {}, onError = () => {}, voiceProfileId,
+  speak, stop = () => {}, onStart = () => {}, onEnd = () => {}, onError = () => {}, voiceProfileId, lookId,
 }) {
   const queue = [];
   let pending = '', characters = 0, running = false, closed = false, complete = false, started = false, releaseActive, resolve;
@@ -39,7 +39,7 @@ export function createSentenceSpeechQueue({
         };
         // speak() may resolve when an Audio element starts. Only its callback
         // proves playback ended; a rejected promise still fails the queue.
-        Promise.resolve(speak(text, end, start, { voiceProfileId })).catch(reject);
+        Promise.resolve(speak(text, end, start, { voiceProfileId, ...(lookId ? { lookId } : {}) })).catch(reject);
       });
     } catch (error) { fail(error); }
     finally { running = false; releaseActive = undefined; }

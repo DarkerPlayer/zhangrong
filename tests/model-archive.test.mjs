@@ -24,7 +24,7 @@ test("new and legacy state archive every Amara and Zuri outfit", () => {
   for (const raw of [null, JSON.stringify({ schemaVersion: 1 }), JSON.stringify({ schemaVersion: 2 })]) {
     const state = restoreState(raw);
     assert.deepEqual(state.removedLookIds, archivedIds);
-    assert.equal(getAvailableLooks(state.removedLookIds).length, 37);
+    assert.equal(getAvailableLooks(state.removedLookIds).length, 46);
     assert.equal(state.appearanceArchiveVersion, 1);
   }
 });
@@ -39,8 +39,8 @@ test("archive migration preserves unrelated removals and removes duplicates", ()
 test("a selected archived outfit falls back to an available appearance", () => {
   for (const lookId of archivedIds) {
     const state = restoreState(JSON.stringify({ lookId, removedLookIds: ["ruby-velvet"] }));
-    assert.equal(state.lookId, "fancha-rose-office");
-    assert.equal(state.lastLookByCharacter.fancha, "fancha-rose-office");
+    assert.equal(state.lookId, "songyu-azure-robes");
+    assert.equal(state.lastLookByCharacter.songyu, "songyu-azure-robes");
   }
 });
 
@@ -124,7 +124,10 @@ function renderRoster(state) {
 test("appearance roster hides models without available outfits and shows an explicitly restored model", () => {
   const state = restoreState(null);
   const roster = renderRoster(state);
-  assert.equal(roster.length, 14);
+  assert.equal(roster.length, 21);
+  for (const name of ["温夫人", "凌玉灵", "梅凝"]) {
+    assert.equal(roster.some(item => item.label === `选择外观模特：${name}`), true);
+  }
   assert.equal(roster.some((item) => item.label === "选择外观模特：阿玛拉"), false);
   assert.equal(roster.some((item) => item.label === "选择外观模特：祖莉"), false);
   const restored = restoreState(JSON.stringify({
@@ -132,7 +135,7 @@ test("appearance roster hides models without available outfits and shows an expl
     removedLookIds: state.removedLookIds.filter((id) => id !== "amara-white-bikini"),
   }));
   const restoredRoster = renderRoster(restored);
-  assert.equal(restoredRoster.length, 15);
+  assert.equal(restoredRoster.length, 22);
   assert.deepEqual(restoredRoster.find((item) => item.label === "选择外观模特：阿玛拉"), {
     label: "选择外观模特：阿玛拉",
     thumbnail: "/looks/amara-white-bikini/character.png",

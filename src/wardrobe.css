@@ -241,6 +241,45 @@
 }
 .wardrobe-preview-caption strong { font-size: 18px; font-weight: 500; }
 .wardrobe-preview-caption small { color: #a89eaf; font-size: 10px; }
+.model-name-row,
+.model-name-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.model-name-row strong { min-width: 0; overflow-wrap: anywhere; }
+.model-rename-button,
+.model-name-form button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 5px 9px;
+  border: 1px solid #d6c3e538;
+  border-radius: 8px;
+  background: #ffffff08;
+  color: #e1ccea;
+  font-size: 12px;
+}
+.model-rename-button { margin-left: auto; }
+.model-name-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid #c3a0d67a;
+  border-radius: 8px;
+  background: #101019;
+  color: #eee8f2;
+  font: inherit;
+}
+.model-name-form button:disabled { opacity: .4; cursor: not-allowed; }
+.model-name-form input:focus-visible,
+.model-name-form button:focus-visible,
+.model-rename-button:focus-visible { outline: 2px solid #dfc1ef; outline-offset: 2px; }
+.wardrobe-character-list button > span { overflow-wrap: anywhere; }
 .wardrobe-editor {
   align-self: start;
   min-height: calc(100dvh - 174px);
@@ -312,6 +351,10 @@
 }
 .wardrobe-section-card h3 { margin: 12px 0 7px; color: #eee4f2; font-size: 15px; }
 .wardrobe-section-card p { margin: 0; color: #9f95aa; font-size: 11px; line-height: 1.8; }
+.wardrobe-inventory-scope { display: flex; gap: 6px; margin-top: 14px; padding: 4px; border-radius: 12px; background: #11131b8a; }
+.wardrobe-inventory-scope button { display: flex; flex: 1; align-items: center; justify-content: center; gap: 7px; padding: 10px 8px; border-radius: 9px; color: #a79aaf; font-size: 11px; }
+.wardrobe-inventory-scope button[aria-pressed="true"] { color: #f4e9f7; background: #bc91cc29; }
+.wardrobe-inventory-scope button span { padding: 1px 5px; border-radius: 6px; color: #d3bce0; background: #ffffff09; font-size: 9px; }
 .part-slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 7px; margin-top: 12px; }
 .part-slot-grid button { display: grid; grid-template-columns: 20px 1fr; gap: 2px 6px; padding: 9px; border: 1px solid #ffffff12; border-radius: 12px; color: #d8c9df; background: #ffffff05; text-align: left; }
 .part-slot-grid button.selected { border-color: #d4b2e279; color: #f2e5f7; background: #be91ce20; }

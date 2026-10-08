@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "sourceReferences": [
+    "梅凝/MN02/截图/02_BV1Hpjfz8Ewm_00053.960s.png",
+    "梅凝/MN02/截图/08_BV1KJV9zjEEP_00035.000s.png",
+    "梅凝/MN02/截图/07_BV1KJV9zjETX_00004.120s.png"
+  ],
+  "retainedReferences": [
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-1.png",
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-2.png",
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-3.png"
+  ],
+  "referencePriorities": {
+    "face": "source-1.png: exact source expression, proportions, texture and shading; no relighting",
+    "outfit": "source-2.png and source-3.png: supplied outfit construction; unseen detail remains inferred"
+  },
+  "generator": "builtin-imagegen",
+  "generatedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-151c326c-6044-4327-9eaa-cbec2713b601.png",
+  "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the long trousers with an opaque teal A-line above-knee skirt with maroon trim, matching her existing tunic. Keep the shoulder mantle, wrist wraps, sash and flower ornaments. Boots should be shortened to ankle boots so knees and calves are visible. Preserve every other detail of the adult character.",
+  "adopted": "character.png",
+  "image": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "sha256": "e3f402a66e7261ac73b8274c57c76d508e6e3799585688b2ebe62e1148c7d77e"
+  },
+  "rigCalibration": {
+    "method": "macOS Vision landmarks, checked against adopted image",
+    "report": ".runtime/three-characters-20261008/mei-face.json",
+    "speechStrength": 0.16,
+    "blushStrength": 0
+  },
+  "dialoguePolicy": "provided-corpus-only",
+  "limitations": [
+    "Generated adaptation, not pixel-identical face copy",
+    "Only one source outfit adopted; no new separately detachable parts",
+    "No new voice clone; only verified original wording is enforced"
+  ],
+  "initialGeneratedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-51bac52f-596e-422d-bac6-1caea457f2df.png",
+  "userOutfitRevision": "More visible legs: above-knee dress, side opening or shortened skirt; original face, upper outfit and accessories preserved",
+  "revisionPrompts": "docs/references/three-characters-20261008/leg-variation.json"
+}

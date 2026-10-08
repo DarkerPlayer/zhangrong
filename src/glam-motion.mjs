@@ -33,6 +33,7 @@ export function normalizeRig(input = {}) {
     y: number(source?.y, 0.128),
     rx: number(source?.rx, 0.026, 0.001, 0.1),
     ry: number(source?.ry, 0.0065, 0.001, 0.06),
+    angle: Number.isFinite(source?.angle) ? number(source.angle, 0, -45, 45) : undefined,
     skin: color(source?.skin, [0.96, 0.82, 0.76]),
     lid: color(source?.lid, [0.18, 0.10, 0.14]),
   });
@@ -40,7 +41,15 @@ export function normalizeRig(input = {}) {
   const bounds = input.bounds || {};
   const point = (source, fallback) => fallback.map((v, i) => number(source?.[i], v));
   return {
+    homeFraming: input.homeFraming === 'full-body' ? 'full-body' : 'portrait',
     armMobility: number(input.armMobility, 1),
+    mouthCovered: input.mouthCovered === true,
+    // Reference portraits keep their own expression and skin colour. Speech
+    // remains subtle; an individually calibrated rig may explicitly override.
+    expression: {
+      speechStrength: number(input.expression?.speechStrength, 0.25),
+      blushStrength: number(input.expression?.blushStrength, 0),
+    },
     head: normalizedHead,
     actionFaces,
     eyes: [eye(input.eyes?.[0], 0.455), eye(input.eyes?.[1], 0.545)],
@@ -67,6 +76,16 @@ export function normalizeRig(input = {}) {
 }
 
 const faceVector = (face) => [face.x, face.y, face.radiusX, face.radiusY];
+
+/** Eye axes are measured in pixels: normalized UVs have a different aspect. */
+export function resolveEyeAxes(rig, width, height) {
+  const [left, right] = rig.eyes;
+  const tilt = Math.atan2((right.y - left.y) * height, (right.x - left.x) * width);
+  return rig.eyes.map(eye => {
+    const radians = Number.isFinite(eye.angle) ? eye.angle * Math.PI / 180 : clamp(tilt, -Math.PI / 4, Math.PI / 4);
+    return new Float32Array([Math.cos(radians), Math.sin(radians)]);
+  });
+}
 
 /** Map the canonical portrait face into an authored action frame. */
 export function resolveFaceStabilizer(rig, actionKind) {
@@ -235,6 +254,10 @@ export function glamPose({ time = 0, motion = true, gaze = {}, action, mood = "i
     }
     if (Number.isFinite(layer.headAngle)) pose.headAngle += layer.headAngle;
     if (Number.isFinite(layer.headNod)) pose.headNod += layer.headNod;
+    if (Number.isFinite(layer.headTurn)) pose.headTurn += layer.headTurn;
+    for (const key of ["blinkLeft", "blinkRight", "smile", "blush"]) {
+      if (Number.isFinite(layer[key])) pose[key] = clamp(layer[key]);
+    }
     if (Number.isFinite(layer.hairLag)) pose.hair += layer.hairLag;
     if (Number.isFinite(layer.armAngle)) pose.armAngle += layer.armAngle;
     if (Number.isFinite(layer.breath)) pose.breath += layer.breath;
@@ -352,6 +375,14 @@ export function resolveActionFit(portraitFit, fullBodyFit, action = {}) {
   if (!portraitFit) return fullBodyFit;
   if (!fullBodyFit) return portraitFit;
   const motionId = action.motionId || action.kind || action.actionKind || "";
+  if (action.fullBody) {
+    const amount = Math.min(1, Math.max(0, Number(action.poseAlpha) || 0));
+    return {
+      scale: portraitFit.scale + (fullBodyFit.scale - portraitFit.scale) * amount,
+      x: portraitFit.x + (fullBodyFit.x - portraitFit.x) * amount,
+      y: portraitFit.y + (fullBodyFit.y - portraitFit.y) * amount,
+    };
+  }
   if (!/^crouch_/.test(motionId) && motionId !== "legacy_crouch" && motionId !== "squat") {
     return portraitFit;
   }

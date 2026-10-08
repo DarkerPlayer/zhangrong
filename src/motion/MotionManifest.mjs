@@ -1,4 +1,6 @@
+import { supportedCuteMotions } from "../../server/cute-actions.mjs";
 import { MOTION_PRIORITIES } from "./constants.mjs";
+import { supportedAuthoredActions } from "../../server/authored-actions.mjs";
 
 export const P0_MOTION_IDS = Object.freeze([
   "idle_neutral",
@@ -48,6 +50,20 @@ export function createMotionManifest(look = {}) {
     shy: motion("shy", { category: "emote", source: "mesh", durationMs: 2900, loop: false, priority: MOTION_PRIORITIES.GESTURE }),
     look_back: motion("look_back", { category: "gesture", source: "mesh", durationMs: 2600, loop: false, priority: MOTION_PRIORITIES.GESTURE }),
   };
+  for (const {kind,durationMs} of supportedCuteMotions(look)) {
+    motions[kind]=motion(kind,{category:"gesture",source:"mesh",durationMs,loop:false,
+      priority:MOTION_PRIORITIES.EXPLICIT,blendInMs:160,blendOutMs:240,cute:true});
+  }
+  for (const { kind, fullBody } of supportedAuthoredActions(look)) {
+    const frames = frameProfile(actions[kind]);
+    motions[kind] = motion(kind, {
+      category: "gesture", source: "frames", assets: kind, authored: true,
+      frames, durationMs: profileDuration(frames), loop: false,
+      priority: MOTION_PRIORITIES.EXPLICIT, blendInMs: 180, blendOutMs: 260,
+      groundAnchor: Object.freeze([0.5, 0.982]),
+      preserveExpression: true, fullBody: Boolean(fullBody),
+    });
+  }
   if (Array.isArray(actions.spit) && actions.spit.length) {
     const frames = frameProfile(actions.spit);
     motions.spit = motion("spit", {

@@ -371,7 +371,14 @@ export async function createLocalStudio({directory=DEFAULT_STUDIO_DIRECTORY,stat
       let itemId=job.input.itemId;
       const slot=job.input.slot || 'shoes',selection={...(job.selection || job.input.baseSelection || {})};
       if(job.input.operation!=='restore') {
-        if(!itemId){itemId=`local-item-${job.id}`;const source=await localPath(job.referencePaths[0]),extension=extname(source);await copyFile(source,join(assetDirectory,`item${extension}`));manifest.catalog.items.push({id:itemId,slot,name,description:job.input.prompt,asset:`/local-studio/assets/${job.id}/item${extension}`,audience:'adult',fitPolicy:'local-image-adapt',status:'source-ready',isLocal:true});}
+        if(!itemId){
+          itemId=`local-item-${job.id}`;
+          const source=await localPath(job.referencePaths[0]),extension=extname(source);
+          const sourceLook=[...LOOKS,...manifest.catalog.looks].find(look=>look.id===job.input.baseLookId);
+          await copyFile(source,join(assetDirectory,`item${extension}`));
+          manifest.catalog.items.push({id:itemId,slot,name,description:job.input.prompt,asset:`/local-studio/assets/${job.id}/item${extension}`,audience:'adult',fitPolicy:'local-image-adapt',status:'source-ready',isLocal:true,
+            sourceLookId:sourceLook?.id,sourceCharacterId:sourceLook?.characterId});
+        }
         selection[slot]=itemId;
       } else delete selection[slot];
       const available=currentCatalog();

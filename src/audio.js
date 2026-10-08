@@ -84,7 +84,7 @@ export function stopSpeech() {
   releaseSpeechAudio();
   window.speechSynthesis?.cancel();
 }
-export async function speak(text, onEnd = () => {}, onStart = () => {}, { voiceProfileId } = {}) {
+export async function speak(text, onEnd = () => {}, onStart = () => {}, { voiceProfileId, lookId } = {}) {
   stopSpeech();
   const generation = speechGeneration;
   const request = new AbortController();
@@ -98,6 +98,7 @@ export async function speak(text, onEnd = () => {}, onStart = () => {}, { voiceP
         text: text.slice(0, 1500),
         stream: !!(window.AudioContext || window.webkitAudioContext),
         ...(voiceProfileId ? { voiceProfileId } : {}),
+        ...(lookId ? { lookId } : {}),
       }),
     });
     if (!response.ok) {

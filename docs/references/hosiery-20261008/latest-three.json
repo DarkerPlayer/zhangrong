@@ -1,0 +1,642 @@
+{
+  "createdAt": "2026-10-08",
+  "tool": "built-in image_gen",
+  "status": "complete-generated-and-calibrated",
+  "referenceResponsibilities": {
+    "legs": "Only add the selected hosiery with unchanged leg silhouette and skirt hem.",
+    "locked": "Face, original facial shadows, expression, hair, adult body proportions, pose, hands, clothing, accessories and shoes."
+  },
+  "entries": [
+    {
+      "look": "wen-furen-black-gold",
+      "item": "sheer-black-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-e2ca75fc-4e5f-42a1-b309-0dcd70eb33fb.png",
+      "source": "public/looks/wen-furen-black-gold/character.png",
+      "asset": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/character.png",
+      "rig": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/provenance.json",
+      "assetSha256": "4344eb34095bf2613c569b046ede76dcb894f69b14ba000c35fba6908ebfc8aa",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.6127961476643881,
+        "opaqueBoundsPixels": [
+          125,
+          11,
+          876,
+          1505
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.01072096850919857,
+              "ry": 0.002646738579581198,
+              "x": 0.49685369312516603,
+              "y": 0.09164972261570292
+            },
+            {
+              "rx": 0.009615369068011193,
+              "ry": 0.0021218602691110977,
+              "x": 0.5432553908189119,
+              "y": 0.0980041311182831
+            }
+          ],
+          "face": {
+            "bottom": 0.15372520685195923,
+            "left": 0.4554702341556549,
+            "right": 0.5771582946181297,
+            "top": 0.07259983569383621
+          },
+          "mouth": {
+            "rx": 0.015344387980750773,
+            "ry": 0.0050477904167458565,
+            "x": 0.5109919708113281,
+            "y": 0.13007770013784592
+          },
+          "path": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "wen-furen-black-gold",
+      "item": "sheer-white-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer ivory-white nylon tights with a fine, smooth translucent white weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-7bf4cfe4-71b4-4d32-94a4-06bd7d688062.png",
+      "source": "public/looks/wen-furen-black-gold/character.png",
+      "asset": "public/wardrobe/fits/wen-furen-black-gold/sheer-white-stockings/character.png",
+      "rig": "public/wardrobe/fits/wen-furen-black-gold/sheer-white-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/wen-furen-black-gold/sheer-white-stockings/provenance.json",
+      "assetSha256": "3de6b575505166662d9c9646e5972a225812f0fd776ed4ead510d2ff6b635e55",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.6117604573567709,
+        "opaqueBoundsPixels": [
+          125,
+          11,
+          879,
+          1505
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010896287137768246,
+              "ry": 0.0026920886453727366,
+              "x": 0.4975301908056069,
+              "y": 0.09133663076480514
+            },
+            {
+              "rx": 0.009678172115157313,
+              "ry": 0.002102499452983908,
+              "x": 0.5442690902531306,
+              "y": 0.09757738468300459
+            }
+          ],
+          "face": {
+            "bottom": 0.15361112356185913,
+            "left": 0.45476409792900085,
+            "right": 0.5764667242765427,
+            "top": 0.07247603684663773
+          },
+          "mouth": {
+            "rx": 0.01550176040582274,
+            "ry": 0.005094945940287421,
+            "x": 0.5119473286932581,
+            "y": 0.12998257294715138
+          },
+          "path": "public/wardrobe/fits/wen-furen-black-gold/sheer-white-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "ling-yuling-jade-robes",
+      "item": "sheer-black-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-0385d7bc-edab-4926-94f3-298812da48e2.png",
+      "source": "public/looks/ling-yuling-jade-robes/character.png",
+      "asset": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/character.png",
+      "rig": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/provenance.json",
+      "assetSha256": "fd5fa74559b7d11249c12f6475bfe4ac4fdd0644f9ab3d2327a1741d2ef24848",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.710150400797526,
+        "opaqueBoundsPixels": [
+          289,
+          22,
+          746,
+          1503
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010525065199980643,
+              "ry": 0.002317737354685656,
+              "x": 0.5162404228753619,
+              "y": 0.08573152992191768
+            },
+            {
+              "rx": 0.008000955900415718,
+              "ry": 0.0021907384840191835,
+              "x": 0.5573088144710985,
+              "y": 0.08664169077074813
+            }
+          ],
+          "face": {
+            "bottom": 0.1412818431854248,
+            "left": 0.4793957471847534,
+            "right": 0.5939365178346634,
+            "top": 0.06492132693529129
+          },
+          "mouth": {
+            "rx": 0.014049297400678507,
+            "ry": 0.005185803717856208,
+            "x": 0.5360205611963822,
+            "y": 0.11969325325164143
+          },
+          "path": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-black-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "ling-yuling-jade-robes",
+      "item": "sheer-white-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer ivory-white nylon tights with a fine, smooth translucent white weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-dfe782b1-d6a5-45c9-af01-7f148c250d34.png",
+      "source": "public/looks/ling-yuling-jade-robes/character.png",
+      "asset": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-white-stockings/character.png",
+      "rig": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-white-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-white-stockings/provenance.json",
+      "assetSha256": "fae836f691c166f4cbeabc5631f7af0c457a1f134f95a04b65e962476864079a",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.7064717610677084,
+        "opaqueBoundsPixels": [
+          289,
+          22,
+          748,
+          1503
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010568121948053844,
+              "ry": 0.00227752025217276,
+              "x": 0.5168980192715893,
+              "y": 0.08574218967259872
+            },
+            {
+              "rx": 0.008045819369314477,
+              "ry": 0.002139166563527306,
+              "x": 0.558116891077663,
+              "y": 0.0866042424213942
+            }
+          ],
+          "face": {
+            "bottom": 0.14233607053756714,
+            "left": 0.47789308428764343,
+            "right": 0.5941405072808266,
+            "top": 0.06483779102563858
+          },
+          "mouth": {
+            "rx": 0.014080186494632718,
+            "ry": 0.0051723136057369445,
+            "x": 0.5371402835264767,
+            "y": 0.11986243103990574
+          },
+          "path": "public/wardrobe/fits/ling-yuling-jade-robes/sheer-white-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "mei-ning-teal-attire",
+      "item": "sheer-black-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-cfd8400e-8669-4cd7-ae8b-708cc22e5e64.png",
+      "source": "public/looks/mei-ning-teal-attire/character.png",
+      "asset": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/character.png",
+      "rig": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/provenance.json",
+      "assetSha256": "8cd2431a73f0a37de89dd64db851b879c56f63fe963303b56a28bab457fc0aa9",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.7814286549886068,
+        "opaqueBoundsPixels": [
+          325,
+          19,
+          742,
+          1493
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.012178134295531828,
+              "ry": 0.002595443971689315,
+              "x": 0.46898592028047426,
+              "y": 0.12326621587122166
+            },
+            {
+              "rx": 0.012158952667862266,
+              "ry": 0.0030557217247353385,
+              "x": 0.527345075263181,
+              "y": 0.11751276498371599
+            }
+          ],
+          "face": {
+            "bottom": 0.18813902139663696,
+            "left": 0.4294775724411011,
+            "right": 0.5705777853727341,
+            "top": 0.09407221525907516
+          },
+          "mouth": {
+            "rx": 0.01919734218071012,
+            "ry": 0.00529317313445965,
+            "x": 0.5054244339517351,
+            "y": 0.1607659192157478
+          },
+          "path": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "mei-ning-teal-attire",
+      "item": "sheer-white-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer ivory-white nylon tights with a fine, smooth translucent white weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-53afec62-d771-466a-a659-f42a8c466873.png",
+      "source": "public/looks/mei-ning-teal-attire/character.png",
+      "asset": "public/wardrobe/fits/mei-ning-teal-attire/sheer-white-stockings/character.png",
+      "rig": "public/wardrobe/fits/mei-ning-teal-attire/sheer-white-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/mei-ning-teal-attire/sheer-white-stockings/provenance.json",
+      "assetSha256": "fdedd8dd7cdacf551a937b4e188926e0248546f2c3ae406fc50e5b51e2c91285",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.7815608978271484,
+        "opaqueBoundsPixels": [
+          325,
+          19,
+          742,
+          1493
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.012193911774758703,
+              "ry": 0.0026075037656128064,
+              "x": 0.46919247043213375,
+              "y": 0.12323092648729239
+            },
+            {
+              "rx": 0.012193912843315502,
+              "ry": 0.0031187782874328995,
+              "x": 0.5277079048261726,
+              "y": 0.11747907885599052
+            }
+          ],
+          "face": {
+            "bottom": 0.18923276662826538,
+            "left": 0.42782098054885864,
+            "right": 0.571240246295929,
+            "top": 0.0936199203133583
+          },
+          "mouth": {
+            "rx": 0.019191987487459983,
+            "ry": 0.005445079926250707,
+            "x": 0.5052948810961482,
+            "y": 0.1608607727532561
+          },
+          "path": "public/wardrobe/fits/mei-ning-teal-attire/sheer-white-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "wen-furen-black-gold",
+      "item": "black-fishnet-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in conventional black small-diamond fishnet fashion tights, a neat fine regular diamond mesh following her exact leg contours, continuously extending upward underneath the existing skirt and down into her existing shoes. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-fc5cff1b-7da6-4d9e-b084-8fbe7e6fc7c1.png",
+      "source": "public/looks/wen-furen-black-gold/character.png",
+      "asset": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/character.png",
+      "rig": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/provenance.json",
+      "assetSha256": "70344d7378f3af0f1eb2164176a1ee8f822eefa96bc779e9ad62df8475cec545",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.6123631795247396,
+        "opaqueBoundsPixels": [
+          124,
+          11,
+          877,
+          1505
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010736401790768735,
+              "ry": 0.0026108110308808996,
+              "x": 0.49740653494799925,
+              "y": 0.0916243978064526
+            },
+            {
+              "rx": 0.009491842127953953,
+              "ry": 0.0020687336377160914,
+              "x": 0.5434884340486181,
+              "y": 0.09796335540987333
+            }
+          ],
+          "face": {
+            "bottom": 0.15416520833969116,
+            "left": 0.4554983079433441,
+            "right": 0.5765421614050865,
+            "top": 0.07346930354833603
+          },
+          "mouth": {
+            "rx": 0.01554869698921979,
+            "ry": 0.004978238804471236,
+            "x": 0.5114783564908161,
+            "y": 0.12979089530739873
+          },
+          "path": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "ling-yuling-jade-robes",
+      "item": "black-fishnet-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in conventional black small-diamond fishnet fashion tights, a neat fine regular diamond mesh following her exact leg contours, continuously extending upward underneath the existing skirt and down into her existing shoes. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-46ec0925-6f15-43c2-a2fc-236dc5fa0d3f.png",
+      "source": "public/looks/ling-yuling-jade-robes/character.png",
+      "asset": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/character.png",
+      "rig": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/provenance.json",
+      "assetSha256": "51673bce7a62eb7e30156d918ba95fc10a8ace8b9ae41269eec994570e4a1c3f",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.7039769490559896,
+        "opaqueBoundsPixels": [
+          285,
+          22,
+          752,
+          1505
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010491777701048033,
+              "ry": 0.0022995684298097174,
+              "x": 0.5174331173139501,
+              "y": 0.08587520494660694
+            },
+            {
+              "rx": 0.00804848690726434,
+              "ry": 0.002139876307895028,
+              "x": 0.558330288826598,
+              "y": 0.08688658838539998
+            }
+          ],
+          "face": {
+            "bottom": 0.143157958984375,
+            "left": 0.47766464948654175,
+            "right": 0.595581516623497,
+            "top": 0.06454671174287796
+          },
+          "mouth": {
+            "rx": 0.013765467853973368,
+            "ry": 0.005259197278780492,
+            "x": 0.537282857632013,
+            "y": 0.12017708878204675
+          },
+          "path": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    },
+    {
+      "look": "mei-ning-teal-attire",
+      "item": "black-fishnet-stockings",
+      "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in conventional black small-diamond fishnet fashion tights, a neat fine regular diamond mesh following her exact leg contours, continuously extending upward underneath the existing skirt and down into her existing shoes. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+      "generatedPath": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-0bfe987a-c35e-4f7a-8b4e-5df77ceffaa7.png",
+      "source": "public/looks/mei-ning-teal-attire/character.png",
+      "asset": "public/wardrobe/fits/mei-ning-teal-attire/black-fishnet-stockings/character.png",
+      "rig": "public/wardrobe/fits/mei-ning-teal-attire/black-fishnet-stockings/rig.json",
+      "provenance": "public/wardrobe/fits/mei-ning-teal-attire/black-fishnet-stockings/provenance.json",
+      "assetSha256": "a6239766f55d21cf70f85fe07238a687401f0935f6c9108ae477242448375b85",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaMin": 0,
+        "alphaMax": 254,
+        "fullyTransparentFraction": 0.7813771565755209,
+        "opaqueBoundsPixels": [
+          325,
+          19,
+          741,
+          1494
+        ],
+        "alphaThresholdForRigBounds": 127,
+        "visualReview": {
+          "hosieriesOnBothVisibleLegs": true,
+          "originalSkirtHemAndShoesRetained": true,
+          "facePoseHairAccessoriesRetained": true,
+          "noGarterOrNewAccessories": true,
+          "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+        },
+        "faceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.012213630776895634,
+              "ry": 0.0026862929935658197,
+              "x": 0.4685710585491103,
+              "y": 0.1231669377384732
+            },
+            {
+              "rx": 0.01222326950705721,
+              "ry": 0.0031618546564424754,
+              "x": 0.5266701563751113,
+              "y": 0.11737020231324236
+            }
+          ],
+          "face": {
+            "bottom": 0.18891692161560059,
+            "left": 0.4295290410518646,
+            "right": 0.5720999538898468,
+            "top": 0.093869648873806
+          },
+          "mouth": {
+            "rx": 0.018855455174531244,
+            "ry": 0.005166934255392386,
+            "x": 0.5049227592323398,
+            "y": 0.16086499829492262
+          },
+          "path": "public/wardrobe/fits/mei-ning-teal-attire/black-fishnet-stockings/character.png"
+        },
+        "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+        "preservedRigSettings": [
+          "armMobility",
+          "mouthCovered",
+          "expression"
+        ],
+        "runtimePreview": "pending parent integration"
+      }
+    }
+  ],
+  "runtimePreview": "pending parent integration"
+}

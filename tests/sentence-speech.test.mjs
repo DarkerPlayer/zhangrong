@@ -74,3 +74,9 @@ test('a rejected speak promise reports failure without waiting for its callback'
   await queue.finished;
   assert.equal(errors[0].message, '声音不可用');
 });
+test('character sentence playback retains its original look binding', async () => {
+  const { queue, calls } = fixture({ lookId: 'ruby-velvet' });
+  queue.push('第一句话。'); queue.finish();
+  assert.deepEqual(calls[0].args, { voiceProfileId: 'saved-voice', lookId: 'ruby-velvet' });
+  calls[0].onEnd(); await queue.finished;
+});

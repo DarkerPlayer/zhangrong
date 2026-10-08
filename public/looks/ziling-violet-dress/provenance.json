@@ -1,0 +1,95 @@
+{
+  "createdAt": "2026-10-07",
+  "characterId": "ziling",
+  "lookId": "ziling-violet-dress",
+  "method": "built-in ImageGen",
+  "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8315d471-dd66-4105-9935-28b89006c69c.png",
+  "prompt": "Create a transparent full-body character cutout of the EXACT Zi Ling in these original animation stills. Image1 is the ONLY FACE identity authority. This must look like that original animation character, NOT a realistic human actress, not a generic 3D fashion model. Keep her large purple eyes, the soft wide eyelid opening, source face shape, thick eyebrows, petite nose, naturally soft peach lips and faint smile, beauty mole outside viewer-right eye, parted dark hair and original face skin/shading. Do not narrow her eyes or make the face longer or sharper. Use source face as unchanged as possible. Image2 supplies her clothing: this adult fantasy woman's purple open-shoulder outfit, light floating sleeves, ornate gold neck/shoulder jewelry, opaque dark fitted bodice, waist ornaments, flowing purple split skirt and boots. Translate the clothing into a relaxed standing full-body pose. Image3 helps identify her gold branchwork hair crown with purple gem, forehead locks and chest jewelry, but do NOT include the face veil yet. Keep face1 fully uncovered. Arms beside body, both hands visible. Full body centered with entire crown, long hair, sleeves, skirt and boots inside frame. EXACT1024x1536 transparentPNG, alpha0 outside character. No scenery, halo, glow, gradient haze, other figures, printed text, subtitles, logos or floor shadow. Above all the FACE MUST match image1's animated identity; original face and shadows more important than body lighting consistency.",
+  "generationRecord": "docs/references/ziling/refinement-20261007/generation.json",
+  "facePriority": "Original 180s unveiled face: wide violet eyes, brows, oval cheeks, mole and expression. Generative reconstruction, not pixel copy.",
+  "referenceAssignment": {
+    "face": "BV1pyTVzLEu2_180s_摘面纱后正面.png",
+    "purpleVeil": "BV1pyTVzLEu2_025s_蒙面正面.png",
+    "whiteCostume": [
+      "10_BV1814y1W7qM-30s.png",
+      "09_BV1dW4y1s7fX-70s.png"
+    ]
+  },
+  "asset": {
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 919237,
+    "bounds": [
+      0,
+      0,
+      1005,
+      1536
+    ],
+    "sha256": "74c9fcbd04d8886de9e30962057ac2c89e9a947b74ff611f9e2b923bcb762b0f",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010972565529464795,
+          "ry": 0.0026011396765861505,
+          "x": 0.4905547022024659,
+          "y": 0.09803977501854888
+        },
+        {
+          "rx": 0.00996926796462505,
+          "ry": 0.0027285438284385677,
+          "x": 0.5383785224994448,
+          "y": 0.09736029368859933
+        }
+      ],
+      "face": {
+        "bottom": 0.15187746286392212,
+        "left": 0.45824921131134033,
+        "right": 0.5711923688650131,
+        "top": 0.07658202201128006
+      },
+      "mouth": {
+        "rx": 0.015511291165943852,
+        "ry": 0.003928252981506397,
+        "x": 0.5146179058982794,
+        "y": 0.12951888187689115
+      },
+      "path": "public/looks/ziling-violet-dress/character.png"
+    }
+  },
+  "voice": {
+    "id": "7e774f36-81e4-4813-8b88-b1dd2fb4a23b",
+    "name": "紫灵",
+    "referenceText": "诸位前辈道友，许久未见，可还记得紫灵？今日相助之情，小女子铭感五内。",
+    "referenceDuration": 13.490791666666667,
+    "createdAt": "2026-10-07T07:49:17.926Z",
+    "version": 1,
+    "referenceFile": "docs/audio/ziling-reference.wav",
+    "previewFile": "docs/audio/ziling-voice-preview.wav",
+    "sourceType": "original scene audio; background music may remain",
+    "sourceProof": [
+      "docs/references/ziling/voice-source-proof.png",
+      "docs/references/ziling/voice-ending-proof.png"
+    ],
+    "previewASR": "你好，我是紫玲。今天过得怎么样？陪我聊一会儿吧。",
+    "source": "/Users/yunfeikong/Codex/抓取神器/data/exports/紫灵_模型参考素材_2026-10-05/05_音频候选_待听音核验/紫灵角色来电_完整原声候选.wav",
+    "sourceRangeSeconds": [
+      0,
+      13.4907916667
+    ]
+  },
+  "validation": {
+    "tests": "58 passed: catalog, wardrobe, model archive, names, assets, motion and real renderer with covered/uncovered mouth speech input",
+    "build": "Vite production build passed",
+    "runtime": "Packaged desktop restarted; all three outfits selected and rendered successfully",
+    "screenshot": "docs/screenshots/ziling-refined-20261007.jpg"
+  },
+  "mouthCovered": false,
+  "previousVersion": ".runtime/ziling-refinement-20261007/before/public/looks/ziling-violet-dress"
+}

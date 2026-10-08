@@ -1,3 +1,6 @@
+import { LOOKS, filterLooks as filterCatalogLooks } from "../server/looks.mjs";
+import { withModelName } from "./model-names.mjs";
+
 // Keep browser and packaged local dialogue on the same appearance catalog.
 export {
   LOOKS,
@@ -16,7 +19,13 @@ export {
   CHARACTER_NAMES,
   CHARACTER_COUNT,
   WARDROBE_SUMMARY,
-  filterLooks,
   matchLookAlias,
   setLocalLooks,
 } from "../server/looks.mjs";
+
+export function filterLooks(options = {}) {
+  return filterCatalogLooks({
+    ...options,
+    looks: LOOKS.map((look) => withModelName(look, options.modelNames)),
+  });
+}

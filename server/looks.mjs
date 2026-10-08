@@ -1,5 +1,14 @@
 // Shared by the browser bundle and packaged local dialogue service.
+import { CUTE_MESH_ACTIONS, CUTE_FRAME_ACTIONS } from "./cute-actions.mjs";
+import { AUTHORED_ACTIONS } from "./authored-actions.mjs";
 export const CHARACTER_ID_BY_NAME = Object.freeze({
+  "温夫人": "wen-furen",
+  "凌玉灵": "ling-yuling",
+  "梅凝": "mei-ning",
+  "银月": "yinyue",
+  "紫灵": "ziling",
+  "宋玉": "songyu",
+  "绾红": "wanhong",
   "反差婊": "fancha",
   "调教组长": "discipline-lead",
   "吴多慧": "wuduohui",
@@ -41,6 +50,8 @@ const makeLook = (
   greetingMotion: metadata.greetingMotion || "wave",
   characterDefault: metadata.characterDefault === true,
   actions: metadata.actions || null,
+  cuteMotions: metadata.cuteMotions || [],
+  ...(metadata.dialoguePolicy ? { dialoguePolicy: metadata.dialoguePolicy } : {}),
   baseLayer: metadata.baseLayer || null,
   aliases: [
     ...new Set([
@@ -97,6 +108,92 @@ const linweiWalk = (lookId) => WALK_POSES.map(([file, durationMs, phase, contact
 }));
 
 export const LOOKS = [
+  makeLook(
+    "songyu-azure-robes", "宋玉", 28, "冰绡青衣",
+    "深棕半束长发、白色云纹冠与双侧羽形发饰，蓝白刺绣露肩长衣配青色银叶腰封，红绳白玉坠及绿玉金环流苏；自然裸色指甲。",
+    "#80b7c6",
+    {
+      ...recent("中式", ["成熟"]), characterDefault: true,
+      aliases: ["宋玉", "冰绡青衣", "蓝白仙衣"],
+      actions: Object.fromEntries(AUTHORED_ACTIONS.map(({kind, asset}) => {
+        const root = "/looks/songyu-azure-robes/";
+        const hasReady = ["tea", "scroll", "salute", "guzheng", "talisman"].includes(asset);
+        const ready = hasReady ? `actions/${asset}-ready.png` : "character.png";
+        const frame = (file, durationMs, phase) => ({src:root+file,durationMs,phase,groundAnchor:[0.5,0.982]});
+        return [kind, [
+          frame(ready, 650, "prepare"),
+          frame(`actions/${asset}.png`, asset === "meditate" ? 3200 : 1700, "perform"),
+          frame(ready, 600, "recover"),
+          frame("character.png", 280, "rest"),
+        ]];
+      })),
+    },
+  ),
+  makeLook(
+    "yinyue-silver-fox", "银月", 28, "银狐红绦",
+    "银白长发、狐耳与白色蓬松尾巴，蓝灰眼与轻笑；银灰绣纹露肩短衣、独立宽袖和红色长绦腰带，配银饰与白色绣纹长靴。",
+    "#d7dee5",
+    {...recent("中式", ["可爱"]), characterDefault: true, aliases: ["银月", "银狐", "银发狐耳", "银狐红绦"],
+      cuteMotions: CUTE_MESH_ACTIONS.map(({kind})=>kind),
+      actions: Object.fromEntries(CUTE_FRAME_ACTIONS.map(({kind,asset})=>[kind,[
+        {src:"/looks/yinyue-silver-fox/character.png",durationMs:280,phase:"prepare",groundAnchor:[.5,.982]},
+        {src:`/looks/yinyue-silver-fox/actions/${asset}.png`,durationMs:2200,phase:"perform",groundAnchor:[.5,.982]},
+        {src:"/looks/yinyue-silver-fox/character.png",durationMs:500,phase:"recover",groundAnchor:[.5,.982]},
+      ]])),
+    },
+  ),
+  makeLook(
+    "ziling-violet-dress", "紫灵", 28, "紫绡金饰",
+    "按摘纱正脸重做紫瞳眉眼与柔和脸型，黑色半束长发配枝形金冠与紫晶垂饰，露肩金饰、紫色薄袖及侧开衩裙片；保留来源神态。",
+    "#9569bf",
+    {...recent("中式", ["成熟"]), characterDefault: true, aliases: ["紫灵", "紫绡金饰", "紫色仙裙", "紫瞳"]},
+  ),
+  makeLook(
+    "ziling-violet-veil", "紫灵", 28, "紫绡面纱",
+    "紫色金纹薄纱覆至下巴下方，金边、尖端紫晶垂珠与原图眉眼；露肩金饰、紫色薄袖和侧开衩长裙。",
+    "#9569bf",
+    {...recent("中式", ["成熟"]), aliases: ["紫灵面纱", "紫衣面纱", "蒙面紫灵"]},
+  ),
+  makeLook(
+    "ziling-white-robes", "紫灵", 28, "白衣紫领",
+    "素材早期浅白宽袖外衣、紫色折领与袖里，双侧细辫、紫晶发饰和淡紫绣纹面纱；白色长衣配紫色内裙。",
+    "#dfd9ec",
+    {...recent("中式", ["成熟"]), aliases: ["白衣紫灵", "紫灵白衣", "白衣紫领"]},
+  ),
+  makeLook(
+    "wen-furen-black-gold", "温夫人", 38, "黑金披肩",
+    "黑金衣裙与宽披肩，黑色盘束长发配金色额饰、耳坠和腕饰；保留来源图沉静的眉眼与衣饰轮廓。",
+    "#b49a64",
+    {...recent("中式", ["成熟"]), characterDefault: true,
+      aliases: ["温夫人", "温夫人黑金衣裙", "黑金披肩"], dialoguePolicy: "provided-corpus-only"},
+  ),
+  makeLook(
+    "ling-yuling-jade-robes", "凌玉灵", 28, "白灰金纹长衣",
+    "成年凌玉灵的白灰交领长衣，肩部金纹与深金腰饰，棕黑半束长发和两侧垂发；沿用来源图的五官与神态。",
+    "#cfcbc0",
+    {...recent("中式", ["成熟"]), characterDefault: true,
+      aliases: ["凌玉灵", "成年凌玉灵", "白灰金纹长衣"], dialoguePolicy: "provided-corpus-only"},
+  ),
+  makeLook(
+    "mei-ning-teal-attire", "梅凝", 28, "青绿斜肩行装",
+    "青绿斜肩行装配深色束腰与护腕，盘束黑发、两侧垂发及发饰；保留来源图的面部比例和衣物结构。",
+    "#589b90",
+    {...recent("中式", ["成熟"]), characterDefault: true,
+      aliases: ["梅凝", "梅凝青衣", "青绿斜肩行装"], dialoguePolicy: "provided-corpus-only"},
+  ),
+  makeLook(
+    "wanhong-vermilion-robes",
+    "绾红",
+    28,
+    "朱绡云袖",
+    "黑色半盘长发配红金发饰与垂链，朱红暗纹交叠 V 领裙保留双侧分片开衩与中央长裙片，搭配完整遮覆的不透明朱红系带三角内搭，配金色腰扣、两侧各三枚沿细珠链独立悬挂的细长梨形垂珠及象牙白云袖外披，垂珠配绿色窄带与长环，画面左组依次绿粉绿、右组依次绿粉粉，保留水滴耳饰、细珠项链和自然裸粉指甲。",
+    "#c9715a",
+    {
+      ...recent("中式", ["成熟"]),
+      characterDefault: true,
+      aliases: ["绾红", "朱绡云袖", "红白古装", "朱红长裙", "盘发云袖"],
+    },
+  ),
   makeLook(
     "fancha-rose-office",
     "反差婊",
@@ -619,10 +716,11 @@ export function filterLooks({
   category = "全部",
   removedLookIds = [],
   view = "active",
+  looks = LOOKS,
 } = {}) {
   const terms = query.trim().split(/\s+/).map(normalize).filter(Boolean);
   const removed = new Set(cleanRemovedLookIds(removedLookIds));
-  return LOOKS.filter((look) => {
+  return looks.filter((look) => {
     if ((view === "removed") !== removed.has(look.id)) return false;
     if (
       category !== "全部" &&

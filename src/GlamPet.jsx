@@ -26,6 +26,7 @@ import {
   remapFaceFeature,
   resolveFaceStabilizer,
   resolveActionFit,
+  resolveEyeAxes,
 } from "./glam-motion.mjs";
 import "./glam-pet.css";
 
@@ -50,12 +51,17 @@ uniform sampler2D uSampler;
 uniform vec4 uColor;
 uniform vec4 uEyeL;
 uniform vec4 uEyeR;
+uniform vec2 uImageSize;
+uniform vec2 uEyeAxisL;
+uniform vec2 uEyeAxisR;
 uniform vec3 uEyeSkinL;
 uniform vec3 uEyeSkinR;
 uniform vec3 uLidL;
 uniform vec3 uLidR;
 uniform vec4 uMouth;
 uniform float uBlink;
+uniform float uBlinkL;
+uniform float uBlinkR;
 uniform float uMouthOpen;
 uniform float uSmile;
 uniform float uBlush;
@@ -97,20 +103,25 @@ vec4 portraitSample(vec2 uv) {
   return mix(source, canonical, stableFace);
 }
 
-vec3 eye(vec3 source, vec4 shape, vec3 skin, vec3 lid) {
-  vec2 q = (vTextureCoord - shape.xy) / shape.zw;
-  float cover = oval(vTextureCoord, shape.xy, shape.zw * vec2(1.12, 1.43), 0.16);
+vec3 eye(vec3 source, vec4 shape, vec3 skin, vec3 lid, vec2 axis, float blink) {
+  vec2 normal = vec2(-axis.y, axis.x);
+  vec2 delta = (vTextureCoord - shape.xy) * uImageSize;
+  vec2 local = vec2(dot(delta, axis), dot(delta, normal));
+  vec2 q = local / (shape.zw * uImageSize);
+  float cover = oval(q, vec2(0.0), vec2(1.12, 1.43), 0.16);
   // The eyebrow sits just above the eye. Borrow clean under-eye skin instead
   // of stretching that eyebrow into a second dark line across the eyelid.
-  vec3 lowerSkin = portraitSample(vec2(vTextureCoord.x, shape.y + shape.w * 2.2)).rgb;
-  vec3 upperSkin = lowerSkin * vec3(0.87, 0.80, 0.78);
-  vec3 eyelid = mix(upperSkin, lowerSkin * 0.96, smoothstep(-1.0, 1.0, q.y));
+  vec2 skinUV = shape.xy + (axis * local.x + normal * shape.w * uImageSize.y * 2.2) / uImageSize;
+  vec3 lowerSkin = portraitSample(skinUV).rgb;
+  // Reuse nearby source skin without a synthetic shadow or warm colour grade.
+  // The original eyelash colour comes from this character's calibrated rig.
+  vec3 eyelid = lowerSkin;
   // Fade the complete eye into its shaded lid, avoiding a moving rectangular
   // slice that leaves the original upper lash visible as a doubled outline.
-  vec3 result = mix(source, eyelid, cover * smoothstep(0.03, 0.77, uBlink));
+  vec3 result = mix(source, eyelid, cover * smoothstep(0.03, 0.77, blink));
   float arc = 0.12 + 0.20 * (1.0 - q.x * q.x);
   float lash = (1.0 - smoothstep(0.08, 0.19, abs(q.y - arc))) *
-    (1.0 - smoothstep(0.83, 1.03, abs(q.x))) * smoothstep(0.18, 0.85, uBlink);
+    (1.0 - smoothstep(0.83, 1.03, abs(q.x))) * smoothstep(0.18, 0.85, blink);
   return mix(result, lid, lash * 0.96);
 }
 
@@ -127,9 +138,9 @@ void main(void) {
   if (opening > 0.0001) mouthUV = uMouth.xy + q * uMouth.zw;
   vec4 source = portraitSample(mouthUV);
   vec3 result = source.rgb;
-  if (uBlink > 0.001) {
-    result = eye(result, uEyeL, uEyeSkinL, uLidL);
-    result = eye(result, uEyeR, uEyeSkinR, uLidR);
+  if (max(uBlinkL, uBlinkR) > 0.001) {
+    result = eye(result, uEyeL, uEyeSkinL, uLidL, uEyeAxisL, uBlinkL);
+    result = eye(result, uEyeR, uEyeSkinR, uLidR, uEyeAxisR, uBlinkR);
   }
   if (uBlush + uSmile > 0.001) {
     vec2 offset = vec2(uMouth.z * 2.2, -uMouth.w * 1.1);
@@ -264,10 +275,11 @@ export default function GlamPet({
       const width = Math.max(1, host.clientWidth);
       const height = Math.max(1, host.clientHeight);
       app.renderer.resize(width, height);
-      fitted = fitGlamModel(width, height, imageWidth, imageHeight, latest.current.petMode, rig);
+      const fullBody = latest.current.petMode || rig.homeFraming === 'full-body';
+      fitted = fitGlamModel(width, height, imageWidth, imageHeight, fullBody, rig);
       fullBodyFitted = fitGlamModel(width, height, imageWidth, imageHeight, true, rig);
       applyDisplayTransform();
-      canvas.dataset.framing = latest.current.petMode ? "full-body" : "portrait";
+      canvas.dataset.framing = fullBody ? "full-body" : "portrait";
       app.render();
     };
 
@@ -279,12 +291,12 @@ export default function GlamPet({
       if (kind === "idle" || kind === "idle_neutral") {
         motionController.stopAllMotions();
         result = motionController.playMotion("idle_neutral");
-      } else if (kind === "spit") {
+      } else if (kind === "spit" || glamAdapter?.manifest.motions[kind]?.authored) {
         // This authored gesture always plays once; duration/repeat overrides
         // must not turn the release into an ongoing animation.
         motionController.stopAllMotions();
         motionController.setLocomotionSpeed(1);
-        result = motionController.playMotion("spit", { priority: explicit });
+        result = motionController.playMotion(kind, { priority: explicit });
       } else if (kind === "squat") {
         motionController.stopAllMotions();
         result = motionController.playMotion("crouch_enter", { priority: explicit });
@@ -367,9 +379,12 @@ export default function GlamPet({
 
     const visibility = () => {
       if (!app) return;
-      actionResources?.setActive(document.hidden ? null : glamAdapter?.getSample().actionKind);
-      if (document.hidden) app.stop();
-      else app.start();
+      if (document.hidden) {
+        ++actionRequest;
+        canvas.dataset.actionLoading = "";
+        app.stop();
+        actionResources?.clear();
+      } else app.start();
     };
 
     const load = async () => {
@@ -403,8 +418,13 @@ export default function GlamPet({
         if (!imageWidth || !imageHeight) throw new Error(`Artwork ${look.id} has no drawable pixels`);
         texture = PIXI.Texture.from(image);
         texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+        // The decoded image is retained by its texture; the encoded Blob URL
+        // no longer needs to occupy memory until the character is changed.
+        URL.revokeObjectURL(imageUrl);
+        imageUrl = null;
         actionResources = createGlamActionResources({
           actions: look.actions,
+          borrowFrame: source => (typeof source === "string" ? source : source.src) === look.asset ? texture : null,
           loadFrame: async (source, signal) => {
             const assetSource = typeof source === "string" ? source : source.src;
             const response = await fetch(assetSource, { signal });
@@ -474,12 +494,15 @@ export default function GlamPet({
           uniforms: {
             uEyeL: shape(rig.eyes[0]),
             uEyeR: shape(rig.eyes[1]),
+            uImageSize: new Float32Array([imageWidth, imageHeight]),
+            uEyeAxisL: resolveEyeAxes(rig, imageWidth, imageHeight)[0],
+            uEyeAxisR: resolveEyeAxes(rig, imageWidth, imageHeight)[1],
             uEyeSkinL: rgb(rig.eyes[0].skin),
             uEyeSkinR: rgb(rig.eyes[1].skin),
             uLidL: rgb(rig.eyes[0].lid),
             uLidR: rgb(rig.eyes[1].lid),
             uMouth: shape(rig.mouth),
-            uBlink: 0,
+            uBlink: 0, uBlinkL: 0, uBlinkR: 0,
             uMouthOpen: 0,
             uSmile: 0,
             uBlush: 0,
@@ -545,7 +568,12 @@ export default function GlamPet({
           adapter: glamAdapter,
           onEvent: ({ event }) => { canvas.dataset.motionEvent = event; },
         });
-        idleScheduler = new MotionScheduler();
+        const cuteIdle = (look.cuteMotions || []).filter(id =>
+          ["cute_double_blink", "cute_tilt_left", "cute_tilt_right", "cute_nod", "cute_sway"].includes(id));
+        idleScheduler = new MotionScheduler(cuteIdle.length ? {
+          entries: cuteIdle.map(id => ({id,weight:1,cooldownMs:24000})),
+          intervalMs:[9000,16000],
+        } : {});
         motionController.playMotion("idle_neutral");
         app.ticker.maxFPS = 60;
         app.ticker.minFPS = 15;
@@ -557,7 +585,7 @@ export default function GlamPet({
           let motionState = motionController.getMotionState();
           if (latest.current.motion) {
             const idleVariation = idleScheduler.update(dt, motionState, (id) => motionController.canPlayMotion(id));
-            if (idleVariation) motionController.playMotion(idleVariation);
+            if (idleVariation) motionController.playMotion(idleVariation, {priority:MOTION_PRIORITIES.IDLE});
             else if (!motionState.motionId) motionController.playMotion("idle_neutral");
             motionState = motionController.getMotionState();
           }
@@ -651,9 +679,12 @@ export default function GlamPet({
           for (const targetMaterial of [material, armMaterial, ...actionMaterials]) {
             const authored = visibleAction.preserveExpression && actionMaterials.includes(targetMaterial);
             targetMaterial.uniforms.uBlink = authored ? 0 : pose.blink;
-            targetMaterial.uniforms.uMouthOpen = authored ? 0 : mouth;
-            targetMaterial.uniforms.uSmile = authored ? 0 : pose.smile;
-            targetMaterial.uniforms.uBlush = authored ? 0 : pose.blush;
+            targetMaterial.uniforms.uBlinkL = authored ? 0 : (pose.blinkLeft ?? pose.blink);
+            targetMaterial.uniforms.uBlinkR = authored ? 0 : (pose.blinkRight ?? pose.blink);
+            // Keep a painted veil intact while retaining exposed-eye blinking.
+            targetMaterial.uniforms.uMouthOpen = authored || rig.mouthCovered ? 0 : mouth * rig.expression.speechStrength;
+            targetMaterial.uniforms.uSmile = authored || rig.mouthCovered ? 0 : pose.smile * rig.expression.blushStrength;
+            targetMaterial.uniforms.uBlush = authored || rig.mouthCovered ? 0 : pose.blush * rig.expression.blushStrength;
           }
           frames++;
           canvas.dataset.blink = pose.blink.toFixed(3);

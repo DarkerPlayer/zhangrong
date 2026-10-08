@@ -28,6 +28,7 @@ import LookActionMenu from "./LookActionMenu.jsx";
 
 export default function PetShell({
   characterName = "张容",
+  modelNames = {},
   lookId,
   appearance,
   removedLookIds = [],
@@ -38,6 +39,7 @@ export default function PetShell({
   action,
   motion,
   line,
+  dialogueStatus = "",
   busy,
   speaking,
   voice,
@@ -67,6 +69,7 @@ export default function PetShell({
   const currentLook = appearance?.id === lookId ? appearance : getLook(lookId);
   const availableLookCount = getAvailableLooks(removedLookIds).length;
   const visibleLooks = filterLooks({
+    modelNames,
     query: wardrobeQuery,
     category: wardrobeCategory,
     removedLookIds,
@@ -296,13 +299,16 @@ export default function PetShell({
           </section>
         </div>
       )}
-      <div
+      {dialogueStatus && <div className="pet-corpus-status" role="status" aria-label="角色语料状态">
+        {dialogueStatus}
+      </div>}
+      {(!dialogueStatus || Boolean(line) && !busy) && <div
         className={`pet-bubble ${speaking ? "speaking" : ""}`}
         aria-live="polite"
       >
         <span>{busy ? "让我想一想…" : line}</span>
         <i />
-      </div>
+      </div>}
       <div className="pet-character">
       <LivePet
         lookId={lookId}

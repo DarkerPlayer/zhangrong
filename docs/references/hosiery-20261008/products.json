@@ -1,0 +1,61 @@
+{
+  "generator": "builtin-imagegen",
+  "created": "2026-10-08",
+  "assets": [
+    {
+      "id": "sheer-black-stockings",
+      "detail": "a matching pair of classic sheer black thigh-high footed stockings, fine smooth 20-denier nylon weave, restrained soft satin highlights, narrow plain opaque black top bands",
+      "prompt": "Use case: product-mockup. Standalone reusable wardrobe product asset, square 1024 by 1024. Show a matching pair of classic sheer black thigh-high footed stockings, fine smooth 20-denier nylon weave, restrained soft satin highlights, narrow plain opaque black top bands. Only the two empty garments suspended side by side on an invisible form, shaped naturally like a pair of stockings with feet pointing gently outward. No human skin or body, no model, no mannequin visible, no shoes, no lingerie accessories, no labels or text. Centered pair with ample margin, consistent soft studio lighting, photorealistic fabric detail. Genuine transparent alpha background, no backdrop, no cast shadow or background glow.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-ff3d3406-36b1-4915-940a-02ad12be8a8b.png",
+      "destination": "public/wardrobe/items/sheer-black-stockings.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "b274ddb055ecc2b5fda5d9f3eb2f11c78cb156aefc73401bed9460cf9f3529c7"
+    },
+    {
+      "id": "sheer-white-stockings",
+      "detail": "a matching pair of white thigh-high footed stockings, smooth semi-sheer ivory-white nylon, soft pearly highlights, narrow plain opaque white top bands",
+      "prompt": "Use case: product-mockup. Standalone reusable wardrobe product asset, square 1024 by 1024. Show a matching pair of white thigh-high footed stockings, smooth semi-sheer ivory-white nylon, soft pearly highlights, narrow plain opaque white top bands. Only the two empty garments suspended side by side on an invisible form, shaped naturally like a pair of stockings with feet pointing gently outward. No human skin or body, no model, no mannequin visible, no shoes, no lingerie accessories, no labels or text. Centered pair with ample margin, consistent soft studio lighting, photorealistic fabric detail. Genuine transparent alpha background, no backdrop, no cast shadow or background glow.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-e9c75699-6d94-4399-9b45-d6acaa4ff04e.png",
+      "destination": "public/wardrobe/items/sheer-white-stockings.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "9b166e0764a5b9bfccb03872d42b1fe6d8c2fb1b4826dd42805b3c7054cae2e7"
+    },
+    {
+      "id": "black-fishnet-stockings",
+      "detail": "a matching pair of black thigh-high footed fishnet stockings, regular small diamond mesh, narrow plain opaque black top bands, fine clean black threads and realistically shaped heels and toes",
+      "prompt": "Use case: product-mockup. Standalone reusable wardrobe product asset, square 1024 by 1024. Show a matching pair of black thigh-high footed fishnet stockings, regular small diamond mesh, narrow plain opaque black top bands, fine clean black threads and realistically shaped heels and toes. Only the two empty garments suspended side by side on an invisible form, shaped naturally like a pair of stockings with feet pointing gently outward. No human skin or body, no model, no mannequin visible, no shoes, no lingerie accessories, no labels or text. Centered pair with ample margin, consistent soft studio lighting, photorealistic fabric detail. Genuine transparent alpha background, no backdrop, no cast shadow or background glow.",
+      "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-7d32460d-bf86-4cbe-bf2d-b4169863c8a4.png",
+      "destination": "public/wardrobe/items/black-fishnet-stockings.png",
+      "refinement": {
+        "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-6bb49020-9f61-4fcd-a9e9-f3bbc6b03ef0.png",
+        "instruction": "Remove flesh-colored filling; retain empty black fishnet fabric with genuine alpha through diamond mesh openings."
+      },
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "45fad8a4538c0f2e1806d3dad99cfa0839b5832901634caef61d55f7a5c4a296"
+    }
+  ]
+}

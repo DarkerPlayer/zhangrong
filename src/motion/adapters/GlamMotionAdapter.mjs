@@ -1,3 +1,4 @@
+import { sampleCutePose } from "../cute-poses.mjs";
 import { applyEasing, sampleKeyframes } from "../MotionInterpolator.mjs";
 import { createSecondaryMotion, stepSecondaryMotion } from "../secondary-motion.mjs";
 
@@ -119,7 +120,7 @@ export function advanceRootMovement(state = {}, deltaMs = 0, speedPxPerSecond = 
   return { offset: next, direction };
 }
 
-export function sampleFrameSequence(frames, elapsedMs, { loop = true } = {}) {
+export function sampleFrameSequence(frames, elapsedMs, { loop = true, blendWindowMs = 80 } = {}) {
   const profile = Array.isArray(frames) && frames.length
     ? frames
     : [{ durationMs: 1, phase: "pose_1", groundAnchor: [0.5, 0.982], contact: null }];
@@ -139,7 +140,7 @@ export function sampleFrameSequence(frames, elapsedMs, { loop = true } = {}) {
   // Keep most of each authored pose fully readable, then ease through a brief
   // overlap at the cut. This removes the bright one-frame "flash" of a hard
   // texture swap without leaving doubled limbs visible through the whole pose.
-  const transitionMs = Math.min(loop ? Infinity : 80, Math.max(1, Math.max(1, Number(frame.durationMs) || 1) * 0.42));
+  const transitionMs = Math.min(loop ? Infinity : blendWindowMs, Math.max(1, Math.max(1, Number(frame.durationMs) || 1) * 0.42));
   const blend = nextIndex === index ? 0 : applyEasing(
     "smoothstep",
     clamp01((cycleTime - (Math.max(1, Number(frame.durationMs) || 1) - transitionMs)) / transitionMs),
@@ -168,9 +169,12 @@ export function sampleGlamMotion(motion = {}, elapsedMs = 0, frameCount = 0) {
   let poseAlpha = 0;
   let frame = null;
   let actionKind = id;
-  if (id === "spit") {
-    frame = frameCount > 0 ? sampleFrameSequence(motion.frames, elapsedMs, { loop: false }) : null;
+  if (motion.cute) {
+    pose={...pose,...sampleCutePose(id,elapsedMs,durationMs)};
+  } else if (id === "spit" || motion.authored) {
+    frame = frameCount > 0 ? sampleFrameSequence(motion.frames, elapsedMs, { loop: false, blendWindowMs: motion.authored ? 220 : 80 }) : null;
     poseAlpha = frame ? Math.min(1, elapsedMs / Math.max(1, motion.blendInMs || 120)) : 0;
+    if (motion.authored) poseAlpha *= Math.min(1, Math.max(0, durationMs - elapsedMs) / Math.max(1, motion.blendOutMs || 260));
   } else if (/^walk_|legacy_walk/.test(id)) {
     pose = sampleKeyframes(WALK_FEMININE, elapsedMs, { durationMs, loop: true });
     if (id === "walk_confident") {
@@ -231,7 +235,7 @@ export function sampleGlamMotion(motion = {}, elapsedMs = 0, frameCount = 0) {
     actionKind = id;
   }
   return { motionId: id, actionKind, elapsed: Math.max(0, Number(elapsedMs) || 0), pose, poseAlpha, frame,
-    preserveExpression: motion.preserveExpression === true };
+    preserveExpression: motion.preserveExpression === true, fullBody: motion.fullBody === true };
 }
 
 export class GlamMotionAdapter {

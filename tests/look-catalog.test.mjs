@@ -4,10 +4,10 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import * as catalog from "../src/looks.mjs";
 
-test("expanded wardrobe keeps existing IDs and the saved default alongside sixteen adult companions", () => {
-  assert.equal(catalog.LOOKS.length, 43);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 16);
-  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 43);
+test("expanded wardrobe keeps existing IDs and the saved default alongside twenty-three adult companions", () => {
+  assert.equal(catalog.LOOKS.length, 52);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.character)).size, 23);
+  assert.equal(new Set(catalog.LOOKS.map((look) => look.id)).size, 52);
   assert.equal(catalog.DEFAULT_LOOK_ID, "ruby-velvet");
   for (const id of [
     "noir-evening",
@@ -28,6 +28,15 @@ test("search and category filters find compatible looks without replacing the se
   assert.deepEqual(
     catalog.filterLooks({ category: "中式" }).map((look) => look.id),
     [
+      "songyu-azure-robes",
+      "yinyue-silver-fox",
+      "ziling-violet-dress",
+      "ziling-violet-veil",
+      "ziling-white-robes",
+      "wen-furen-black-gold",
+      "ling-yuling-jade-robes",
+      "mei-ning-teal-attire",
+      "wanhong-vermilion-robes",
       "xuanling-golden-crown",
       "zhixia-qipao",
       "zhixia-city",
@@ -47,8 +56,8 @@ test("search and category filters find compatible looks without replacing the se
       .map((look) => look.id),
     ["sakura-kimono"],
   );
-  assert.equal(catalog.filterLooks({ category: "可爱" }).length, 6);
-  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 26);
+  assert.equal(catalog.filterLooks({ category: "可爱" }).length, 7);
+  assert.equal(catalog.filterLooks({ category: "成熟" }).length, 34);
   assert.equal(catalog.filterLooks({ query: "Ankara" })[0].id, "amara-ankara");
   assert.deepEqual(
     catalog.filterLooks({ category: "日系", query: "非洲公主" }),
@@ -133,7 +142,7 @@ test("Fancha is selectable by her name and rose office outfit without replacing 
   assert.equal(look.characterDefault, true);
   assert.equal(look.isNew, true);
   assert.equal(look.greetingMotion, "nod");
-  assert.equal(catalog.filterLooks()[0].id, id);
+  assert.ok(catalog.filterLooks().some((item) => item.id === id));
   for (const query of ["反差婊", "反差", "粉色双排扣", "粉色职场裙"]) {
     assert.ok(catalog.filterLooks({ category: "成熟", query }).some((item) => item.id === id), query);
     assert.equal(catalog.matchLookAlias(`请换成${query}`), id, query);

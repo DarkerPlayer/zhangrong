@@ -78,7 +78,7 @@ export function createVoiceService({
     configuration,
     closed = false;
   const cache = new Map();
-  let cacheBytes = 0, warming, active, revision = 0;
+  let cacheBytes = 0, warming, active, revision = 0, cacheIdleTimer;
   const queue = [];
   const aborted = () => Object.assign(new Error("已停止朗读。"), { name: "AbortError" });
   const unavailable = () => Object.assign(new Error("语音服务已关闭。"), { status: 503 });
@@ -90,7 +90,22 @@ export function createVoiceService({
     task.reject(error);
   }
   function pump() {
-    if (closed || active || !queue.length) return;
+    if (closed || active) return;
+    clearTimeout(cacheIdleTimer);
+    cacheIdleTimer = undefined;
+    if (!queue.length) {
+      // The Python model already unloads after this interval; decoded speech
+      // in the main process must also stop retaining its audio buffers.
+      if (cache.size && workerIdleMs > 0) {
+        cacheIdleTimer = setTimeout(() => {
+          cacheIdleTimer = undefined;
+          cache.clear();
+          cacheBytes = 0;
+        }, workerIdleMs);
+        cacheIdleTimer.unref?.();
+      }
+      return;
+    }
     const task = active = queue.shift();
     service.synthesizeRequest(task.text, { ...task.options, signal: task.controller.signal }, task)
       .then(task.resolve, task.reject)
@@ -102,6 +117,8 @@ export function createVoiceService({
   }
   const reset = () => {
     revision++;
+    clearTimeout(cacheIdleTimer);
+    cacheIdleTimer = undefined;
     const error = closed ? unavailable() : aborted();
     for (const task of [...queue]) cancelTask(task, error);
     if (active) cancelTask(active, error);

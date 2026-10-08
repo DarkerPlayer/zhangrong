@@ -9,6 +9,47 @@ const deferred = () => {
 };
 const settle = () => new Promise((resolve) => setImmediate(resolve));
 
+test("repeated sources decode once and the already loaded portrait is borrowed, never destroyed", async () => {
+  const portrait = { name: "portrait" }, decoded = [], released = [];
+  const store = createGlamActionResources({
+    actions: { heart: ["/idle.png", { src: "/heart.png" }, { src: "/idle.png" }, "/heart.png"] },
+    borrowFrame: source => (source.src || source) === "/idle.png" ? portrait : null,
+    loadFrame: async source => { decoded.push(source.src || source); return { name: "heart" }; },
+    releaseFrame: frame => released.push(frame),
+  });
+  const frames = await store.load("heart");
+  assert.deepEqual(decoded, ["/heart.png"], "one new texture instead of three duplicate decodes");
+  assert.equal(frames[0], portrait);
+  assert.equal(frames[0], frames[2]);
+  assert.equal(frames[1], frames[3]);
+  const heart = frames[1];
+  store.destroy();
+  assert.deepEqual(released, [heart], "release each owned texture once, retain borrowed portrait");
+});
+
+test("suspending a hidden renderer immediately cancels and frees action resources", async () => {
+  const released = [], gate = deferred();
+  const store = createGlamActionResources({
+    actions: { ready: ["ready"], pending: ["pending"] },
+    loadFrame: async source => source === "pending" ? gate.promise : source,
+    releaseFrame: frame => released.push(frame),
+  });
+  await store.load("ready");
+  store.setActive("ready");
+  assert.equal(typeof store.clear, "function");
+  store.clear();
+  assert.equal(store.get("ready"), null);
+  assert.deepEqual(released, ["ready"]);
+  const pending = store.load("pending");
+  const rejected = assert.rejects(pending, { name: "AbortError" });
+  store.clear();
+  gate.resolve("late");
+  await rejected;
+  assert.deepEqual(released, ["ready", "late"]);
+  assert.deepEqual(await store.load("ready"), ["ready"], "visible renderer can load again");
+  store.destroy();
+});
+
 test("only two action frames decode at once and repeated requests share complete frames", async () => {
   const gates = Array.from({ length: 4 }, deferred);
   const started = [], released = [];

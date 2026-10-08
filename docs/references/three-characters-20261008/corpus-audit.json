@@ -1,0 +1,817 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "fullTranscriptAvailable": false,
+  "characters": {
+    "wen-furen": {
+      "characterId": "wen-furen",
+      "speaker": "温夫人",
+      "status": "no-verified-dialogue",
+      "entries": [],
+      "reason": "选中片段及两个完整来源（82.069s/31.957s）均未核到属于温夫人本人的原句；已对完整音轨作离线ASR辅助检索并核对跨时段关键帧，识别出的发言属于其他人物。保留空集，不用他人话语补齐。",
+      "reviewedSources": [
+        {
+          "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/温夫人/WF01/完整来源/BV1gm421n7vC.mp4",
+          "durationSeconds": 82.069,
+          "verification": "full-track offline ASR plus manual keyframe/visible subtitle review; no verified Wen Furen dialogue",
+          "referenceFile": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/wen-full1-asr-unverified.json"
+        },
+        {
+          "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/温夫人/WF01/完整来源/BV1Lm411k72k.mp4",
+          "durationSeconds": 31.957,
+          "verification": "full-track offline ASR plus manual keyframe/visible subtitle review; no verified Wen Furen dialogue",
+          "referenceFile": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/wen-full2-asr-unverified.json"
+        }
+      ]
+    },
+    "ling-yuling": {
+      "characterId": "ling-yuling",
+      "speaker": "凌玉灵",
+      "status": "partial-verified",
+      "entries": [
+        {
+          "id": "ling-yuling-BV18dxceyEqx-021",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "此前我被两名逆星盟修士追杀",
+          "category": "story",
+          "keywords": [
+            "逆星盟",
+            "追杀"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 21,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-021.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "近景本人张口，与此前、此后连续说话画面一致",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-023",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "多亏这位韩道友出手相助",
+          "category": "thanks",
+          "keywords": [
+            "韩道友",
+            "相助"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 23,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-023.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人前景侧脸张口，师兄在后景聆听",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-040",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "无妨",
+          "category": "daily",
+          "keywords": [
+            "没事",
+            "不要紧",
+            "担心"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 40,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-040.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸张口，回应师兄的受伤询问",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-042",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "只是受了那两人一击",
+          "category": "story",
+          "keywords": [
+            "受伤",
+            "一击"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 42,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-042.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人持续正脸说话，字幕与原始截图41.400s一致",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-044",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "但我有法宝护身",
+          "category": "story",
+          "keywords": [
+            "法宝",
+            "护身"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 44,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-044.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人连续正脸说话，前后同一发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-046",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "并无大碍",
+          "category": "daily",
+          "keywords": [
+            "身体",
+            "伤势",
+            "大碍"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 46,
+            "screenshot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00046.000s.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "原素材46.000s清晰本人正脸张口",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-056",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "谢师兄赠药",
+          "category": "thanks",
+          "keywords": [
+            "赠药",
+            "丹药"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 56,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-056.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "师兄递药、凌玉灵接药连续镜头，紧接本人回话；ASR仅辅助",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-059",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "我只要先去宫内回禀南明岛之事",
+          "category": "story",
+          "keywords": [
+            "南明岛",
+            "回禀"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 59,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-059.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口；逐字采用画面字幕“我只要”，不采用ASR“我还要”",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-062",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "就麻烦师兄帮我送韩道友进城了",
+          "category": "story",
+          "keywords": [
+            "师兄",
+            "进城"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 62,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-062.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口；逐字采用字幕末字“了”",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-076",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "凌某还有公务在身",
+          "category": "daily",
+          "keywords": [
+            "忙",
+            "公务",
+            "工作"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 76,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-076.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口、相邻镜头连续发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-077",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "此番怠慢了",
+          "category": "daily",
+          "keywords": [
+            "怠慢",
+            "抱歉"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 77,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-077.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口、相邻镜头连续发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-079",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "此次承蒙道友施以援手",
+          "category": "thanks",
+          "keywords": [
+            "帮助",
+            "援手"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 79,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-079.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人向韩立行礼，镜头连续发言，前段本人近景确定说话人",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "ling-yuling-BV18dxceyEqx-081",
+          "characterId": "ling-yuling",
+          "speaker": "凌玉灵",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "且容日后相谢",
+          "category": "thanks",
+          "keywords": [
+            "谢谢",
+            "相谢"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+            "evidenceTimeSeconds": 81,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/ling-yuling-081.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "行礼连续发言末句，后切韩立回应“凌道友莫要客气”明确分界",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        }
+      ],
+      "scope": "仅成年 LYL_ADULT_01；幼年 LYL_CHILD_01 明确排除。"
+    },
+    "mei-ning": {
+      "characterId": "mei-ning",
+      "speaker": "梅凝",
+      "status": "partial-verified",
+      "entries": [
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-072",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "梅凝愚钝",
+          "category": "story",
+          "keywords": [
+            "愚钝"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 72,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-072.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "梅凝起身向韩立和紫灵致谢，字幕自称梅凝，与随后本人正脸镜头连续",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-073",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "多谢二位点醒",
+          "category": "thanks",
+          "keywords": [
+            "指点",
+            "提醒",
+            "点醒"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 73,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-073.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "梅凝起身致谢连续镜头；韩立、紫灵处于聆听状态",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-078",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "梅凝一定勉励修行",
+          "category": "daily",
+          "keywords": [
+            "修行",
+            "努力",
+            "加油"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 78,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-078.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸张口且字幕明确自称；“勉励”按可见字幕逐字录入",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-080",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "绝不辜负二位恩情",
+          "category": "thanks",
+          "keywords": [
+            "恩情",
+            "辜负"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 80,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-080.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸张口，前句后连续发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-38",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "这难道是降尘丹",
+          "category": "story",
+          "keywords": [
+            "降尘丹"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 38,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-038.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口，正注视赠予的丹药",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-40",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "结丹所需的顶级丹药",
+          "category": "story",
+          "keywords": [
+            "结丹",
+            "丹药"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 40,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-040.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人近景张口，上句连续发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1oBT5zMEkt-89",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "谢谢姐姐",
+          "category": "thanks",
+          "keywords": [
+            "谢谢",
+            "感谢"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+            "evidenceTimeSeconds": 89,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-ning-089.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "紫灵刚以“梅凝妹妹”唤她并握手；梅凝随后面向紫灵回话，字幕可见，韩立转身离开",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1KJV9zjETX-1",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "有什么事可以明天再说",
+          "category": "night",
+          "keywords": [
+            "明天",
+            "休息"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjETX.mp4",
+            "evidenceTimeSeconds": 1,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-source07-001.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸近景张口，与接下来的送客动作同一连续发言",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1KJV9zjETX-2",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "夜已深",
+          "category": "night",
+          "keywords": [
+            "晚安",
+            "晚上",
+            "夜深"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjETX.mp4",
+            "evidenceTimeSeconds": 2,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-source07-002.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸近景张口并伸手送客",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1KJV9zjETX-2.6",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "请回吧",
+          "category": "farewell",
+          "keywords": [
+            "再见",
+            "告辞"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjETX.mp4",
+            "evidenceTimeSeconds": 2.6,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-source07-002.6.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "本人正脸近景张口，前句送客发言；随后3s起男子说“梅姑娘你听我说”不可混入",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1E7EYzRErh-10",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "都怪梅凝学艺不精",
+          "category": "story",
+          "keywords": [
+            "学艺",
+            "不精"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN03/完整来源/BV1E7EYzRErh.mp4",
+            "evidenceTimeSeconds": 10,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-source14-010.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "梅凝抱头躲避阴兽时开口，自称梅凝；紧接下句向韩立致歉",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1E7EYzRErh-12",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "拖累了前辈",
+          "category": "apology",
+          "keywords": [
+            "拖累",
+            "抱歉"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN03/完整来源/BV1E7EYzRErh.mp4",
+            "evidenceTimeSeconds": 12,
+            "screenshot": "/Users/yunfeikong/Codex/女友/docs/references/three-characters-20261008/proof-frames/截图/mei-source14-012.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "与上一句自称梅凝连续发言，13s切韩立自称“韩某”回应明确说话人边界",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        },
+        {
+          "id": "mei-ning-BV1KJV9zjEEP-5.84",
+          "characterId": "mei-ning",
+          "speaker": "梅凝",
+          "kind": "dialogue",
+          "verified": true,
+          "text": "可否带上我一起",
+          "category": "company",
+          "keywords": [
+            "一起",
+            "陪伴",
+            "同行"
+          ],
+          "source": {
+            "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjEEP.mp4",
+            "evidenceTimeSeconds": 5.84,
+            "screenshot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/截图/08_BV1KJV9zjEEP_00005.840s.png",
+            "timePrecision": "evidence frame near this second; not a speech-aligned audio segment"
+          },
+          "verification": {
+            "method": "manual subtitle reading plus visible speaker/continuous dialogue shot",
+            "speakerVerified": true,
+            "textVerified": true,
+            "note": "原包5.840s本人正脸张口；后续切韩立回应暴风山凶险，人物关系清楚",
+            "asrUse": "auxiliary only; raw ASR is not imported"
+          }
+        }
+      ],
+      "scope": "核验选句来自 MN01/BV1oBT5zMEkt、MN02/BV1KJV9zjETX、MN02/BV1KJV9zjEEP、MN03/BV1E7EYzRErh。不是完整16片段转写。"
+    }
+  },
+  "exclusions": [
+    {
+      "source": "素材包 截图/*.txt 与 语料/*.jsonl",
+      "reason": "场景描述/镜头摘要，不是逐字台词，不能用于角色聊天。"
+    },
+    {
+      "source": "凌玉灵/LYL_CHILD_01",
+      "reason": "幼年版不进入成年角色语料或音色。"
+    },
+    {
+      "source": "温夫人/WF01/BV1Lm411k72k 17–20s",
+      "text": "没想到 / 青兄和温夫人也在",
+      "reason": "其他人提及温夫人，并非温夫人本人说话。"
+    },
+    {
+      "source": "梅凝/MN01/BV1oBT5zMEkt 54–65s",
+      "text": "你结丹的机会将大幅增加 / 我们也可结伴同行 / 若是能靠自己的努力 / 创出一片天地 / 何愁回不去故土呢",
+      "reason": "紫灵向梅凝说话；即使反打梅凝画面也不能归给梅凝。"
+    },
+    {
+      "source": "凌玉灵/LYL_ADULT_01/BV18dxceyEqx 83s",
+      "text": "凌道友莫要客气",
+      "reason": "韩立回应，不是凌玉灵。"
+    },
+    {
+      "source": "梅凝/MN02/BV1KJV9zjETX 3–7s",
+      "text": "梅姑娘你听我说 / 你是我带过来的 / 我不能见死不救",
+      "reason": "男子向梅凝说话；梅凝出现在反打镜头，并非该句说话人。"
+    },
+    {
+      "source": "梅凝/MN02/BV1KJV9zjETX 40.92s",
+      "text": "你是何时回来的",
+      "reason": "男子向韩立发问，梅凝只在背景聆听。"
+    }
+  ],
+  "limits": [
+    "只使用用户提供的本地视频；没有网络补充或模型编写台词。",
+    "为字幕原句摘录，保留原人物称呼和逐字文本，不改变说话对象称谓。",
+    "审核属于小批量人工核对，不代表整包、整集或全部日常话题已有语料。",
+    "source.evidenceTimeSeconds用于回看证据；没有生成逐句音频精确起止时间，不应直接据此裁剪克隆样本。",
+    "ASR 与 OCR 原始产物均为未核验检索辅助，不能直接灌入语料库。"
+  ],
+  "auditStatus": "completed-batch",
+  "counts": {
+    "wen-furen": 0,
+    "ling-yuling": 13,
+    "mei-ning": 13
+  },
+  "sourceFiles": [
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/凌玉灵/LYL_ADULT_01/完整来源/BV18dxceyEqx.mp4",
+      "bytes": 111362277,
+      "sha256": "7548a3bb9d5792229561117eeb2edbfeffa7d5b7353563ad358cacf0db910d13"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN01/完整来源/BV1oBT5zMEkt.mp4",
+      "bytes": 55454184,
+      "sha256": "de7bc385b62b671fa46ba924ffe2a948ac5704c177863d9dcae833350365bbfb"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjEEP.mp4",
+      "bytes": 51539385,
+      "sha256": "f3eee0eb50839fd77657433456de724686113b58dc93667a9e4a3abe3a21bbad"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN02/完整来源/BV1KJV9zjETX.mp4",
+      "bytes": 92495635,
+      "sha256": "4e7c4967584498d17726c7ac13078bcc90c90445c69928f7ff95262be5c7ecb8"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/梅凝/MN03/完整来源/BV1E7EYzRErh.mp4",
+      "bytes": 38669003,
+      "sha256": "1e40338156473d15c989567e4be7deec57f044529e7aff4b2e513b694a8c22c5"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/温夫人/WF01/完整来源/BV1Lm411k72k.mp4",
+      "bytes": 40300415,
+      "sha256": "5f777c698f6d4b18b5b52f5c2f385f551e2c2e7503d6ccd3f45ae0f91d5d90aa"
+    },
+    {
+      "file": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08/温夫人/WF01/完整来源/BV1gm421n7vC.mp4",
+      "bytes": 79169518,
+      "sha256": "2afa019afd28d021dfe19aecd7944930458ddcc6dec9534285e8edd4be1c125a"
+    }
+  ],
+  "temporaryCleanup": {
+    "filesRemoved": 110,
+    "bytesRemoved": 151164430,
+    "scope": "only this audit generated unused proof frames and duplicated temporary WAV extraction; original source bundle untouched",
+    "note": "raw OCR records may cite temporary frames removed after review; every imported entry keeps an existing screenshot and source video."
+  }
+}

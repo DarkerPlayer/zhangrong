@@ -5,11 +5,12 @@ import { createReadStream, existsSync } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { offlineReply, normalizeHistory, MAX_MESSAGE_LENGTH, SCENES, AVATAR_MODES } from './dialogue.mjs';
+import { offlineReply, exclusiveDialogueCharacter, normalizeHistory, MAX_MESSAGE_LENGTH, SCENES, AVATAR_MODES } from './dialogue.mjs';
 import { listModels, modelReply, modelReplyStream } from './ollama.mjs';
 import { normalizeCompanionContext } from './companion-memory.mjs';
 import { createVoiceService } from './voice.mjs';
-import { LOOKS, cleanRemovedLookIds, getAvailableLookId, isLookId, ORIGINAL_LOOK, setLocalLooks } from './looks.mjs';
+import { LOOKS, cleanRemovedLookIds, getAvailableLookId, getLook, isLookId, ORIGINAL_LOOK, setLocalLooks } from './looks.mjs';
+import { isAllowedExclusiveCorpusText } from './exclusive-corpus.mjs';
 import { setLocalWardrobe } from './wardrobe.mjs';
 import { createLocalStudio, DEFAULT_STUDIO_DIRECTORY, STUDIO_BODY_LIMIT } from './local-studio.mjs';
 import { normalizePersonaSnapshot, resolvePersonaProfile } from './personas.mjs';
@@ -216,7 +217,7 @@ export async function startServer({port=4317,host='127.0.0.1',staticDir,prewarm=
         // Interactive dialogue takes priority over optional book classification.
         for(const pending of textClassifiers)pending.abort('对话已开始，语料分类已暂停。可以在对话结束后继续分类。');
         ensureInference();
-        if(input.provider==='ollama') {const model=input.model || (await listModels()).defaultModel;ensureInference();if(model)ownedChatModels.add(model);}
+        if(input.provider==='ollama' && !exclusiveDialogueCharacter(input)) {const model=input.model || (await listModels()).defaultModel;ensureInference();if(model)ownedChatModels.add(model);}
         if (input.stream) {
           response.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Accel-Buffering':'no'});
           response.flushHeaders();
@@ -261,6 +262,10 @@ export async function startServer({port=4317,host='127.0.0.1',staticDir,prewarm=
         const input=await body(request);
         ensureInference();
         if(typeof input.text!=='string' || !input.text.trim() || input.text.length>1500) throw fail('朗读内容需要为 1 至 1500 字。');
+        if(input.lookId != null) {
+          if(!isLookId(input.lookId)) throw fail('角色造型无效。');
+          if(!isAllowedExclusiveCorpusText(getLook(input.lookId).characterId,input.text)) throw fail('当前角色只能朗读已核验的素材原句。',422);
+        }
         if(input.voiceProfileId != null) {
           if(typeof input.voiceProfileId !== 'string') throw fail('音色 ID 格式无效。');
           await voiceService.library.resolve(input.voiceProfileId);

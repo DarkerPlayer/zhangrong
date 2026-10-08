@@ -1,0 +1,126 @@
+{
+  "createdAt": "2026-10-08",
+  "lookId": "yinyue-silver-fox",
+  "itemId": "sheer-black-stockings",
+  "selection": {
+    "hosiery": "sheer-black-stockings"
+  },
+  "method": "built-in ImageGen",
+  "status": "fitted",
+  "sourceImage": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png",
+  "sourceSha256": "bc18327b404d2c7cb361e97a11f083f50f098060d6d5ae5dbf956ed1eb565cd8",
+  "sourceRig": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/rig.json",
+  "sourceRigSha256": "9784b265f825c72cff64c5dc8c01a8bd4e21a03f419e205d6c1237f281e4f185",
+  "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the silver fox ears, silver hair, original adult face and gentle smile, fluffy tail, silver-white embroidered short tunic, red waist ribbons, little belt ornament and tall embroidered white boots. Hosiery appears only from the original skirt hem to the unchanged boot tops; it continues unseen underneath the skirt and boots.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+  "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-966c683b-729b-4ce0-8434-fcccd50081f0.png",
+  "asset": {
+    "path": "public/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 1127723,
+    "opaquePixels": 0,
+    "alphaBounds": [
+      45,
+      12,
+      1002,
+      1504
+    ],
+    "sha256": "78c1be60dee997de3b61e0e4e5582d5ebe24575fc196390748035d55eea95b56"
+  },
+  "calibration": {
+    "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.009608092692639847,
+          "ry": 0.003215418414294069,
+          "x": 0.5044765585334403,
+          "y": 0.11035745342884007
+        },
+        {
+          "rx": 0.010226246431667141,
+          "ry": 0.002676121701134404,
+          "x": 0.5517538664308643,
+          "y": 0.11785670165515927
+        }
+      ],
+      "face": {
+        "bottom": 0.16766810417175293,
+        "left": 0.4689229130744934,
+        "right": 0.5792756900191307,
+        "top": 0.09409958869218826
+      },
+      "mouth": {
+        "rx": 0.015980416507779815,
+        "ry": 0.004721370918424284,
+        "x": 0.5190146163168231,
+        "y": 0.1451165146717176
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png"
+    },
+    "sourceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.009514166951530623,
+          "ry": 0.003275028738400909,
+          "x": 0.5041898575619448,
+          "y": 0.11061704602187827
+        },
+        {
+          "rx": 0.010167099481144248,
+          "ry": 0.002653187590569983,
+          "x": 0.551232123768088,
+          "y": 0.11785112854348712
+        }
+      ],
+      "face": {
+        "bottom": 0.16725873947143555,
+        "left": 0.46863746643066406,
+        "right": 0.5782633125782013,
+        "top": 0.0941748395562172
+      },
+      "mouth": {
+        "rx": 0.016338871193440685,
+        "ry": 0.004974727549094948,
+        "x": 0.5190052173415505,
+        "y": 0.14510848959994543
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png"
+    },
+    "armMobility": 0,
+    "mouthCovered": false,
+    "sourceFace": "not configured in source rig; no face overlay added",
+    "faceRGBMeanAbsoluteDifference": [
+      10.400589923469388,
+      8.84701849489796,
+      8.539142219387756
+    ],
+    "headAdjustedToNewLandmarks": true,
+    "rigSha256": "21d86682747e84e5c34a1f39eefa8c7bf7c1098a2c658bbbcb0caf8556745763"
+  },
+  "validation": {
+    "visualReviewed": true,
+    "preserved": [
+      "face identity and expression",
+      "original clothing coverage and hem",
+      "hair and accessories",
+      "stance and hands",
+      "original footwear",
+      "existing face veil where present"
+    ],
+    "imageEditing": "Built-in ImageGen only; PNG copied without pixel post-processing.",
+    "runtime": "Not independently exercised by this asset-only subtask; parent performs integration QA."
+  },
+  "limitations": [
+    "Generated edits preserve reference likeness but do not claim pixel-identical face reproduction."
+  ]
+}

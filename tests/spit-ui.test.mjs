@@ -6,6 +6,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { getLook } from "../server/looks.mjs";
+import { AUTHORED_ACTIONS } from "../server/authored-actions.mjs";
 
 const dom = new JSDOM("<html><body></body></html>", { url: "http://localhost:4317" });
 for (const name of ["window", "document", "navigator", "HTMLElement"]) {
@@ -81,6 +82,44 @@ test("the shared main-window and desktop action menu offers spit only for loaded
     ui.rerender(React.createElement(LookActionMenu, { look: { actions: { spit: [] } }, onSelect() {} }));
     assert.equal(ui.queryByRole("menuitem", { name: "吐口水" }), null);
   } finally { cleanup(); }
+});
+
+test("Songyu menu exposes its nine independent actions and removes them on an unfitted look", () => {
+  const look = getLook("songyu-azure-robes");
+  const selections = [];
+  const ui = render(React.createElement(LookActionMenu, {look,onSelect:kind=>selections.push(kind)}));
+  try {
+    fireEvent.click(ui.getByRole("button"));
+    assert.equal(ui.getAllByRole("menuitem").length,12);
+    fireEvent.click(ui.getByRole("menuitem",{name:"闭目打坐"}));
+    assert.deepEqual(selections,["meditate"]);
+    ui.rerender(React.createElement(LookActionMenu,{look:{...look,actions:null},onSelect(){}}));
+    fireEvent.click(ui.getByRole("button"));
+    assert.equal(ui.queryByRole("menuitem",{name:"闭目打坐"}),null);
+  } finally {cleanup();}
+});
+
+test("all Songyu actions load sequentially, retain authored expression and finish once", async () => {
+  globalThis.__spitApps = [];
+  globalThis.fetch = async () => ({ ok: true, blob: async () => new Blob(), json: async () => ({}) });
+  const look = getLook("songyu-azure-robes");
+  const props = {lookId:look.id,appearance:look};
+  const ui = render(React.createElement(GlamPet,props));
+  try {
+    await waitFor(() => assert.equal(ui.container.querySelector("canvas").dataset.ready,"true"));
+    const app = globalThis.__spitApps[0];
+    let nonce = 0;
+    for (const {kind} of AUTHORED_ACTIONS) {
+      ui.rerender(React.createElement(GlamPet,{...props,action:{kind,nonce:++nonce,args:{repeat:10,durationMs:90000}}}));
+      await waitFor(() => assert.equal(ui.container.querySelector("canvas").dataset.action,kind));
+      for (let i=0;i<18;i++) app.tick();
+      const actionMesh = app.stage.children[2];
+      assert.equal(actionMesh.alpha,1,kind);
+      assert.equal(actionMesh.material.uniforms.uBlink,0,kind);
+      for (let i=0;i<100;i++) app.tick();
+      assert.equal(actionMesh.alpha,0,kind);
+    }
+  } finally {cleanup();delete globalThis.__spitApps;}
 });
 
 test("spit lazily renders its authored expression, stays bounded, and idle or look changes cancel loading", async () => {
@@ -184,4 +223,77 @@ test("spit fade sampling holds the resting portrait in place in both facing dire
       assert.deepEqual(Array.from(action.material.uniforms.uBaseUvOffset), [0, 0], "idle clears the compensation");
     }
   } finally { cleanup(); delete globalThis.__spitApps; }
+});
+
+test('Yinyue menu exposes sixteen cute gestures only for its matching look',()=>{
+ const ui=render(React.createElement(LookActionMenu,{look:getLook('yinyue-silver-fox'),onSelect(){}}));
+ try{
+  fireEvent.click(ui.getByRole('button'));
+  assert.equal(ui.getAllByRole('menuitem').length,19);
+  for(const label of ['轻轻眨眼','左眼 Wink','狐爪卖萌','抱抱尾巴'])assert.ok(ui.getByRole('menuitem',{name:label}));
+  ui.rerender(React.createElement(LookActionMenu,{look:getLook('ziling-violet-dress'),onSelect(){}}));
+  assert.equal(ui.queryByRole('menuitem',{name:'狐爪卖萌'}),null);
+ }finally{cleanup();}
+});
+
+test('Yinyue renderer runs independent wink eyelids, all six frame gestures, recovery and outfit switching',async()=>{
+ globalThis.__spitApps=[];
+ globalThis.fetch=async()=>({ok:true,blob:async()=>new Blob(),json:async()=>({})});
+ const look=getLook('yinyue-silver-fox');const props={lookId:look.id,motion:false};
+ const ui=render(React.createElement(GlamPet,props));
+ try{
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.ready,'true'));
+  const app=globalThis.__spitApps[0];const [body,,sprite]=app.stage.children;let nonce=0;
+  ui.rerender(React.createElement(GlamPet,{...props,action:{kind:'cute_wink_left',nonce:++nonce}}));
+  for(let i=0;i<16;i++)app.tick();
+  assert.equal(body.material.uniforms.uBlinkL,0);
+  assert.ok(body.material.uniforms.uBlinkR>.99);
+  for(let i=0;i<35;i++)app.tick();
+  assert.equal(body.material.uniforms.uBlinkR,0);
+  for(const kind of Object.keys(look.actions)){
+   ui.rerender(React.createElement(GlamPet,{...props,action:{kind,nonce:++nonce}}));
+   await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.action,kind));
+   for(let i=0;i<20;i++)app.tick();
+   assert.ok(sprite.alpha>0,kind);
+   assert.equal(sprite.material.uniforms.uMouthOpen,0,'preserve authored mouth/expression');
+   assert.equal(sprite.material.uniforms.uBlinkL,0,'do not paint over authored eyes');
+   for(let i=0;i<45;i++)app.tick();
+   assert.equal(sprite.alpha,0,`${kind} returns to idle`);
+  }
+  ui.rerender(React.createElement(GlamPet,{...props,action:{kind:'cute_paws',nonce:++nonce}}));
+  ui.rerender(React.createElement(GlamPet,{lookId:'ziling-violet-dress',motion:false}));
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.look,'ziling-violet-dress'));
+  assert.equal(app.destroyed,true);
+ }finally{cleanup();delete globalThis.__spitApps;}
+});
+
+test('hidden portrait releases gesture textures, borrows idle pixels once, and can play again on return', async () => {
+ globalThis.__spitApps=[];
+ const requests=[];
+ globalThis.fetch=async url=>{requests.push(url);return {ok:true,blob:async()=>new Blob(),json:async()=>({})};};
+ let hidden=false;
+ Object.defineProperty(document,'hidden',{configurable:true,get:()=>hidden});
+ const look=getLook('yinyue-silver-fox'), props={lookId:look.id,motion:false};
+ const ui=render(React.createElement(GlamPet,props));
+ try {
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.ready,'true'));
+  const app=globalThis.__spitApps[0], [body,,sprite]=app.stage.children;
+  ui.rerender(React.createElement(GlamPet,{...props,action:{kind:'cute_heart',nonce:1}}));
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.action,'cute_heart'));
+  for(let i=0;i<20;i++)app.tick();
+  const poseTexture=sprite.texture;
+  assert.equal(requests.filter(url=>url===look.asset).length,1,'prepare/recover reuse the already decoded portrait');
+  assert.notEqual(poseTexture,body.material.texture);
+  hidden=true;document.dispatchEvent(new window.Event('visibilitychange'));
+  assert.equal(poseTexture.destroyed,true);
+  assert.notEqual(body.material.texture.destroyed,true,'clearing an action must retain borrowed idle texture');
+  assert.equal(sprite.alpha,0);
+  hidden=false;document.dispatchEvent(new window.Event('visibilitychange'));
+  ui.rerender(React.createElement(GlamPet,{...props,action:{kind:'cute_heart',nonce:2}}));
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.actionLoading,''));
+  await waitFor(()=>assert.equal(ui.container.querySelector('canvas').dataset.action,'cute_heart'));
+  for(let i=0;i<20;i++)app.tick();
+  assert.notEqual(sprite.texture,poseTexture);
+  assert.notEqual(sprite.texture.destroyed,true);
+ } finally { cleanup();delete document.hidden;delete globalThis.__spitApps; }
 });

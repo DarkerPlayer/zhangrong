@@ -1,0 +1,94 @@
+{
+  "createdAt": "2026-10-07",
+  "characterId": "ziling",
+  "lookId": "ziling-violet-veil",
+  "method": "built-in ImageGen",
+  "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4acb0725-1a48-4dbe-903f-d6d4960eb8f0.png",
+  "prompt": "Edit image1 by ADDING ONLY the exact face veil from image2. Keep image1's face, wide violet eyes and brows, head angle, hair, gold crown, complete body pose, costume, shoulder ornaments, belt, skirt, hands, boots and framing unchanged. The veil in image2 is translucent lavender-purple chiffon, narrow metallic upper edge crossing below eyes across nose bridge, hanging down past chin to upper chest in a triangular tapered point, delicate gold swirling feather embroidery concentrated along lower edges, a tiny hanging purple teardrop bead at the lowest point, tiny hanging beads at sides. Nose and mouth softly visible underneath the translucent fabric, eyes/brows completely uncovered. Accurately replicate shape and jewelry attachment from image2 rather than a surgical mask or opaque face covering. Preserve1024x1536 full-body composition and genuine transparent background, alpha zero outside silhouette, no colored glow/haze/floor/background/text. One character only.",
+  "generationRecord": "docs/references/ziling/refinement-20261007/generation.json",
+  "facePriority": "Original 180s unveiled face: wide violet eyes, brows, oval cheeks, mole and expression. Generative reconstruction, not pixel copy.",
+  "referenceAssignment": {
+    "face": "BV1pyTVzLEu2_180s_摘面纱后正面.png",
+    "purpleVeil": "BV1pyTVzLEu2_025s_蒙面正面.png",
+    "whiteCostume": [
+      "10_BV1814y1W7qM-30s.png",
+      "09_BV1dW4y1s7fX-70s.png"
+    ]
+  },
+  "asset": {
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 908994,
+    "bounds": [
+      65,
+      0,
+      1004,
+      1536
+    ],
+    "sha256": "1246712631ecbbca87aa840dea761eb572fa375bf479b22d979773e9f8b052c6",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010794000806600368,
+          "ry": 0.0028381737206708557,
+          "x": 0.4919955546554053,
+          "y": 0.09740935531298334
+        },
+        {
+          "rx": 0.00985539078647002,
+          "ry": 0.0028381737206708557,
+          "x": 0.5388924720250567,
+          "y": 0.09716353086961416
+        }
+      ],
+      "face": {
+        "bottom": 0.1500212550163269,
+        "left": 0.46101123094558716,
+        "right": 0.5716442093253136,
+        "top": 0.07626593858003616
+      },
+      "mouth": {
+        "rx": 0.015989871551089663,
+        "ry": 0.003709739255429889,
+        "x": 0.5152596429407962,
+        "y": 0.129612575553758
+      },
+      "path": "public/looks/ziling-violet-veil/character.png"
+    }
+  },
+  "voice": {
+    "id": "7e774f36-81e4-4813-8b88-b1dd2fb4a23b",
+    "name": "紫灵",
+    "referenceText": "诸位前辈道友，许久未见，可还记得紫灵？今日相助之情，小女子铭感五内。",
+    "referenceDuration": 13.490791666666667,
+    "createdAt": "2026-10-07T07:49:17.926Z",
+    "version": 1,
+    "referenceFile": "docs/audio/ziling-reference.wav",
+    "previewFile": "docs/audio/ziling-voice-preview.wav",
+    "sourceType": "original scene audio; background music may remain",
+    "sourceProof": [
+      "docs/references/ziling/voice-source-proof.png",
+      "docs/references/ziling/voice-ending-proof.png"
+    ],
+    "previewASR": "你好，我是紫玲。今天过得怎么样？陪我聊一会儿吧。",
+    "source": "/Users/yunfeikong/Codex/抓取神器/data/exports/紫灵_模型参考素材_2026-10-05/05_音频候选_待听音核验/紫灵角色来电_完整原声候选.wav",
+    "sourceRangeSeconds": [
+      0,
+      13.4907916667
+    ]
+  },
+  "validation": {
+    "tests": "58 passed: catalog, wardrobe, model archive, names, assets, motion and real renderer with covered/uncovered mouth speech input",
+    "build": "Vite production build passed",
+    "runtime": "Packaged desktop restarted; all three outfits selected and rendered successfully",
+    "screenshot": "docs/screenshots/ziling-veil-20261007.jpg"
+  },
+  "mouthCovered": true
+}

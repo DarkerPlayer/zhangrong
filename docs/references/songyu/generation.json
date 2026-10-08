@@ -1,0 +1,123 @@
+{
+  "master": {
+    "prompt": "Create a production character sprite for a desktop companion app. Portrait 1024x1536, actual transparent alpha background. ONE adult female Song Yu from supplied Chinese fantasy animation references, fully clothed, full body head-to-hem, all hair and long robe completely inside frame, crown top y~55 bottom hem y~1480. Reproduce the exact face from image1: soft oval tapered face, gray blue eyes, restrained rose lips, calm composed warm-neutral gaze, subtle natural makeup. Long dark brown almost black half-up hair, white carved swirling cloud/phoenix crown and two white feather fan side hair clips with pearl studs EXACTLY as reference. Source2/3 define outfit: pale icy blue embroidered wrap V-bodice, exposed shoulder cutouts, long gradient blue-white bell sleeves, translucent pale chiffon streamers, dark teal layered broad wrap sash with silver curved leaf/vine framework, layered full-length blue/white silk skirt with pointed ivory front panels. Small ivory double-scroll jade plaque on orange-red cord at neck, lower red cord with two gold beads across chest. Green circular carved jade disk with gold connector, large gold ring and dark green tassel hangs at HER left waist (viewer right). Natural nude nails, no watch. Standing centered relaxed pose, hands separated gently by sides, slight elbow bend, no props, no other people, no background, no captions. High quality faithful 3D animation render, soft neutral studio light, original clothing coverage and face proportions, not chibi. Dress covers legs to floor; don't invent conspicuous shoes. Preserve layered textile construction and silver embroidery. No shadow floor, no checkerboard.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c58321e3-5b58-4576-9b7d-dd5cab237a57.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+  },
+  "tea": {
+    "prompt": "Edit image1 into ONE distinct full-body animation key pose. Standing in same placement as master, raises tiny celadon tea cup in both hands just below lips, soft downward gaze, elbows bent. Source image2 specifies cup and refined hand grip. Full skirt samehem at y1500. Keep face visible. Preserve exactly adult Song Yu identity, realistic3D style, face anatomy, crown, white side feather hair clips, red cord jade necklace, iceblue white embroidered coldshoulder longdress, teal silver waist sash, green disk/goldring/tassel at viewer right. Portrait1024x1536, whole figure insideframe, same character scale asmaster. Background real transparent alpha, isolatedsprite, no scene, no words, no other people. Image2 only guides pose. No panels or sheet.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-000d7773-cf2a-4956-9897-fc4da4b817d4.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/tea.png"
+  },
+  "salute": {
+    "prompt": "Edit image1 into ONE distinct full-body animation key pose. Bows forward twenty degrees in respectful Chinese clasped-hands salute, hands together extended at chest height, chin lowered and eyes lookingdown, loose sleeveshang, same full skirt hem at y1500. Reference2 poseof womanforeground only. Preserve exactly adult Song Yu identity, realistic3D style, face anatomy, crown, white side feather hair clips, red cord jade necklace, iceblue white embroidered coldshoulder longdress, teal silver waist sash, green disk/goldring/tassel at viewer right. Portrait1024x1536, whole figure insideframe, same character scale asmaster. Background real transparent alpha, isolatedsprite, no scene, no words, no other people. Image2 only guides pose. No panels or sheet.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-3ba08f40-b6f1-4de7-bce3-f91a22ab56b6.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/salute.png"
+  },
+  "scroll": {
+    "prompt": "Edit image1 into ONE full-body animation keypose. Standing reading a broad partly unrolled green bamboo scroll held horizontally in BOTH hands at midchest, gaze lowered to scroll, reference2 exact bamboo scrollshape. Preserve adult Song Yu's EXACT identity, face, hair with white crown and feather clips, same iceblue white embroidered coldshoulder longdress and long sleeves, redcordwhitejade necklace, teal silver sash, green jade goldring tassel at viewer right. Same1024x1536 framing, crown y30 skirtbottom1500, same body scale. One character isolated on true transparent background, no floor, no text outside talisman, no scene or extrapeople. Fullfigureinsideframe. Image2 onlypose/prop reference.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-5cae1b13-ebab-4a17-a2a1-f77e0cbdd27a.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/scroll.png"
+  },
+  "talisman": {
+    "prompt": "Edit image1 into ONE full-body animation keypose. Standing with right hand raised near shoulder, index and middle fingers together pointing upward, floating small pale rectangular talisman with blue calligraphic strokes beside fingertips, tiny blue magical glow. Eyes focused on talisman, reference2 definesgesture. Preserve adult Song Yu's EXACT identity, face, hair with white crown and feather clips, same iceblue white embroidered coldshoulder longdress and long sleeves, redcordwhitejade necklace, teal silver sash, green jade goldring tassel at viewer right. Same1024x1536 framing, crown y30 skirtbottom1500, same body scale. One character isolated on true transparent background, no floor, no text outside talisman, no scene or extrapeople. Fullfigureinsideframe. Image2 onlypose/prop reference.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-124351a5-46f0-4758-9ae9-38624586287d.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/talisman.png"
+  },
+  "meditate": {
+    "prompt": "Create ONE authored animation keypose from image1. Sitting crosslegged meditating on ground, eyes gently closed, both hands forming relaxed rounded meditation mudra in lap as source2, knees and legs fully covered by draped bluewhite skirt. Full seated figure low in canvas, pelvis around y1200, head top around y650, skirt ground y1500. Keep head SAME physical size as image1, DO NOT enlarge seated character to fill height; upperhalf transparent blank space. This must animate from standing to sitting without scale change. Preserve EXACT adult Song Yu identity, 3Drenderface, white crown and featherclips, long dark halfup hair, bluewhite embroidered coldshoulder gown, redcordwhitejade necklace, silverteal sash and greenjade ringtassel. Portrait1024x1536, actual transparent alpha background. No panels no scene no extraobjects beyond requested prop. Fullbodyallinsidecanvas. Image2 pose referenceonly.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-0a409ca9-5eda-41a3-b545-49aa3e9302d3.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/meditate.png"
+  },
+  "guzheng": {
+    "prompt": "Create ONE authored animation keypose from image1. Seated playing a Chinese wooden guzheng with many strings and individual small bridge supports as source2. Left hand raised above strings, right hand plucking. Show entire woman with skirt draped over knees and instrument on two discreet wooden supports. Full subject and instrument insideframe, body head similar size to master, head top y330 and skirt hem1500, instrument horizontally at waist y800. No otherpeople, nofloor. Preserve EXACT adult Song Yu identity, 3Drenderface, white crown and featherclips, long dark halfup hair, bluewhite embroidered coldshoulder gown, redcordwhitejade necklace, silverteal sash and greenjade ringtassel. Portrait1024x1536, actual transparent alpha background. No panels no scene no extraobjects beyond requested prop. Fullbodyallinsidecanvas. Image2 pose referenceonly.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-b49c266f-cb74-47c3-80fe-1c7f0fad2a1f.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/guzheng.png"
+  },
+  "turn": {
+    "prompt": "Edit master image1 to ONE full-body authored action sprite. Turn torso 35 degrees toward viewer right, glance calmly back toward viewer, hands low at sides, hair sliding around back, same floor-length skirt. Adult Song Yu exactly same face identity and proportions, SAME long bluewhite embroidered coldshoulder dress, whitecrown and sidefeatherclips, redcordjade necklace, tealsilverwaistbelt greenjade goldringtassel. Portrait1024x1536 same headsize andscaleasimage1, fullfigureallinsideframe, true transparent alpha, nofloor no scene no subtitles. Image2 actionreferenceonly.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8871a989-3439-425f-a378-35f8e25bd71c.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/turn.png"
+  },
+  "spell": {
+    "prompt": "Edit master image1 to ONE full-body authored action sprite. Extend left arm toward viewer right shoulder height with palmup, a small bluewhite magical sparkle rests above palm, other arm relaxed. Long sleeve hangs under extended forearm. Keep hand within canvas at x900, no croppedfingers. Adult Song Yu exactly same face identity and proportions, SAME long bluewhite embroidered coldshoulder dress, whitecrown and sidefeatherclips, redcordjade necklace, tealsilverwaistbelt greenjade goldringtassel. Portrait1024x1536 same headsize andscaleasimage1, fullfigureallinsideframe, true transparent alpha, nofloor no scene no subtitles. Image2 actionreferenceonly.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-cb520a31-28f9-4063-b5ad-a809e4790d5a.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/spell.png"
+  },
+  "flight": {
+    "prompt": "Edit master image1 to ONE full-body authored action sprite. Hover upright in elegant threequarterpose, headgazingabovehorizon, botharms slightly open awayfromwaist, blackhair and gauze streaming gently viewer right, skirt lifted lightly as levitating, hem around y1450. No bird or platform. Adult Song Yu exactly same face identity and proportions, SAME long bluewhite embroidered coldshoulder dress, whitecrown and sidefeatherclips, redcordjade necklace, tealsilverwaistbelt greenjade goldringtassel. Portrait1024x1536 same headsize andscaleasimage1, fullfigureallinsideframe, true transparent alpha, nofloor no scene no subtitles. Image2 actionreferenceonly.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-646ce221-098f-4521-9f9e-d07a8f7ead5c.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/flight.png"
+  },
+  "tea-ready": {
+    "prompt": "Modify only the pose of supplied fullbody adult Song Yu sprite: Lower cup from lips to upperwaist, hold SAME cup with both hands, eyes looking forward softly. This is the before/after drinking keyframe. Keep exact same identity, face, costume, jewelry, hair, natural nails, proportions, lighting, fullbodyplacement and scale, crown and hem remaininframe. Portrait1024x1536 with actual transparent alpha. One figure, no scene, no text. Preserve all other details.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-ef9d0a93-a138-4ba1-819e-7a0d2d1edc67.png",
+    "previousSource": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-19b0bf39-7100-451c-8530-ed7781f400aa.png",
+    "correctionPrompt": "Precise minimal image edit. Remove ONLY the extra white charm on the LOWER red cord at center chest. Retain upperneckwhitejadeplaque, lowerredcord and two goldbeads. All other exact pixels, pose, fullbodyposition, wardrobe must stay unchanged. Preserve true transparent alpha, exact1024x1536canvas, no scaling, no camera movement, no added background.",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/tea-ready.png",
+    "rejectedBackgroundSource": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-1070eb7b-1cbe-44c3-8482-dcb17ce486a0.png",
+    "alphaPrompt": "Precise background removal only. Keep this entire character, clothing, jewelry, pose, face and framing EXACTLY unchanged, same 1024x1536 canvas. Remove ALL background, black area, gray/blue glow, halo, haze, floor and shadow around the silhouette. The output must have truly transparent RGBA alpha=0 in all empty space, especially above and beside the character, not a painted transparent-looking gradient. Preserve the exact subject geometry and fine hair and sheer garment edges. No other changes."
+  },
+  "scroll-ready": {
+    "prompt": "Modify only the pose of supplied fullbody adult Song Yu sprite: Close green bamboo scroll most of the way into two adjacent vertical rolls held low at waist by bothhands, raise gaze forward. Before/after unrolling keyframe. Keep exact same identity, face, costume, jewelry, hair, natural nails, proportions, lighting, fullbodyplacement and scale, crown and hem remaininframe. Portrait1024x1536 with actual transparent alpha. One figure, no scene, no text. Preserve all other details.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-b53de769-a799-4748-9ee6-37db51639100.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/scroll-ready.png"
+  },
+  "salute-ready": {
+    "prompt": "Modify only the pose of supplied fullbody adult Song Yu sprite: Straighten back and head fully upright, clasp hands in front at chestlevel for upright salute before bowing. Same handsjoint but elbows relaxedlower. Keep exact same identity, face, costume, jewelry, hair, natural nails, proportions, lighting, fullbodyplacement and scale, crown and hem remaininframe. Portrait1024x1536 with actual transparent alpha. One figure, no scene, no text. Preserve all other details.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-b591fe45-fabd-4bf6-8e55-d973b7227b93.png",
+    "previousSource": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-e318b0bf-6a0b-4b66-bbff-74f8fad58d18.png",
+    "correctionPrompt": "Precise minimal image edit. Remove ONLY the two tiny dangling earrings below ears; retain the WHITE FEATHER HAIR CLIPS with round studs. Everything else exact same fullbodyposition, pose, face, gown and jewelry. No other edits. Preserve true transparent alpha, exact1024x1536canvas, no scaling, no camera movement, no added background.",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/salute-ready.png",
+    "rejectedBackgroundSource": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-1989b5f7-0e47-4048-a673-122f440ef62c.png",
+    "alphaPrompt": "Precise background removal only. Keep this entire character, clothing, jewelry, pose, face and framing EXACTLY unchanged, same 1024x1536 canvas. Remove ALL background, black area, gray/blue glow, halo, haze, floor and shadow around the silhouette. The output must have truly transparent RGBA alpha=0 in all empty space, especially above and beside the character, not a painted transparent-looking gradient. Preserve the exact subject geometry and fine hair and sheer garment edges. No other changes."
+  },
+  "guzheng-ready": {
+    "prompt": "Precise pose edit of supplied adult Song Yu sprite. Move raised hand down to pluck the other end of strings, lift the opposite hand a few centimeters. Both hands must be over strings. Keep instrument, body, face and camera fixed exactly. This is alternate plucking animation keyframe. Preserve ALL exact identity and attire, same single redcordwhitejade plaque necklace, no new jewelry, no earrings. 1024x1536 fullfigure transparent PNG. Same scale, position, lighting and clothes. No scene, no text.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-ba973b13-419b-4de8-a74b-42ba9b72518b.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/guzheng-ready.png"
+  },
+  "meditate-ready": {
+    "prompt": "Precise pose edit of supplied adult Song Yu sprite. Open eyes softly, lower both hands from joined mudra to rest separately on covered knees. Keep same seated pose, face size, characterplacement, garments andgroundanchor. This is entering/exiting meditation keyframe. Preserve ALL exact identity and attire, same single redcordwhitejade plaque necklace, no new jewelry, no earrings. 1024x1536 fullfigure transparent PNG. Same scale, position, lighting and clothes. No scene, no text.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-a556f5bd-dab7-40d5-aa29-108563086df0.png",
+    "previousSource": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-de523b89-cfb5-4a1d-b796-3b8ac99d8d99.png",
+    "correctionPrompt": "Precise minimal image edit. Change ONLY eyelids: open her gray-blue eyes gently looking slightlydown. Keep ALL other pixels/layout unchanged, exact head position around y620, crown top450, skirtbottom1480. Keep hands in SAME rounded meditation mudra, don't change pose or reframe, no change to pendants. Preserve true transparent alpha, exact1024x1536canvas, no scaling, no camera movement, no added background.",
+    "savedPath": null,
+    "status": "rejected: eye-open derivatives shifted body or retained background; meditation uses the aligned closed-eye key pose"
+  },
+  "talisman-ready": {
+    "prompt": "Precise pose edit of supplied adult Song Yu sprite. Remove the floating talisman and blue glow, lower her raised right forearm so index/middle fingers are still together but held at chest height. Keep other hand and rest of character fixed. This is gathering magic before manifestation. Preserve ALL exact identity and attire, same single redcordwhitejade plaque necklace, no new jewelry, no earrings. 1024x1536 fullfigure transparent PNG. Same scale, position, lighting and clothes. No scene, no text.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-6c20360f-fd0b-4c6c-aec8-8ad1c63f7837.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/actions/talisman-ready.png"
+  },
+  "songyu-azure-dress": {
+    "prompt": "Extract a reusable wardrobe item from the character references. ONLY the pale bluewhite long dress fromreferences, empty ghostmannequin garment, no body, no skin, no head, no hair, no jewelry, NO teal waist sash and NO waist pendant. Include pale embroidered wrap bodice, shoulder cutouts and sleeve straps, long blue-white bell sleeves and chiffon streamers, layered full floorlength blue white skirt with silverwhite embroidered panels. Faithfully reproduce textile construction and original silhouette, no detachedrandompieces. Transparent alpha square1024x1024 productcutout, all parts fullyinsideframe with margin, neutralsoftlight, materials preserved, no stand nofloor noshadowbackground nocaptions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-a12ff081-6546-4120-a32f-febc7aad9925.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-azure-dress.png"
+  },
+  "songyu-halfup-hair": {
+    "prompt": "Extract a reusable wardrobe item from the character references. ONLY dark brown almostblack half-up long hair as standalone wig product, frontthreequarterview with two soft front locks and long hair downback. NO crown NO featherclips NO head/face/scalp/mannequin NO neck NO clothing. Exact same hairshape asreference, realistic3Drender. Transparent alpha square1024x1024 productcutout, all parts fullyinsideframe with margin, neutralsoftlight, materials preserved, no stand nofloor noshadowbackground nocaptions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8edc2f74-e795-4b47-b82f-c42ec20cc160.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-halfup-hair.png"
+  },
+  "songyu-white-hair-ornaments": {
+    "prompt": "Extract a reusable wardrobe item from the character references. ONLY THREE ivory white carved hairornaments arranged as complete set: one low wide cloud/phoenix curling crown above and TWO matching featherfan sidehairclips below, each fan has one round pearlescent stud near inner upperedge. Exactlysourceforms, no hanging earrings, no hair, no head, no text. Transparent alpha square1024x1024 productcutout, all parts fullyinsideframe with margin, neutralsoftlight, materials preserved, no stand nofloor noshadowbackground nocaptions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-a4f2fee5-70df-4cde-9154-c5af39dd3d6b.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-white-hair-ornaments.png"
+  },
+  "songyu-red-cord-jade": {
+    "prompt": "Extract ONE standalone reusable wardrobe accessory from references. ONLY her necklace, EXACT orange-red thin cord forming an upper U with one small ivory double-scroll jadeplaque with curved cutout carving and horizontaltopbar. Second lower U-shaped red cord with EXACTLY TWO gold roundbeads, no extra whitependants on lowercord. Isolated empty jewelry product, no neckskin, no clothes. Transparent alpha square1024x1024 productcutout, allpartsinsideframe with ample margin, neutral studio illumination, material faithful3Drender, no background no captions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9fa0a5d8-c266-4aab-b336-c19219120c8f.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-red-cord-jade.png"
+  },
+  "songyu-silver-sash": {
+    "prompt": "Extract ONE standalone reusable wardrobe accessory from references. ONLY her broad darkteal silk waist sash with layered diagonal folds and precisely curved silverleaf and vine framework stretching around the front. Belt only, no torso, no dress, no jadependant, no necklace. Match source shape: large open silverloop onviewerleft connected to silver sweptleaves on right. Transparent alpha square1024x1024 productcutout, allpartsinsideframe with ample margin, neutral studio illumination, material faithful3Drender, no background no captions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4d73d4ea-2182-45ed-a711-7242de87003c.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-silver-sash.png"
+  },
+  "songyu-green-jade-tassel": {
+    "prompt": "Extract ONE standalone reusable wardrobe accessory from references. ONLY single waist pendant: green round jade disk carved with radial leafpetal flower, short goldconnector to large slender gold ring underneath, short goldbead connector to darkgreen long silk tassel. Entire verticallyhanging pendant inoneunit, no dress, no body, no stand, match original no inventedshape. Transparent alpha square1024x1024 productcutout, allpartsinsideframe with ample margin, neutral studio illumination, material faithful3Drender, no background no captions.",
+    "source": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-786a98f6-6d52-4bce-8663-f0e9971f95de.png",
+    "savedPath": "/Users/yunfeikong/Codex/女友/public/wardrobe/items/songyu-green-jade-tassel.png"
+  }
+}

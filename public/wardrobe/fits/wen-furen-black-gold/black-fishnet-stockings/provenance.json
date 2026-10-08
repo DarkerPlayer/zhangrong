@@ -1,0 +1,84 @@
+{
+  "lookId": "wen-furen-black-gold",
+  "itemId": "black-fishnet-stockings",
+  "selection": {
+    "hosiery": "black-fishnet-stockings"
+  },
+  "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in conventional black small-diamond fishnet fashion tights, a neat fine regular diamond mesh following her exact leg contours, continuously extending upward underneath the existing skirt and down into her existing shoes. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-fc5cff1b-7da6-4d9e-b084-8fbe7e6fc7c1.png",
+  "references": [
+    "public/looks/wen-furen-black-gold/character.png"
+  ],
+  "provider": "builtin-imagegen",
+  "pixelProcessing": "none; generated PNG copied byte-for-byte",
+  "asset": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/character.png",
+  "rig": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/rig.json",
+  "sourceSha256": "175a8381ddc544dd58a0ace7ddf057b05d72e2729b2da88720266210fbf7e679",
+  "generatedSha256": "70344d7378f3af0f1eb2164176a1ee8f822eefa96bc779e9ad62df8475cec545",
+  "assetSha256": "70344d7378f3af0f1eb2164176a1ee8f822eefa96bc779e9ad62df8475cec545",
+  "rigSha256": "07d2541d4b6573211c5b730be5f372792d6fbba76760399144ac79340d8813cc",
+  "faceConfidence": 1,
+  "calibration": {
+    "tool": "Apple Vision via scripts/face-landmarks.swift --full-body",
+    "method": "Every output independently detected. Original head offsets mapped to its new face box; eyes and mouth replaced with output landmarks; colors sampled read-only; alpha bounds measured per output. Original non-coordinate face behavior preserved."
+  },
+  "qa": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaMin": 0,
+    "alphaMax": 254,
+    "fullyTransparentFraction": 0.6123631795247396,
+    "opaqueBoundsPixels": [
+      124,
+      11,
+      877,
+      1505
+    ],
+    "alphaThresholdForRigBounds": 127,
+    "visualReview": {
+      "hosieriesOnBothVisibleLegs": true,
+      "originalSkirtHemAndShoesRetained": true,
+      "facePoseHairAccessoriesRetained": true,
+      "noGarterOrNewAccessories": true,
+      "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+    },
+    "faceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010736401790768735,
+          "ry": 0.0026108110308808996,
+          "x": 0.49740653494799925,
+          "y": 0.0916243978064526
+        },
+        {
+          "rx": 0.009491842127953953,
+          "ry": 0.0020687336377160914,
+          "x": 0.5434884340486181,
+          "y": 0.09796335540987333
+        }
+      ],
+      "face": {
+        "bottom": 0.15416520833969116,
+        "left": 0.4554983079433441,
+        "right": 0.5765421614050865,
+        "top": 0.07346930354833603
+      },
+      "mouth": {
+        "rx": 0.01554869698921979,
+        "ry": 0.004978238804471236,
+        "x": 0.5114783564908161,
+        "y": 0.12979089530739873
+      },
+      "path": "public/wardrobe/fits/wen-furen-black-gold/black-fishnet-stockings/character.png"
+    },
+    "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+    "preservedRigSettings": [
+      "armMobility",
+      "mouthCovered",
+      "expression"
+    ],
+    "runtimePreview": "pending parent integration"
+  }
+}

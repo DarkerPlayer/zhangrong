@@ -1,0 +1,37 @@
+{
+  "generator": "builtin-imagegen",
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "assets": [
+  {
+    "id": "wen-furen-black-gold",
+    "refs": [
+      "温夫人/WF01/截图/02_BV1Lm411k72k_00019.200s.png",
+      "温夫人/WF01/截图/01_BV1gm421n7vC_00018.000s.png",
+      "温夫人/WF01/截图/01_BV1gm421n7vC_00012.000s.png"
+    ],
+    "prompt": "Create a single full-body transparent PNG desktop character sprite, portrait 1024x1536, isolated one person only, entire hairstyle and shoes visible, centered with comfortable transparent margins. Faithful extraction/adaptation of supplied fictional animation character, not a redesign. Facial fidelity is highest priority: preserve reference face shape, exact eyes, eyebrows, nose, mouth, expression, skin texture and original face shading. Do not beautify or relight face to harmonize body, do not genericize. Outfit and accessories remain faithful, no additional text, scene, watermark, props unrelated to character, no floor or shadow behind. Natural standing posture, feet aligned to bottom baseline, arms relaxed or softly gathered at waist. Real alpha transparency. Wen Furen, mature adult woman. Image 1 exclusively defines her face and calm proud sideways gaze, same slight head tilt; images 2/3 support black gold full outfit and hair detail only. Precisely keep gold V tiara with green diamond on forehead, dark high bun with pin and trailing dark hair, gold dangling diamond earrings, sculpted gold choker, wrist cuffs. Long black layered cross-lapel gown with dark olive inner layer, subtle patterned black cape and gold trim, sharp structured shoulder mantle. Extend standing lower body consistent with black gown and simple dark shoes. Hands lowered gracefully, no sword or magic effects so body fits full-height sprite. Closed lips as source1, don't add smile.",
+    "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-c534a733-7977-479e-964b-4ad3cd40502d.png"
+  },
+  {
+    "id": "ling-yuling-jade-robes",
+    "refs": [
+      "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00018.400s.png",
+      "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00036.800s.png",
+      "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00078.200s.png"
+    ],
+    "prompt": "Create a single full-body transparent PNG desktop character sprite, portrait 1024x1536, isolated one person only, entire hairstyle and shoes visible, centered with comfortable transparent margins. Faithful extraction/adaptation of supplied fictional animation character, not a redesign. Facial fidelity is highest priority: preserve reference face shape, exact eyes, eyebrows, nose, mouth, expression, skin texture and original face shading. Do not beautify or relight face to harmonize body, do not genericize. Outfit and accessories remain faithful, no additional text, scene, watermark, props unrelated to character, no floor or shadow behind. Natural standing posture, feet aligned to bottom baseline, arms relaxed or softly gathered at waist. Real alpha transparency. Adult Ling Yuling, ONLY woman in gray-white outfit. Image 1 face absolute priority: same focused neutral closed-lip expression and subtle side gaze, narrow almond eyes and arched brows, adult facial proportions. Image 2 shoulder embroidery and lapel construction; image 3 RIGHT HAND gray-white woman supplies full-length silhouette, belt, long panels and gold shoes. Do not include man on left. Dark brown half-up long hair with side fringe, small metal rectangular earrings, same gold and burgundy shoulder plates, silvery woven gray-white crossover robe with flowing sleeves, diagonally intersecting golden chest inserts, ornate metallic gold belt, dark inner panels and calf-length layered outer panels. Preserve fully clothed source outfit, no change of era or decorative redesign.",
+    "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-bd589479-aa31-46aa-9ffc-66e3bf2ca90a.png"
+  },
+  {
+    "id": "mei-ning-teal-attire",
+    "refs": [
+      "梅凝/MN02/截图/02_BV1Hpjfz8Ewm_00053.960s.png",
+      "梅凝/MN02/截图/08_BV1KJV9zjEEP_00035.000s.png",
+      "梅凝/MN02/截图/07_BV1KJV9zjETX_00004.120s.png"
+    ],
+    "prompt": "Create a single full-body transparent PNG desktop character sprite, portrait 1024x1536, isolated one person only, entire hairstyle and shoes visible, centered with comfortable transparent margins. Faithful extraction/adaptation of supplied fictional animation character, not a redesign. Facial fidelity is highest priority: preserve reference face shape, exact eyes, eyebrows, nose, mouth, expression, skin texture and original face shading. Do not beautify or relight face to harmonize body, do not genericize. Outfit and accessories remain faithful, no additional text, scene, watermark, props unrelated to character, no floor or shadow behind. Natural standing posture, feet aligned to bottom baseline, arms relaxed or softly gathered at waist. Real alpha transparency. Mei Ning, adult fictional woman. Image 1 defines exact face and gentle attentive expression, retain gray-brown eye color and same slightly open mouth, softly angled eyebrows, no facial relighting. Image 2 defines full standing body, dark trousers and tall dark boots, hands gently folded near waist. Image 3 supports texture details only. Preserve paired high looped hair buns with blue and pink flower ornaments, long hanging dark hair, pink floral drop earrings. Teal woven diagonal cross-collar tunic with white/gray inner collar, turquoise irregular stone-like trim around shoulders and chest, asymmetric green ridged leaf-panel mantle on her left shoulder, maroon thin edging and sash, leather forearm wraps, dark fitted trousers and boots. Exactly these colors and construction, not long dress, not revealing redesign.",
+    "output": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-51bac52f-596e-422d-bac6-1caea457f2df.png"
+  }
+]
+}

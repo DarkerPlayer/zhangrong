@@ -1,0 +1,1556 @@
+{
+  "status": "assets-complete-calibrated",
+  "jobs": [
+    {
+      "lookId": "yinyue-silver-fox",
+      "itemId": "sheer-black-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the silver fox ears, silver hair, original adult face and gentle smile, fluffy tail, silver-white embroidered short tunic, red waist ribbons, little belt ornament and tall embroidered white boots. Hosiery appears only from the original skirt hem to the unchanged boot tops; it continues unseen underneath the skirt and boots.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-966c683b-729b-4ce0-8434-fcccd50081f0.png",
+      "provenance": "public/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009608092692639847,
+              "ry": 0.003215418414294069,
+              "x": 0.5044765585334403,
+              "y": 0.11035745342884007
+            },
+            {
+              "rx": 0.010226246431667141,
+              "ry": 0.002676121701134404,
+              "x": 0.5517538664308643,
+              "y": 0.11785670165515927
+            }
+          ],
+          "face": {
+            "bottom": 0.16766810417175293,
+            "left": 0.4689229130744934,
+            "right": 0.5792756900191307,
+            "top": 0.09409958869218826
+          },
+          "mouth": {
+            "rx": 0.015980416507779815,
+            "ry": 0.004721370918424284,
+            "x": 0.5190146163168231,
+            "y": 0.1451165146717176
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009514166951530623,
+              "ry": 0.003275028738400909,
+              "x": 0.5041898575619448,
+              "y": 0.11061704602187827
+            },
+            {
+              "rx": 0.010167099481144248,
+              "ry": 0.002653187590569983,
+              "x": 0.551232123768088,
+              "y": 0.11785112854348712
+            }
+          ],
+          "face": {
+            "bottom": 0.16725873947143555,
+            "left": 0.46863746643066406,
+            "right": 0.5782633125782013,
+            "top": 0.0941748395562172
+          },
+          "mouth": {
+            "rx": 0.016338871193440685,
+            "ry": 0.004974727549094948,
+            "x": 0.5190052173415505,
+            "y": 0.14510848959994543
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          10.400589923469388,
+          8.84701849489796,
+          8.539142219387756
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "21d86682747e84e5c34a1f39eefa8c7bf7c1098a2c658bbbcb0caf8556745763"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 1127723,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          45,
+          12,
+          1002,
+          1504
+        ],
+        "sha256": "78c1be60dee997de3b61e0e4e5582d5ebe24575fc196390748035d55eea95b56"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "yinyue-silver-fox",
+      "itemId": "sheer-white-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer white hosiery over every currently exposed part of the legs, with a fine smooth lightly translucent textile and subtle natural sheen.\nKeep the silver fox ears, silver hair, original adult face and gentle smile, fluffy tail, silver-white embroidered short tunic, red waist ribbons, little belt ornament and tall embroidered white boots. Hosiery appears only from the original skirt hem to the unchanged boot tops; it continues unseen underneath the skirt and boots.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-6496efa5-ca1d-432f-8e71-813bad1b5ad8.png",
+      "provenance": "public/wardrobe/fits/yinyue-silver-fox/sheer-white-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009766479870306488,
+              "ry": 0.0033167255842716514,
+              "x": 0.5047861201515773,
+              "y": 0.11036134928932873
+            },
+            {
+              "rx": 0.010256334461626881,
+              "ry": 0.0026942005722876416,
+              "x": 0.5520264939308097,
+              "y": 0.11780101857215985
+            }
+          ],
+          "face": {
+            "bottom": 0.16777610778808594,
+            "left": 0.46951940655708313,
+            "right": 0.5798458531498909,
+            "top": 0.09422514587640762
+          },
+          "mouth": {
+            "rx": 0.0162264410437013,
+            "ry": 0.004714852645495482,
+            "x": 0.5193593026688189,
+            "y": 0.14533493762595123
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/yinyue-silver-fox/sheer-white-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009514166951530623,
+              "ry": 0.003275028738400909,
+              "x": 0.5041898575619448,
+              "y": 0.11061704602187827
+            },
+            {
+              "rx": 0.010167099481144248,
+              "ry": 0.002653187590569983,
+              "x": 0.551232123768088,
+              "y": 0.11785112854348712
+            }
+          ],
+          "face": {
+            "bottom": 0.16725873947143555,
+            "left": 0.46863746643066406,
+            "right": 0.5782633125782013,
+            "top": 0.0941748395562172
+          },
+          "mouth": {
+            "rx": 0.016338871193440685,
+            "ry": 0.004974727549094948,
+            "x": 0.5190052173415505,
+            "y": 0.14510848959994543
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          11.67641900510204,
+          9.951371173469388,
+          9.683673469387756
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "0dcda447903ea57790a52cec44b7755198d0f622e382d96ff3dbfff57f036db3"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/yinyue-silver-fox/sheer-white-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 1127520,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          25,
+          11,
+          1010,
+          1504
+        ],
+        "sha256": "fec0f1ba1a41ea813f9d69579b7faf3290aa18c5579ac0779dd89c30cb02a99a"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "yinyue-silver-fox",
+      "itemId": "black-fishnet-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the silver fox ears, silver hair, original adult face and gentle smile, fluffy tail, silver-white embroidered short tunic, red waist ribbons, little belt ornament and tall embroidered white boots. Hosiery appears only from the original skirt hem to the unchanged boot tops; it continues unseen underneath the skirt and boots.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-d1e1c216-6660-4568-8fb6-554b3c456bf0.png",
+      "provenance": "public/wardrobe/fits/yinyue-silver-fox/black-fishnet-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009790061226503943,
+              "ry": 0.0034501964096549376,
+              "x": 0.5047939299208254,
+              "y": 0.11021673259433284
+            },
+            {
+              "rx": 0.010412018434011738,
+              "ry": 0.0028256807987185883,
+              "x": 0.5526385399092759,
+              "y": 0.11782354616913904
+            }
+          ],
+          "face": {
+            "bottom": 0.16761046648025513,
+            "left": 0.46677976846694946,
+            "right": 0.5786804482340813,
+            "top": 0.09301001578569412
+          },
+          "mouth": {
+            "rx": 0.016278377896316032,
+            "ry": 0.004852799777577577,
+            "x": 0.5199896441608465,
+            "y": 0.14511798204734538
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/yinyue-silver-fox/black-fishnet-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.009514166951530623,
+              "ry": 0.003275028738400909,
+              "x": 0.5041898575619448,
+              "y": 0.11061704602187827
+            },
+            {
+              "rx": 0.010167099481144248,
+              "ry": 0.002653187590569983,
+              "x": 0.551232123768088,
+              "y": 0.11785112854348712
+            }
+          ],
+          "face": {
+            "bottom": 0.16725873947143555,
+            "left": 0.46863746643066406,
+            "right": 0.5782633125782013,
+            "top": 0.0941748395562172
+          },
+          "mouth": {
+            "rx": 0.016338871193440685,
+            "ry": 0.004974727549094948,
+            "x": 0.5190052173415505,
+            "y": 0.14510848959994543
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/yinyue-silver-fox/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          10.645089285714286,
+          8.76578443877551,
+          8.38360969387755
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "f5623777d4870fd52174ce34d4092463e3fc9c3cdd055d98f02804d2609f3835"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/yinyue-silver-fox/black-fishnet-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 1125283,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          41,
+          9,
+          988,
+          1504
+        ],
+        "sha256": "89b674a9191d0f08a3203c8d2417a3c8b3c1f3a3c5a7133c4c5f0c0e5f2018ba"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-dress",
+      "itemId": "sheer-black-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the exact adult face, purple eyes and composed closed-mouth expression, gold hair crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep the original ornate purple/gold footwear and all leg ornaments on top of the hosiery. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-d5550329-193d-41c5-8a6b-01956a91bcee.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-dress/sheer-black-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010849252440232604,
+              "ry": 0.002610978665576358,
+              "x": 0.4906237764101453,
+              "y": 0.09833628971235298
+            },
+            {
+              "rx": 0.009885927753987112,
+              "ry": 0.0027057316164651457,
+              "x": 0.5381425497522061,
+              "y": 0.09771512749601574
+            }
+          ],
+          "face": {
+            "bottom": 0.1520102620124817,
+            "left": 0.4582827091217041,
+            "right": 0.5710400640964508,
+            "top": 0.07683869451284409
+          },
+          "mouth": {
+            "rx": 0.015350033998230206,
+            "ry": 0.003937525578737611,
+            "x": 0.5150543335726243,
+            "y": 0.1295417050191855
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-dress/sheer-black-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010972565529464795,
+              "ry": 0.0026011396765861505,
+              "x": 0.4905547022024659,
+              "y": 0.09803977501854888
+            },
+            {
+              "rx": 0.00996926796462505,
+              "ry": 0.0027285438284385677,
+              "x": 0.5383785224994448,
+              "y": 0.09736029368859933
+            }
+          ],
+          "face": {
+            "bottom": 0.15187746286392212,
+            "left": 0.45824921131134033,
+            "right": 0.5711923688650131,
+            "top": 0.07658202201128006
+          },
+          "mouth": {
+            "rx": 0.015511291165943852,
+            "ry": 0.003928252981506397,
+            "x": 0.5146179058982794,
+            "y": 0.12951888187689115
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          14.213493253373313,
+          11.448275862068966,
+          11.53335832083958
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "177f5aad9fbf5389eec0141fbd9ab0ba4069c689384b6b031fdb8d2447a0daba"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-dress/sheer-black-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 910207,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          35,
+          0,
+          986,
+          1536
+        ],
+        "sha256": "f6480deedf9c050790a857e19fb0abbe0759f9dfe3743b1adc166a00d203c69d"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-dress",
+      "itemId": "sheer-white-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer white hosiery over every currently exposed part of the legs, with a fine smooth lightly translucent textile and subtle natural sheen.\nKeep the exact adult face, purple eyes and composed closed-mouth expression, gold hair crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep the original ornate purple/gold footwear and all leg ornaments on top of the hosiery. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-ca65d413-feb8-440d-96d1-bf0f4d28ddb4.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-dress/sheer-white-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010910358151330624,
+              "ry": 0.002552130757313975,
+              "x": 0.49069361070927203,
+              "y": 0.09793119128211103
+            },
+            {
+              "rx": 0.00988950556967616,
+              "ry": 0.0026584691672302263,
+              "x": 0.5385779604199001,
+              "y": 0.09725062233688364
+            }
+          ],
+          "face": {
+            "bottom": 0.15145200490951538,
+            "left": 0.45944714546203613,
+            "right": 0.5716782137751579,
+            "top": 0.07663129270076752
+          },
+          "mouth": {
+            "rx": 0.015504192678309159,
+            "ry": 0.003913266975395513,
+            "x": 0.515034555856052,
+            "y": 0.12917352325888454
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-dress/sheer-white-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010972565529464795,
+              "ry": 0.0026011396765861505,
+              "x": 0.4905547022024659,
+              "y": 0.09803977501854888
+            },
+            {
+              "rx": 0.00996926796462505,
+              "ry": 0.0027285438284385677,
+              "x": 0.5383785224994448,
+              "y": 0.09736029368859933
+            }
+          ],
+          "face": {
+            "bottom": 0.15187746286392212,
+            "left": 0.45824921131134033,
+            "right": 0.5711923688650131,
+            "top": 0.07658202201128006
+          },
+          "mouth": {
+            "rx": 0.015511291165943852,
+            "ry": 0.003928252981506397,
+            "x": 0.5146179058982794,
+            "y": 0.12951888187689115
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          14.21064467766117,
+          11.037181409295352,
+          10.08680659670165
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "dd27cffe5ae4594d0e47a83763a5999283134411a888700f86ec17fa7abaa51f"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-dress/sheer-white-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 906860,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          0,
+          0,
+          1002,
+          1536
+        ],
+        "sha256": "7be5ea59cd41e98904c2ab5a8410dc0cd8405654508edd01de7a3978c7047509"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-dress",
+      "itemId": "black-fishnet-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the exact adult face, purple eyes and composed closed-mouth expression, gold hair crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep the original ornate purple/gold footwear and all leg ornaments on top of the hosiery. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-a225dd5c-9323-4f74-8dee-d214edfe352a.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-dress/black-fishnet-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010809059875893645,
+              "ry": 0.0025649505685265694,
+              "x": 0.4904350910509434,
+              "y": 0.09791976489940168
+            },
+            {
+              "rx": 0.009807783395405778,
+              "ry": 0.0026700706146343123,
+              "x": 0.5380154573365878,
+              "y": 0.09720494367173416
+            }
+          ],
+          "face": {
+            "bottom": 0.15166383981704712,
+            "left": 0.458684504032135,
+            "right": 0.571110188961029,
+            "top": 0.07671338319778442
+          },
+          "mouth": {
+            "rx": 0.015547386830867538,
+            "ry": 0.0038894746530271362,
+            "x": 0.5148047507933171,
+            "y": 0.12916170964117946
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-dress/black-fishnet-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010972565529464795,
+              "ry": 0.0026011396765861505,
+              "x": 0.4905547022024659,
+              "y": 0.09803977501854888
+            },
+            {
+              "rx": 0.00996926796462505,
+              "ry": 0.0027285438284385677,
+              "x": 0.5383785224994448,
+              "y": 0.09736029368859933
+            }
+          ],
+          "face": {
+            "bottom": 0.15187746286392212,
+            "left": 0.45824921131134033,
+            "right": 0.5711923688650131,
+            "top": 0.07658202201128006
+          },
+          "mouth": {
+            "rx": 0.015511291165943852,
+            "ry": 0.003928252981506397,
+            "x": 0.5146179058982794,
+            "y": 0.12951888187689115
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          11.25232383808096,
+          9.534857571214392,
+          9.067391304347826
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "105b54cea432ed4e01078f3f94563490fa0bf8d1bdebfd8651b2b21350a187a0"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-dress/black-fishnet-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 908339,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          39,
+          0,
+          1008,
+          1536
+        ],
+        "sha256": "d0a9edb7364577944cfceec6622c24543e3e6a0b128beccb93261c6715881173"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-veil",
+      "itemId": "sheer-black-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the exact adult eyes and expression, gold-edged translucent purple FACE VEIL covering nose/mouth, crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep ornate purple/gold footwear and leg ornaments on top. Never remove or change the face veil. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-5cb23498-ebb4-4af3-b1e3-f785fccf7770.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-veil/sheer-black-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.01061758775638022,
+              "ry": 0.0026263717625278904,
+              "x": 0.49232059484628954,
+              "y": 0.0977140445380924
+            },
+            {
+              "rx": 0.00964070728651012,
+              "ry": 0.0026797528286843786,
+              "x": 0.539291009809096,
+              "y": 0.09736172774239327
+            }
+          ],
+          "face": {
+            "bottom": 0.15017348527908325,
+            "left": 0.4600498378276825,
+            "right": 0.570720724761486,
+            "top": 0.07639289647340775
+          },
+          "mouth": {
+            "rx": 0.016238665664559115,
+            "ry": 0.0037794133459059243,
+            "x": 0.5161020717074706,
+            "y": 0.1293799735531984
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-veil/sheer-black-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010794000806600368,
+              "ry": 0.0028381737206708557,
+              "x": 0.4919955546554053,
+              "y": 0.09740935531298334
+            },
+            {
+              "rx": 0.00985539078647002,
+              "ry": 0.0028381737206708557,
+              "x": 0.5388924720250567,
+              "y": 0.09716353086961416
+            }
+          ],
+          "face": {
+            "bottom": 0.1500212550163269,
+            "left": 0.46101123094558716,
+            "right": 0.5716442093253136,
+            "top": 0.07626593858003616
+          },
+          "mouth": {
+            "rx": 0.015989871551089663,
+            "ry": 0.003709739255429889,
+            "x": 0.5152596429407962,
+            "y": 0.129612575553758
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          6.309499569269324,
+          6.19335891612499,
+          6.347247239407941
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "494422a14ef3c9af2b6e78dfb9281ae952090db19aff3b5e1757a1b588183b7a"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-veil/sheer-black-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 893548,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          0,
+          0,
+          1012,
+          1536
+        ],
+        "sha256": "5d4a6433c538adb2cee24e3b55426a93ad9f736bb49e644ab27be72dbd088148"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-veil",
+      "itemId": "sheer-white-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer white hosiery over every currently exposed part of the legs, with a fine smooth lightly translucent textile and subtle natural sheen.\nKeep the exact adult eyes and expression, gold-edged translucent purple FACE VEIL covering nose/mouth, crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep ornate purple/gold footwear and leg ornaments on top. Never remove or change the face veil. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-46c1565b-195d-43aa-bf19-ac97b9d9d6a3.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-veil/sheer-white-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010773203870530212,
+              "ry": 0.0026892509651845753,
+              "x": 0.49261669726339535,
+              "y": 0.09757822475499922
+            },
+            {
+              "rx": 0.009752585551775494,
+              "ry": 0.002754051340531527,
+              "x": 0.5396461843514706,
+              "y": 0.09710301757891915
+            }
+          ],
+          "face": {
+            "bottom": 0.1506175398826599,
+            "left": 0.4609050154685974,
+            "right": 0.5722269341349602,
+            "top": 0.0764029249548912
+          },
+          "mouth": {
+            "rx": 0.016248907563035098,
+            "ry": 0.0038448720353631005,
+            "x": 0.5164959474683329,
+            "y": 0.12973043233142623
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-veil/sheer-white-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010794000806600368,
+              "ry": 0.0028381737206708557,
+              "x": 0.4919955546554053,
+              "y": 0.09740935531298334
+            },
+            {
+              "rx": 0.00985539078647002,
+              "ry": 0.0028381737206708557,
+              "x": 0.5388924720250567,
+              "y": 0.09716353086961416
+            }
+          ],
+          "face": {
+            "bottom": 0.1500212550163269,
+            "left": 0.46101123094558716,
+            "right": 0.5716442093253136,
+            "top": 0.07626593858003616
+          },
+          "mouth": {
+            "rx": 0.015989871551089663,
+            "ry": 0.003709739255429889,
+            "x": 0.5152596429407962,
+            "y": 0.129612575553758
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          7.703735609679693,
+          7.507009162816195,
+          7.500039157334169
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "dabcf539e65eb1c8485dbf7323b4fc781da6ffbd3391a0169af94c00a14cf495"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-veil/sheer-white-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 902238,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          77,
+          0,
+          987,
+          1536
+        ],
+        "sha256": "e84af23b45cdb8a3963675e4b9521e6af6af82194ae84b3641fc9b2b308654f8"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-violet-veil",
+      "itemId": "black-fishnet-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the exact adult eyes and expression, gold-edged translucent purple FACE VEIL covering nose/mouth, crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep ornate purple/gold footwear and leg ornaments on top. Never remove or change the face veil. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-e178c616-bdc8-4b74-a05d-d0b044524c9d.png",
+      "provenance": "public/wardrobe/fits/ziling-violet-veil/black-fishnet-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010716468400293888,
+              "ry": 0.0025719527459495684,
+              "x": 0.49200675472817806,
+              "y": 0.09774523886634134
+            },
+            {
+              "rx": 0.009716264372270356,
+              "ry": 0.0026354566562101223,
+              "x": 0.5388575715155643,
+              "y": 0.09725836815761091
+            }
+          ],
+          "face": {
+            "bottom": 0.15083742141723633,
+            "left": 0.45984676480293274,
+            "right": 0.5715336874127388,
+            "top": 0.07637947052717209
+          },
+          "mouth": {
+            "rx": 0.016241405768175343,
+            "ry": 0.003852637311320961,
+            "x": 0.5159481422224285,
+            "y": 0.12919080005612232
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-veil/black-fishnet-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010794000806600368,
+              "ry": 0.0028381737206708557,
+              "x": 0.4919955546554053,
+              "y": 0.09740935531298334
+            },
+            {
+              "rx": 0.00985539078647002,
+              "ry": 0.0028381737206708557,
+              "x": 0.5388924720250567,
+              "y": 0.09716353086961416
+            }
+          ],
+          "face": {
+            "bottom": 0.1500212550163269,
+            "left": 0.46101123094558716,
+            "right": 0.5716442093253136,
+            "top": 0.07626593858003616
+          },
+          "mouth": {
+            "rx": 0.015989871551089663,
+            "ry": 0.003709739255429889,
+            "x": 0.5152596429407962,
+            "y": 0.129612575553758
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-veil/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          6.215913540606156,
+          6.401362675229071,
+          6.355313650246691
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "ff3cc46a507689c354806d56884405af2cdc9928e9dd9d9d415bd7479dbd1bb5"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-violet-veil/black-fishnet-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 901468,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          65,
+          0,
+          1006,
+          1536
+        ],
+        "sha256": "c940b36db190567790d0c19017e1e2ddd40e108f6b94b93fa06e5bd9c42adc0a"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-white-robes",
+      "itemId": "sheer-black-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the exact adult eyes and expression, gold-edged purple FACE VEIL, purple scarf, dark hair and long front braids, full-length white embroidered robe with purple inner layers, belt and dangling ornaments, and original pale purple closed shoes. Hosiery may be visible ONLY on the small already exposed ankle areas between the unchanged full-length robe hem and shoes; most remains hidden. Never shorten, split, lift, or open the robe. Never remove or change the face veil.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-d14113a1-60c1-4e05-b69b-64f9ff5d8224.png",
+      "provenance": "public/wardrobe/fits/ziling-white-robes/sheer-black-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010656518951979166,
+              "ry": 0.0024505160150187777,
+              "x": 0.48130083861324735,
+              "y": 0.0840189580473667
+            },
+            {
+              "rx": 0.009415137389545691,
+              "ry": 0.0026654735601958635,
+              "x": 0.5272641253237182,
+              "y": 0.08208434014077293
+            }
+          ],
+          "face": {
+            "bottom": 0.13732409477233887,
+            "left": 0.44803622364997864,
+            "right": 0.5620181858539581,
+            "top": 0.06133612245321274
+          },
+          "mouth": {
+            "rx": 0.014557996825992348,
+            "ry": 0.004385132789303525,
+            "x": 0.5063863798598973,
+            "y": 0.11495134313680422
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-white-robes/sheer-black-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010678407387924471,
+              "ry": 0.0024331888167150595,
+              "x": 0.48104375989642123,
+              "y": 0.08391197094868774
+            },
+            {
+              "rx": 0.009435250419196128,
+              "ry": 0.0026775715669369315,
+              "x": 0.527550617416807,
+              "y": 0.08201004551954916
+            }
+          ],
+          "face": {
+            "bottom": 0.1370372772216797,
+            "left": 0.4475337266921997,
+            "right": 0.5619977191090584,
+            "top": 0.06072794646024704
+          },
+          "mouth": {
+            "rx": 0.014471633650965932,
+            "ry": 0.0041651101892487,
+            "x": 0.5068313203909479,
+            "y": 0.11482091486372392
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          12.903791365329827,
+          12.037256191102346,
+          12.10168748630287
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "1ea786b8a52cefc435dd7d56b5471bf0665232f007d4f41cbb05a346bfc4c3c7"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-white-robes/sheer-black-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 952091,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          0,
+          16,
+          926,
+          1520
+        ],
+        "sha256": "feb99b041054210f32b00adcbb81513c02b3b845c88c64e494915ea817064156"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-white-robes",
+      "itemId": "sheer-white-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer white hosiery over every currently exposed part of the legs, with a fine smooth lightly translucent textile and subtle natural sheen.\nKeep the exact adult eyes and expression, gold-edged purple FACE VEIL, purple scarf, dark hair and long front braids, full-length white embroidered robe with purple inner layers, belt and dangling ornaments, and original pale purple closed shoes. Hosiery may be visible ONLY on the small already exposed ankle areas between the unchanged full-length robe hem and shoes; most remains hidden. Never shorten, split, lift, or open the robe. Never remove or change the face veil.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-83fe3f7c-f0d2-491b-92ec-379d1a295d7f.png",
+      "provenance": "public/wardrobe/fits/ziling-white-robes/sheer-white-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010611914886059282,
+              "ry": 0.002452678386030138,
+              "x": 0.48205270080158313,
+              "y": 0.08457098065061186
+            },
+            {
+              "rx": 0.009287467437430363,
+              "ry": 0.0026597917353754497,
+              "x": 0.5276234363528511,
+              "y": 0.08290315898929101
+            }
+          ],
+          "face": {
+            "bottom": 0.1369972825050354,
+            "left": 0.44881105422973633,
+            "right": 0.5616861805319786,
+            "top": 0.06174720078706741
+          },
+          "mouth": {
+            "rx": 0.014356334325573483,
+            "ry": 0.004338512564864283,
+            "x": 0.5073152712946956,
+            "y": 0.11543110742154594
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-white-robes/sheer-white-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010678407387924471,
+              "ry": 0.0024331888167150595,
+              "x": 0.48104375989642123,
+              "y": 0.08391197094868774
+            },
+            {
+              "rx": 0.009435250419196128,
+              "ry": 0.0026775715669369315,
+              "x": 0.527550617416807,
+              "y": 0.08201004551954916
+            }
+          ],
+          "face": {
+            "bottom": 0.1370372772216797,
+            "left": 0.4475337266921997,
+            "right": 0.5619977191090584,
+            "top": 0.06072794646024704
+          },
+          "mouth": {
+            "rx": 0.014471633650965932,
+            "ry": 0.0041651101892487,
+            "x": 0.5068313203909479,
+            "y": 0.11482091486372392
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          11.619329388560157,
+          10.997954562057126,
+          11.285923003871721
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "6de46986ee9d353d717c99ab93ea987e5f12a08f3bec445eac11734784057b57"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-white-robes/sheer-white-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 953981,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          0,
+          17,
+          1010,
+          1520
+        ],
+        "sha256": "39aa8e535b068a13ea9e592db65e5df88600a18a61c8707e01a51d4d74c3b945"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "ziling-white-robes",
+      "itemId": "black-fishnet-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the exact adult eyes and expression, gold-edged purple FACE VEIL, purple scarf, dark hair and long front braids, full-length white embroidered robe with purple inner layers, belt and dangling ornaments, and original pale purple closed shoes. Hosiery may be visible ONLY on the small already exposed ankle areas between the unchanged full-length robe hem and shoes; most remains hidden. Never shorten, split, lift, or open the robe. Never remove or change the face veil.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-513ed5b0-a683-4fd3-bca9-2e05a80b8926.png",
+      "provenance": "public/wardrobe/fits/ziling-white-robes/black-fishnet-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010628767483401858,
+              "ry": 0.0024309495462115915,
+              "x": 0.4816242235885925,
+              "y": 0.08382363768123624
+            },
+            {
+              "rx": 0.00942655972983042,
+              "ry": 0.002685721257585927,
+              "x": 0.5276344432421634,
+              "y": 0.0818916155097631
+            }
+          ],
+          "face": {
+            "bottom": 0.13686317205429077,
+            "left": 0.44878295063972473,
+            "right": 0.5615331456065178,
+            "top": 0.0616963729262352
+          },
+          "mouth": {
+            "rx": 0.014330923412289587,
+            "ry": 0.004416046917409211,
+            "x": 0.506743145118523,
+            "y": 0.11476781536720398
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-white-robes/black-fishnet-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010678407387924471,
+              "ry": 0.0024331888167150595,
+              "x": 0.48104375989642123,
+              "y": 0.08391197094868774
+            },
+            {
+              "rx": 0.009435250419196128,
+              "ry": 0.0026775715669369315,
+              "x": 0.527550617416807,
+              "y": 0.08201004551954916
+            }
+          ],
+          "face": {
+            "bottom": 0.1370372772216797,
+            "left": 0.4475337266921997,
+            "right": 0.5619977191090584,
+            "top": 0.06072794646024704
+          },
+          "mouth": {
+            "rx": 0.014471633650965932,
+            "ry": 0.0041651101892487,
+            "x": 0.5068313203909479,
+            "y": 0.11482091486372392
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-white-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": true,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          9.229308203667179,
+          9.184819928409672,
+          9.142304039739937
+        ],
+        "headAdjustedToNewLandmarks": true,
+        "rigSha256": "b7bc699e67f2065c71db12806f2dc4c98c0c73477ceb31167f87b78f00b652fb"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/ziling-white-robes/black-fishnet-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 948286,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          49,
+          16,
+          994,
+          1520
+        ],
+        "sha256": "b222aee5db74c1af2b3da02d687329c1e4e3141c346a98862d6c0f3bc3054970"
+      },
+      "status": "fitted"
+    },
+    {
+      "lookId": "songyu-azure-robes",
+      "itemId": "sheer-black-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer black hosiery over every currently exposed part of the legs, with a fine smooth translucent textile and subtle natural sheen.\nKeep the exact user-approved adult frontal face and slightly parted speaking lips, brown hair, white hair ornaments, red cord jade necklace, green jade waist pendant and tassel, very full floor-length azure and white embroidered robes. The floor-length robe fully obscures the legs and feet: hosiery is fully hidden under it, so do not change or shorten the robe or invent any new leg exposure. Preserve the current full gown silhouette.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": null,
+      "provenance": "public/wardrobe/fits/songyu-azure-robes/sheer-black-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/songyu-azure-robes/sheer-black-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "headAdjustedToNewLandmarks": false,
+        "rigSha256": "65478db92d79b0d643dbc95d42b194d7ca61e2d336c72efb8e7d9660dfa70125"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/songyu-azure-robes/sheer-black-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 781763,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          62,
+          0,
+          1010,
+          1536
+        ],
+        "sha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086"
+      },
+      "status": "fully-occluded/no-visible-image-change"
+    },
+    {
+      "lookId": "songyu-azure-robes",
+      "itemId": "sheer-white-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add plain sheer white hosiery over every currently exposed part of the legs, with a fine smooth lightly translucent textile and subtle natural sheen.\nKeep the exact user-approved adult frontal face and slightly parted speaking lips, brown hair, white hair ornaments, red cord jade necklace, green jade waist pendant and tassel, very full floor-length azure and white embroidered robes. The floor-length robe fully obscures the legs and feet: hosiery is fully hidden under it, so do not change or shorten the robe or invent any new leg exposure. Preserve the current full gown silhouette.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": null,
+      "provenance": "public/wardrobe/fits/songyu-azure-robes/sheer-white-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/songyu-azure-robes/sheer-white-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "headAdjustedToNewLandmarks": false,
+        "rigSha256": "65478db92d79b0d643dbc95d42b194d7ca61e2d336c72efb8e7d9660dfa70125"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/songyu-azure-robes/sheer-white-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 781763,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          62,
+          0,
+          1010,
+          1536
+        ],
+        "sha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086"
+      },
+      "status": "fully-occluded/no-visible-image-change"
+    },
+    {
+      "lookId": "songyu-azure-robes",
+      "itemId": "black-fishnet-stockings",
+      "src": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png",
+      "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the exact user-approved adult frontal face and slightly parted speaking lips, brown hair, white hair ornaments, red cord jade necklace, green jade waist pendant and tassel, very full floor-length azure and white embroidered robes. The floor-length robe fully obscures the legs and feet: hosiery is fully hidden under it, so do not change or shorten the robe or invent any new leg exposure. Preserve the current full gown silhouette.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+      "generatedFile": null,
+      "provenance": "public/wardrobe/fits/songyu-azure-robes/black-fishnet-stockings/provenance.json",
+      "calibration": {
+        "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+        "landmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/songyu-azure-robes/black-fishnet-stockings/character.png"
+        },
+        "sourceLandmarks": {
+          "confidence": 1,
+          "eyes": [
+            {
+              "rx": 0.010128083709403213,
+              "ry": 0.0019228787326055485,
+              "x": 0.45669772869237424,
+              "y": 0.097675833923488
+            },
+            {
+              "rx": 0.009955024476942631,
+              "ry": 0.0019558440743996375,
+              "x": 0.5047010550130773,
+              "y": 0.09810435985372856
+            }
+          ],
+          "face": {
+            "bottom": 0.15426069498062134,
+            "left": 0.42113420367240906,
+            "right": 0.5394794270396233,
+            "top": 0.0753638818860054
+          },
+          "mouth": {
+            "rx": 0.013300836892340961,
+            "ry": 0.005647773075022733,
+            "x": 0.4802585047871747,
+            "y": 0.1328700313696073
+          },
+          "path": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+        },
+        "armMobility": 0,
+        "mouthCovered": false,
+        "sourceFace": "not configured in source rig; no face overlay added",
+        "faceRGBMeanAbsoluteDifference": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "headAdjustedToNewLandmarks": false,
+        "rigSha256": "65478db92d79b0d643dbc95d42b194d7ca61e2d336c72efb8e7d9660dfa70125"
+      },
+      "asset": {
+        "path": "public/wardrobe/fits/songyu-azure-robes/black-fishnet-stockings/character.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "transparentPixels": 781763,
+        "opaquePixels": 0,
+        "alphaBounds": [
+          62,
+          0,
+          1010,
+          1536
+        ],
+        "sha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086"
+      },
+      "status": "fully-occluded/no-visible-image-change"
+    }
+  ],
+  "counts": {
+    "fits": 15,
+    "generated": 12,
+    "fullyOccludedSourceCopies": 3
+  },
+  "scope": "Only the listed fit directories and this record were modified. Catalog/UI/deployment handled by parent."
+}

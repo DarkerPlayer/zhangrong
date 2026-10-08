@@ -8,6 +8,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { offlineReply } from "../server/dialogue.mjs";
 import { restoreState } from "../src/state.mjs";
+import { getAvailableLooks } from "../src/looks.mjs";
+import { isAllowedExclusiveCorpusText } from "../server/exclusive-corpus.mjs";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   url: "http://localhost:4317",
@@ -62,9 +64,9 @@ await build({
         b.onLoad({ filter: /.*/, namespace: "test" }, (a) => ({
           contents:
             a.path === "pet"
-              ? "import React from 'react'; export default function LivePet({lookId,appearance,petMode,onReady}){React.useEffect(()=>{onReady?.()},[lookId,appearance?.asset,appearance?.rig]);return React.createElement('div',{'data-testid':'live-pet','data-look':lookId,'data-asset':appearance?.asset,'data-full-body':String(Boolean(petMode))})}"
+              ? "import React from 'react'; export default function LivePet({lookId,appearance,petMode,onReady,action}){React.useEffect(()=>{onReady?.()},[lookId,appearance?.asset,appearance?.rig]);return React.createElement('div',{'data-testid':'live-pet','data-look':lookId,'data-asset':appearance?.asset,'data-full-body':String(Boolean(petMode)),'data-action':action?.kind || ''})}"
               : a.path === "audio"
-                ? "export async function speak(t,f,s,o){globalThis.__speechCalls.push(t);globalThis.__speechProfiles.push(o?.voiceProfileId);if(!globalThis.__holdSpeech)f?.()}export function stopSpeech(){globalThis.__speechStops++} export async function setRain(){}"
+                ? "export async function speak(t,f,s,o){globalThis.__speechCalls.push(t);globalThis.__speechProfiles.push(o?.voiceProfileId);globalThis.__speechOptions.push(o);if(!globalThis.__holdSpeech)f?.()}export function stopSpeech(){globalThis.__speechStops++} export async function setRain(){}"
                 : "export async function readMedia(){return null} export async function saveMedia(){}",
           loader: "js",
         }));
@@ -74,15 +76,17 @@ await build({
 });
 const require = createRequire(import.meta.url),
   App = require(bundle).default;
-let chatResolve, chatPayload, voiceSelections, missingVoiceIds, libraryVoices;
+let chatResolve, chatPayload, chatSignal, voiceSelections, missingVoiceIds, libraryVoices;
 beforeEach(() => {
   localStorage.clear();
   globalThis.__speechCalls = [];
   globalThis.__speechProfiles = [];
+  globalThis.__speechOptions = [];
   globalThis.__speechStops = 0;
   globalThis.__holdSpeech = false;
   chatPayload = null;
   chatResolve = null;
+  chatSignal = null;
   voiceSelections = [];
   missingVoiceIds = new Set();
   libraryVoices = [{id:"builtin",name:"原始参考音色",builtin:true,duration:5.4},{id:"older-voice",name:"旧音色",builtin:false,duration:6}];
@@ -99,6 +103,7 @@ beforeEach(() => {
     if (url === "/api/health") return { json: async () => ({ ok: true }) };
     if (url === "/api/chat") {
       chatPayload = JSON.parse(options.body);
+      chatSignal = options.signal;
       return new Promise((resolve) => {
         chatResolve = (reply, extra = {}) =>
           resolve(extra.response || {
@@ -156,6 +161,11 @@ async function mountV2(update = {}) {
   await act(async () => {});
   return ui;
 }
+function showAllWardrobeItems(ui) {
+  assert.equal(ui.getByRole("button", { name: /^角色专属/ }).getAttribute("aria-pressed"), "true");
+  fireEvent.click(ui.getByRole("button", { name: /^全部衣橱/ }));
+  assert.equal(ui.getByRole("button", { name: /^全部衣橱/ }).getAttribute("aria-pressed"), "true");
+}
 async function submit(ui, text) {
   fireEvent.change(ui.getByRole("textbox", { name: /说点什么/ }), {
     target: { value: text },
@@ -163,6 +173,55 @@ async function submit(ui, text) {
   fireEvent.click(ui.getByRole("button", { name: "发送消息" }));
   await waitFor(() => assert.ok(chatResolve));
 }
+
+test("模型改名同步同角色造型、搜索和桌宠，重载后保留且不修改人格", async () => {
+  let ui = await mountV2({ lookId: "ruby-velvet" });
+  const before = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "修改模型名称" }));
+  fireEvent.change(ui.getByRole("textbox", { name: "模型名称" }), { target: { value: "  我的名字  " } });
+  fireEvent.click(ui.getByRole("button", { name: "保存模型名称" }));
+  assert.ok(ui.getByRole("button", { name: "选择外观模特：我的名字" }));
+  fireEvent.change(ui.getByRole("searchbox", { name: "搜索当前模型的造型" }), { target: { value: "我的名字" } });
+  const outfits = ui.getAllByRole("button", { name: /^动态换装：我的名字 · / });
+  assert.ok(outfits.length > 1);
+  const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.equal(saved.modelNames.ruby, "我的名字");
+  assert.deepEqual(saved.personas, before.personas);
+  assert.deepEqual(saved.personaThreads, before.personaThreads);
+  assert.deepEqual(saved.wardrobeSelections, before.wardrobeSelections);
+  ui.unmount();
+  ui = render(React.createElement(App));
+  await act(async () => {});
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  assert.ok(ui.getByRole("button", { name: "选择外观模特：我的名字" }));
+  fireEvent.click(ui.getByRole("button", { name: "关闭衣柜" }));
+  fireEvent.click(ui.getByRole("button", { name: "桌宠模式" }));
+  fireEvent.click(ui.getByRole("button", { name: "桌宠换装" }));
+  assert.ok(ui.getAllByRole("button", { name: /^动态换装：我的名字 · / }).length > 1);
+});
+
+test("Haru 可独立改名，取消及空白输入不会覆盖已保存名称", async () => {
+  const ui = await mountV2();
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：Haru" }));
+  fireEvent.click(ui.getByRole("button", { name: "修改模型名称" }));
+  fireEvent.change(ui.getByRole("textbox", { name: "模型名称" }), { target: { value: "小春" } });
+  fireEvent.click(ui.getByRole("button", { name: "保存模型名称" }));
+  assert.ok(ui.getByRole("button", { name: "选择外观模特：小春" }));
+  assert.deepEqual(JSON.parse(localStorage.getItem("muyu-state-v2")).modelNames, { haru: "小春" });
+  fireEvent.click(ui.getByRole("button", { name: "修改模型名称" }));
+  fireEvent.change(ui.getByRole("textbox", { name: "模型名称" }), { target: { value: "   " } });
+  assert.equal(ui.getByRole("button", { name: "保存模型名称" }).disabled, true);
+  fireEvent.click(ui.getByRole("button", { name: "取消改名" }));
+  assert.ok(ui.getByRole("button", { name: "选择外观模特：小春" }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：绾红" }));
+  fireEvent.click(ui.getByRole("button", { name: "修改模型名称" }));
+  fireEvent.change(ui.getByRole("textbox", { name: "模型名称" }), { target: { value: "草稿" } });
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：小春" }));
+  assert.equal(ui.queryByRole("textbox", { name: "模型名称" }), null);
+  assert.deepEqual(JSON.parse(localStorage.getItem("muyu-state-v2")).modelNames, { haru: "小春" });
+});
 async function resolveChat(text = "我听到啦。") {
   await act(async () => {
     chatResolve(text);
@@ -206,8 +265,10 @@ test("单品页展示真实库存分类，清空穿搭会切到当前角色的�
   const ui = await mount({ lookId: "linwei-red-sole" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
-  assert.ok(ui.getByRole("heading", { name: "独立单品衣橱" }));
+  assert.ok(ui.getByRole("heading", { name: "林薇的专属衣橱" }));
   assert.ok(ui.getByRole("button", { name: "筛选单品：鞋履" }));
+  showAllWardrobeItems(ui);
+  assert.ok(ui.getByRole("heading", { name: "全部单品衣橱" }));
   fireEvent.click(ui.getByRole("button", { name: "什么都不穿（白色比基尼）" }));
   assert.ok(ui.getByText("已换上白色比基尼安全底装"));
   assert.equal(
@@ -223,6 +284,9 @@ test("反差婊可以选择并保存，未适配的底装和鞋履保持玫瑰�
   assert.equal(JSON.parse(localStorage.getItem("muyu-state-v2")).lookId, "fancha-rose-office");
 
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  assert.ok(ui.getByRole("button", { name: "鞋履库存：象牙白细跟鞋" }));
+  assert.equal(ui.queryByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }), null);
+  showAllWardrobeItems(ui);
   assert.equal(ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }).disabled, true);
   assert.equal(ui.getByRole("button", { name: "鞋履库存：象牙白软底拖鞋" }).disabled, true);
   fireEvent.click(ui.getByRole("button", { name: "什么都不穿（白色比基尼）" }));
@@ -237,6 +301,7 @@ test("鞋履库存展示高跟鞋和拖鞋，并按外观模特保存选择", as
   const ui = await mount({ lookId: "xuanling-golden-crown" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllWardrobeItems(ui);
 
   assert.ok(ui.getByRole("heading", { name: "独立鞋履库存" }));
   const heels = ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" });
@@ -268,6 +333,7 @@ test("current Ruby white-base model wears fitted slippers and does not claim unf
   const ui = await mount({ lookId: "ruby-white-bikini" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllWardrobeItems(ui);
   assert.equal(ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }).disabled, true);
   fireEvent.click(ui.getByRole("button", { name: "鞋履库存：象牙白软底拖鞋" }));
   assert.equal(ui.getByTestId("live-pet").dataset.asset, "/wardrobe/fits/ruby-white-bikini/ivory-soft-slippers/character.png");
@@ -280,6 +346,7 @@ test("blocked outfits disable shoe try-on and offer only fitted looks of the sam
   const ui = await mount({ lookId: "ruby-white-bikini" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllWardrobeItems(ui);
   assert.equal(ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }).disabled, true);
   assert.ok(ui.getByText(/只推荐当前模特已适配的造型/));
   assert.equal(ui.queryByRole("button", { name: "切换到美杜莎试穿鞋履" }), null);
@@ -293,6 +360,7 @@ test("reselecting fitted shoes or an already empty outfit does not leave the pet
   const ui = await mount({ lookId: "linwei-white-bikini" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllWardrobeItems(ui);
   const heels = ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" });
   fireEvent.click(heels);
   fireEvent.click(heels);
@@ -311,9 +379,12 @@ test("same shoe fits independent models and uses each model's artwork", async ()
   const ui = await mount({ lookId: "linwei-white-bikini" });
   fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
   fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  showAllWardrobeItems(ui);
   fireEvent.click(ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }));
   assert.match(ui.getByTestId("live-pet").dataset.asset, /linwei-white-bikini\/black-pointed-heels/);
   fireEvent.click(ui.getByRole("button", { name: "选择外观模特：吴多慧" }));
+  assert.equal(ui.queryByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }), null);
+  showAllWardrobeItems(ui);
   fireEvent.click(ui.getByRole("button", { name: "鞋履库存：黑色尖头高跟鞋" }));
   assert.match(ui.getByTestId("live-pet").dataset.asset, /wuduohui-plaid-agent\/black-pointed-heels/);
   const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
@@ -702,7 +773,11 @@ test("pet wardrobe changes the visible look without leaving pet mode or closing 
     target: { value: "还没发出的消息" },
   });
   fireEvent.click(ui.getByRole("button", { name: "桌宠换装" }));
-  assert.equal(ui.getAllByRole("button", { name: /^动态换装：/ }).length, 37);
+  const savedBeforeSelection = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.deepEqual(
+    ui.getAllByRole("button", { name: /^动态换装：/ }).map(button => button.getAttribute("aria-label")).sort(),
+    getAvailableLooks(savedBeforeSelection.removedLookIds).map(look => `动态换装：${look.name}`).sort(),
+  );
   fireEvent.click(
     ui.getByRole("button", { name: "动态换装：霜华 · 机车皮衣" }),
   );
@@ -1318,4 +1393,346 @@ test("unlocked companion activities stay disabled until the current reply finish
     await resolveChat("我听到啦，我们慢慢聊。");
   }
   await waitFor(()=>assert.equal(ui.getByRole("button",{name:"回顾共同经历",exact:true}).disabled,false));
+});
+
+
+test("reading studio releases the hidden portrait and returning does not replay a consumed gesture", async () => {
+  const ui = await mountV2({ lookId: "yinyue-silver-fox" });
+  fireEvent.click(ui.getByRole("button", { name: "银月的动作" }));
+  fireEvent.click(ui.getByRole("menuitem", { name: "双手比心" }));
+  assert.equal(ui.getByTestId("live-pet").dataset.action, "cute_heart");
+  fireEvent.click(ui.getByRole("button", { name: "朗读", exact: true }));
+  assert.equal(ui.queryByTestId("live-pet"), null, "covered artwork must release its WebGL renderer");
+  fireEvent.click(ui.getByRole("button", { name: "返回陪伴", exact: true }));
+  assert.equal(ui.getByTestId("live-pet").dataset.action, "", "return to the resting portrait without reloading the old gesture");
+});
+
+function exclusiveState(lookId = "mei-ning-teal-attire") {
+  const base = restoreState(null);
+  return { ...base, lookId, avatarMode: "live2d", settings: { ...base.settings, voice: true, motion: false } };
+}
+function storedAssistantLines() {
+  const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  return saved.personaThreads[saved.activePersonaId].messages.filter(item => item.role === "assistant").map(item => item.content);
+}
+function assertNoCharacterLine(ui) {
+  assert.equal(ui.container.querySelector(".reply-text"), null);
+  assert.equal(ui.queryByRole("button", { name: "朗读回复" }), null);
+  assert.ok(ui.getByRole("status", { name: "角色语料状态" }).textContent.trim());
+}
+
+for (const lookId of ["wen-furen-black-gold", "ling-yuling-jade-robes", "mei-ning-teal-attire"]) {
+  test(`exclusive corpus ${lookId} starts with a separate status and never stock greetings`, async () => {
+    const ui = await mountV2(exclusiveState(lookId));
+    assertNoCharacterLine(ui);
+    assert.deepEqual(globalThis.__speechCalls, []);
+    assert.deepEqual(storedAssistantLines(), []);
+  });
+}
+
+test("exclusive corpus gestures and focus still work without invented action or completion dialogue", async () => {
+  const ui = await mountV2(exclusiveState());
+  for (const [name, action] of [["摸摸头", "pat"], ["打个招呼", "wave"], ["害羞一下", "shy"]]) {
+    fireEvent.click(ui.getByRole("button", { name, exact: true }));
+    assert.equal(ui.getByTestId("live-pet").dataset.action, action);
+    assertNoCharacterLine(ui);
+  }
+  fireEvent.click(ui.getByRole("button", { name: "专注", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "开始专注", exact: true }));
+  assertNoCharacterLine(ui);
+  const realNow = Date.now;
+  Date.now = () => realNow() + 1501000;
+  try {
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 300)); });
+    await waitFor(() => assert.ok(ui.getByRole("button", { name: "再来一段" })));
+  } finally { Date.now = realNow; }
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("exclusive corpus accepts a literal verified reply and binds ordinary speech to its look", async () => {
+  const ui = await mountV2(exclusiveState());
+  const line = "梅凝一定勉励修行";
+  assert.equal(isAllowedExclusiveCorpusText("mei-ning", line), true);
+  await submit(ui, "好好修行");
+  await resolveChat(line);
+  assert.equal(ui.container.querySelector(".reply-text").textContent, line);
+  assert.deepEqual(storedAssistantLines(), [line]);
+  assert.deepEqual(globalThis.__speechCalls, [line]);
+  assert.equal(globalThis.__speechOptions[0].lookId, "mei-ning-teal-attire");
+  fireEvent.click(ui.getByRole("button", { name: "朗读回复" }));
+  assert.deepEqual(globalThis.__speechCalls, [line, line]);
+});
+
+test("exclusive corpus drops generated and other-character replies without saving or speaking them", async () => {
+  const ui = await mountV2(exclusiveState());
+  await submit(ui, "讲个太空旅行笑话");
+  await resolveChat("今天也会一直陪着你。");
+  assertNoCharacterLine(ui);
+  assert.match(ui.getByRole("status", { name: "角色语料状态" }).textContent, /没有适合|没有匹配/);
+  chatResolve = null;
+  await submit(ui, "身体如何");
+  await resolveChat("并无大碍");
+  assertNoCharacterLine(ui);
+  assert.deepEqual(storedAssistantLines(), []);
+  assert.deepEqual(globalThis.__speechCalls, []);
+});
+
+test("exclusive corpus empty and failing requests show status rather than assistant fallback messages", async () => {
+  const ui = await mountV2(exclusiveState("wen-furen-black-gold"));
+  await submit(ui, "你好");
+  await resolveChat("");
+  assertNoCharacterLine(ui);
+  assert.match(ui.getByRole("status", { name: "角色语料状态" }).textContent, /尚待核验/);
+  chatResolve = null;
+  await submit(ui, "请回复");
+  await act(async () => { chatResolve("", { response: { ok: false, json: async () => ({ error: "fixture failure" }) } }); });
+  assertNoCharacterLine(ui);
+  assert.match(ui.getByRole("status", { name: "角色语料状态" }).textContent, /服务暂不可用/);
+  assert.deepEqual(storedAssistantLines(), []);
+  assert.deepEqual(globalThis.__speechCalls, []);
+});
+
+test("exclusive corpus stream withholds every delta until its complete literal reply is verified", async () => {
+  const ui = await mountV2(exclusiveState());
+  await submit(ui, "修行加油");
+  let channel;
+  const response = new Response(new ReadableStream({ start(c) { channel = c; } }), { headers: { "Content-Type": "application/x-ndjson" } });
+  const emit = value => channel.enqueue(new TextEncoder().encode(JSON.stringify(value) + "\n"));
+  await act(async () => {
+    chatResolve("", { response });
+    emit({ delta: "这是一条未核验的流式台词。" });
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
+  assertNoCharacterLine(ui);
+  assert.equal(ui.queryByText("这是一条未核验的流式台词。"), null);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+  await act(async () => {
+    emit({ done: true, result: { reply: "梅凝一定勉励修行", provider: "corpus" } });
+    channel.close();
+  });
+  assert.equal(ui.container.querySelector(".reply-text").textContent, "梅凝一定勉励修行");
+  assert.deepEqual(globalThis.__speechCalls, ["梅凝一定勉励修行"]);
+  assert.deepEqual(storedAssistantLines(), ["梅凝一定勉励修行"]);
+});
+
+test("exclusive corpus hides incompatible old history but preserves it and excludes it from requests", async () => {
+  const base = exclusiveState();
+  base.personaThreads["older-sister"].messages = [
+    { id: "old", role: "assistant", content: "属于旧角色的问候", createdAt: 1 },
+    { id: "verified", role: "assistant", content: "梅凝一定勉励修行", createdAt: 2 },
+  ];
+  const ui = await mountV2(base);
+  fireEvent.click(ui.getByRole("button", { name: "回忆", exact: true }));
+  assert.equal(ui.queryByText("属于旧角色的问候"), null);
+  assert.equal(ui.container.querySelector(".memory-message.assistant p").textContent, "梅凝一定勉励修行");
+  fireEvent.click(ui.getByRole("button", { name: "回忆", exact: true }));
+  await submit(ui, "修行");
+  assert.deepEqual(chatPayload.history, [{ role: "assistant", content: "梅凝一定勉励修行" }]);
+  await resolveChat("梅凝一定勉励修行");
+  assert.deepEqual(storedAssistantLines(), ["属于旧角色的问候", "梅凝一定勉励修行", "梅凝一定勉励修行"]);
+});
+
+test("switching the visual character aborts old chat and stops voice before any late reply can arrive", async () => {
+  const ui = await mountV2(exclusiveState("ruby-velvet"));
+  await submit(ui, "请晚一点回复");
+  const previousSignal = chatSignal;
+  const oldReply = chatResolve;
+  const beforeStops = globalThis.__speechStops;
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：梅凝" }));
+  assert.equal(previousSignal.aborted, true);
+  assert.ok(globalThis.__speechStops > beforeStops);
+  await act(async () => { oldReply("不能带进梅凝的旧回复"); });
+  fireEvent.click(ui.getByRole("button", { name: "关闭衣柜" }));
+  assertNoCharacterLine(ui);
+  assert.equal(ui.queryByText("不能带进梅凝的旧回复"), null);
+  assert.deepEqual(storedAssistantLines(), []);
+  assert.deepEqual(globalThis.__speechCalls, []);
+});
+
+test("switching persona into a restricted appearance gates the greeting and cancels its predecessor", async () => {
+  const base = exclusiveState("ruby-velvet");
+  base.personas["adult-younger"].appearance = { lookId: "ling-yuling-jade-robes" };
+  const ui = await mountV2(base);
+  await submit(ui, "请晚一点回复");
+  const previousSignal = chatSignal;
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "选择女友：夏桃" }));
+  await resolveChat("旧人格的延迟回复");
+  fireEvent.click(ui.getByRole("button", { name: "返回陪伴", exact: true }));
+  assert.equal(previousSignal.aborted, true);
+  assert.equal(ui.getByTestId("live-pet").dataset.look, "ling-yuling-jade-robes");
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("chat wardrobe commands still apply while their unverified target-character dialogue is blocked", async () => {
+  const ui = await mountV2(exclusiveState("ruby-velvet"));
+  await submit(ui, "换成梅凝");
+  await act(async () => { chatResolve("我换好了，继续陪着你。", { lookAction: "mei-ning-teal-attire", petAction: "wave" }); });
+  assert.equal(ui.getByTestId("live-pet").dataset.look, "mei-ning-teal-attire");
+  assert.equal(ui.getByTestId("live-pet").dataset.action, "wave");
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("character corpus auditions are gated while independent reading remains available without a look binding", async () => {
+  const base = exclusiveState();
+  base.personas["older-sister"].customCorpora = [{ id: "line", title: "自编问候", text: "{userName}，一直陪着你。", category: "greeting", level: "mature", enabled: true, voiceProfileId: "builtin" }];
+  const ui = await mountV2(base);
+  fireEvent.click(ui.getByRole("button", { name: "女友", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "试听语料：自编问候" }));
+  fireEvent.click(ui.getByRole("button", { name: "试听内置语料：见面" }));
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.match(ui.getByRole("status", { name: "角色语料状态" }).textContent, /未朗读/);
+  fireEvent.click(ui.getByRole("button", { name: "返回陪伴", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "朗读", exact: true }));
+  await waitFor(() => assert.ok(ui.getByRole("option", { name: "旧音色" })));
+  fireEvent.change(ui.getByRole("textbox", { name: "朗读文本" }), { target: { value: "用户自己的文章可以在这里朗读。" } });
+  fireEvent.click(ui.getByRole("button", { name: "读给我听", exact: true }));
+  assert.deepEqual(globalThis.__speechCalls, ["用户自己的文章可以在这里朗读。"]);
+  assert.equal(globalThis.__speechOptions[0].lookId, undefined);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("exclusive corpus desktop pet displays an independent status and never a stock empty-state bubble", async () => {
+  const base = exclusiveState("wen-furen-black-gold");
+  const ui = await mountV2({ ...base, petMode: true });
+  assert.ok(ui.getByRole("status", { name: "角色语料状态" }));
+  assert.equal(ui.container.querySelector(".pet-bubble"), null);
+  fireEvent.click(ui.getByRole("button", { name: "摸摸头", exact: true }));
+  assert.equal(ui.getByTestId("live-pet").dataset.action, "pat");
+  assert.equal(ui.container.querySelector(".pet-bubble"), null);
+  assert.deepEqual(globalThis.__speechCalls, []);
+});
+
+test("exclusive corpus photo scene and clearing history cannot supply stock character dialogue", async () => {
+  const ui = await mountV2(exclusiveState());
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("tab", { name: "背景" }));
+  fireEvent.click(ui.getByRole("button", { name: /初见 · 日常/ }));
+  assert.equal(JSON.parse(localStorage.getItem("muyu-state-v2")).avatarMode, "photo");
+  fireEvent.click(ui.getByRole("button", { name: "关闭衣柜" }));
+  assertNoCharacterLine(ui);
+  fireEvent.click(ui.getByRole("button", { name: "设置", exact: true }));
+  fireEvent.click(ui.getByRole("button", { name: "清空记录", exact: true }));
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("exclusive corpus stream rejects an unverified final result as well as its partial sentences", async () => {
+  const ui = await mountV2(exclusiveState());
+  await submit(ui, "说点什么");
+  const encoder = new TextEncoder();
+  const response = new Response(new ReadableStream({ start(channel) {
+    channel.enqueue(encoder.encode(JSON.stringify({ delta: "未核验的开头。" }) + "\n"));
+    channel.enqueue(encoder.encode(JSON.stringify({ done: true, result: { reply: "未核验的开头。未核验的结尾。", provider: "ollama" } }) + "\n"));
+    channel.close();
+  } }), { headers: { "Content-Type": "application/x-ndjson" } });
+  await act(async () => { chatResolve("", { response }); });
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+  assert.deepEqual(storedAssistantLines(), []);
+});
+
+test("verified source dialogue picker plays exact material and clearly identifies an empty corpus", async () => {
+  let ui = await mountV2(exclusiveState());
+  const picker = ui.container.querySelector(".source-dialogue-picker");
+  assert.ok(picker);
+  assert.equal(picker.open, false);
+  assert.match(picker.querySelector("summary").textContent, /^素材原句（[1-9]\d*）$/);
+  fireEvent.click(picker.querySelector("summary"));
+  const literal = "梅凝一定勉励修行";
+  fireEvent.click(ui.getByRole("button", { name: `说这句：${literal}` }));
+  assert.equal(ui.container.querySelector(".reply-text").textContent, literal);
+  assert.deepEqual(globalThis.__speechCalls, [literal]);
+  assert.equal(globalThis.__speechOptions[0].lookId, "mei-ning-teal-attire");
+  assert.equal(chatPayload, null);
+  cleanup();
+  ui = await mountV2(exclusiveState("wen-furen-black-gold"));
+  const emptyPicker = ui.container.querySelector(".source-dialogue-picker");
+  assert.equal(emptyPicker.querySelector("summary").textContent, "素材原句（0）");
+  fireEvent.click(emptyPicker.querySelector("summary"));
+  assert.match(emptyPicker.textContent, /温夫人目前有 0 条已核验的本人台词/);
+  assert.equal(ui.queryByRole("button", { name: /^说这句：/ }), null);
+});
+
+test("a successful switch from an empty exclusive corpus accepts the new character's real source reply", async () => {
+  const ui = await mountV2(exclusiveState("wen-furen-black-gold"));
+  await submit(ui, "换成梅凝，修行");
+  const result = offlineReply(chatPayload);
+  assert.equal(result.lookAction, "mei-ning-teal-attire");
+  assert.equal(result.reply, "梅凝一定勉励修行");
+  assert.equal(isAllowedExclusiveCorpusText("wen-furen", result.reply), false);
+  await act(async () => { chatResolve(result.reply, result); });
+  assert.equal(ui.getByTestId("live-pet").dataset.look, result.lookAction);
+  assert.equal(ui.container.querySelector(".reply-text")?.textContent, result.reply);
+  assert.deepEqual(storedAssistantLines(), [result.reply]);
+  assert.deepEqual(globalThis.__speechCalls, [result.reply]);
+  assert.equal(globalThis.__speechOptions[0].lookId, result.lookAction);
+});
+
+for (const [sourceLook, label] of [["ling-yuling-jade-robes", "previous character"], ["wen-furen-black-gold", "third character"]]) {
+  test(`a successful exclusive character switch rejects the ${label}'s verified line`, async () => {
+    const ui = await mountV2(exclusiveState(sourceLook));
+    const otherLine = "并无大碍";
+    assert.equal(isAllowedExclusiveCorpusText("ling-yuling", otherLine), true);
+    assert.equal(isAllowedExclusiveCorpusText("mei-ning", otherLine), false);
+    await submit(ui, "换成梅凝，修行");
+    const result = offlineReply(chatPayload);
+    assert.equal(result.lookAction, "mei-ning-teal-attire");
+    await act(async () => { chatResolve(otherLine, { ...result, reply: otherLine }); });
+    assert.equal(ui.getByTestId("live-pet").dataset.look, result.lookAction);
+    assertNoCharacterLine(ui);
+    assert.deepEqual(storedAssistantLines(), []);
+    assert.deepEqual(globalThis.__speechCalls, []);
+  });
+}
+
+test("stockings equip, switch and restore on a corpus-only character without introducing dialogue", async () => {
+  const ui = await mountV2(exclusiveState("wen-furen-black-gold"));
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  fireEvent.click(ui.getByRole("button", { name: "筛选单品：袜类" }));
+  for (const [itemId, name] of [["sheer-black-stockings", "黑色丝袜"], ["sheer-white-stockings", "白色丝袜"], ["black-fishnet-stockings", "黑色渔网袜"]]) {
+    fireEvent.click(ui.getByRole("button", { name: `袜类库存：${name}` }));
+    assert.equal(ui.getByTestId("live-pet").dataset.asset, `/wardrobe/fits/wen-furen-black-gold/${itemId}/character.png`);
+    assert.equal(JSON.parse(localStorage.getItem("muyu-state-v2")).wardrobeSelections["wen-furen"].hosiery, itemId);
+  }
+  fireEvent.click(ui.getByRole("button", { name: "恢复原造型袜类" }));
+  assert.equal(ui.getByTestId("live-pet").dataset.asset, "/looks/wen-furen-black-gold/character.png");
+  assert.equal(JSON.parse(localStorage.getItem("muyu-state-v2")).wardrobeSelections["wen-furen"]?.hosiery, undefined);
+  fireEvent.click(ui.getByRole("button", { name: "关闭衣柜" }));
+  assertNoCharacterLine(ui);
+  assert.deepEqual(globalThis.__speechCalls, []);
+});
+
+test("stockings survive character switches and reload while Yinyue keeps mesh gestures in her fitted portrait", async () => {
+  const initial = exclusiveState("yinyue-silver-fox");
+  let ui = await mountV2(initial);
+  fireEvent.click(ui.getByRole("button", { name: "衣橱", exact: true }));
+  fireEvent.click(ui.getByRole("tab", { name: "单品" }));
+  fireEvent.click(ui.getByRole("button", { name: "筛选单品：袜类" }));
+  fireEvent.click(ui.getByRole("button", { name: "袜类库存：黑色丝袜" }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：紫灵" }));
+  fireEvent.click(ui.getByRole("button", { name: "袜类库存：白色丝袜" }));
+  fireEvent.click(ui.getByRole("button", { name: "选择外观模特：银月" }));
+  const saved = JSON.parse(localStorage.getItem("muyu-state-v2"));
+  assert.deepEqual(saved.wardrobeSelections.yinyue, { hosiery: "sheer-black-stockings" });
+  assert.deepEqual(saved.wardrobeSelections.ziling, { hosiery: "sheer-white-stockings" });
+  cleanup();
+  ui = await mountV2(saved);
+  assert.equal(ui.getByTestId("live-pet").dataset.asset, "/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png");
+  fireEvent.click(ui.getByRole("button", { name: "银月的动作" }));
+  fireEvent.click(ui.getByRole("menuitem", { name: "俏皮双眨眼" }));
+  assert.equal(ui.getByTestId("live-pet").dataset.action, "cute_double_blink");
+  assert.equal(ui.getByTestId("live-pet").dataset.asset, "/wardrobe/fits/yinyue-silver-fox/sheer-black-stockings/character.png");
+  fireEvent.click(ui.getByRole("button", { name: "银月的动作" }));
+  assert.equal(ui.queryByRole("menuitem", { name: "双手比心" }), null);
 });

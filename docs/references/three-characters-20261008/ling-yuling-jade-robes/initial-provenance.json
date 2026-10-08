@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "sourceReferences": [
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00018.400s.png",
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00036.800s.png",
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00078.200s.png"
+  ],
+  "retainedReferences": [
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-1.png",
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-2.png",
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-3.png"
+  ],
+  "referencePriorities": {
+    "face": "source-1.png: exact source expression, proportions, texture and shading; no relighting",
+    "outfit": "source-2.png and source-3.png: supplied outfit construction; unseen detail remains inferred"
+  },
+  "generator": "builtin-imagegen",
+  "generatedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-bd589479-aa31-46aa-9ffc-66e3bf2ca90a.png",
+  "prompt": "Create a single full-body transparent PNG desktop character sprite, portrait 1024x1536, isolated one person only, entire hairstyle and shoes visible, centered with comfortable transparent margins. Faithful extraction/adaptation of supplied fictional animation character, not a redesign. Facial fidelity is highest priority: preserve reference face shape, exact eyes, eyebrows, nose, mouth, expression, skin texture and original face shading. Do not beautify or relight face to harmonize body, do not genericize. Outfit and accessories remain faithful, no additional text, scene, watermark, props unrelated to character, no floor or shadow behind. Natural standing posture, feet aligned to bottom baseline, arms relaxed or softly gathered at waist. Real alpha transparency. Adult Ling Yuling, ONLY woman in gray-white outfit. Image 1 face absolute priority: same focused neutral closed-lip expression and subtle side gaze, narrow almond eyes and arched brows, adult facial proportions. Image 2 shoulder embroidery and lapel construction; image 3 RIGHT HAND gray-white woman supplies full-length silhouette, belt, long panels and gold shoes. Do not include man on left. Dark brown half-up long hair with side fringe, small metal rectangular earrings, same gold and burgundy shoulder plates, silvery woven gray-white crossover robe with flowing sleeves, diagonally intersecting golden chest inserts, ornate metallic gold belt, dark inner panels and calf-length layered outer panels. Preserve fully clothed source outfit, no change of era or decorative redesign.",
+  "adopted": "character.png",
+  "image": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "sha256": "f39a618a37f9fc9597d11cde797d0a7a48294112ec0a62e6fee4ffb2bbe9ae85"
+  },
+  "rigCalibration": {
+    "method": "macOS Vision landmarks, checked against adopted image",
+    "report": ".runtime/three-characters-20261008/ling-face.json",
+    "speechStrength": 0.16,
+    "blushStrength": 0
+  },
+  "dialoguePolicy": "provided-corpus-only",
+  "limitations": [
+    "Generated adaptation, not pixel-identical face copy",
+    "Only one source outfit adopted; no new separately detachable parts",
+    "No new voice clone; only verified original wording is enforced"
+  ]
+}

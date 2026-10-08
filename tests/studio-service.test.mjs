@@ -76,10 +76,19 @@ test('fit generation includes the existing person and shoe, importing a complete
   const result=await studio.importJob(job.id,{});assert.equal(result.catalog.fits.length,1);assert.equal(result.catalog.fits[0].lookId,'ruby-velvet');assert.equal(result.job.importedItemId,'black-pointed-heels');assert.equal(result.catalog.looks.length,0);
 });
 test('new uploaded shoes become a reusable item with a fit and original image asset',async t=>{
-  const {studio}=await fixture(t);
+  const {studio,store,site,runtime}=await fixture(t);
   const job=await studio.createJob({kind:'fit',name:'银色高跟鞋',prompt:'银色鞋',baseLookId:'ruby-velvet',slot:'shoes',references:[reference]});await settled(studio,job.id);
   const result=await studio.importJob(job.id,{});assert.equal(result.catalog.items[0].slot,'shoes');assert.equal(result.catalog.fits[0].itemId,result.catalog.items[0].id);
+  assert.equal(result.catalog.items[0].sourceLookId,'ruby-velvet');
+  assert.equal(result.catalog.items[0].sourceCharacterId,'ruby');
   assert.deepEqual(await readFile(await studio.getAsset(result.catalog.items[0].asset)),PNG);
+  await studio.close();
+  const restored=await createLocalStudio({directory:store,staticRoot:site,runtime});
+  try {
+    const item=(await restored.info()).catalog.items[0];
+    assert.equal(item.sourceLookId,'ruby-velvet');
+    assert.equal(item.sourceCharacterId,'ruby');
+  } finally {await restored.close();}
 });
 test('nail colors fit without raster references and combinations reuse the exact current artwork',async t=>{
   const {studio,calls,site}=await fixture(t);

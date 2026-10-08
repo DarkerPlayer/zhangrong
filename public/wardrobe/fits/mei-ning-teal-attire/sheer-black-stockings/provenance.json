@@ -1,0 +1,84 @@
+{
+  "lookId": "mei-ning-teal-attire",
+  "itemId": "sheer-black-stockings",
+  "selection": {
+    "hosiery": "sheer-black-stockings"
+  },
+  "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-cfd8400e-8669-4cd7-ae8b-708cc22e5e64.png",
+  "references": [
+    "public/looks/mei-ning-teal-attire/character.png"
+  ],
+  "provider": "builtin-imagegen",
+  "pixelProcessing": "none; generated PNG copied byte-for-byte",
+  "asset": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/character.png",
+  "rig": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/rig.json",
+  "sourceSha256": "e3f402a66e7261ac73b8274c57c76d508e6e3799585688b2ebe62e1148c7d77e",
+  "generatedSha256": "8cd2431a73f0a37de89dd64db851b879c56f63fe963303b56a28bab457fc0aa9",
+  "assetSha256": "8cd2431a73f0a37de89dd64db851b879c56f63fe963303b56a28bab457fc0aa9",
+  "rigSha256": "5f1795dfa467d51298c4217e64d857e222341dbaec40fba8dd3788b16f50c72b",
+  "faceConfidence": 1,
+  "calibration": {
+    "tool": "Apple Vision via scripts/face-landmarks.swift --full-body",
+    "method": "Every output independently detected. Original head offsets mapped to its new face box; eyes and mouth replaced with output landmarks; colors sampled read-only; alpha bounds measured per output. Original non-coordinate face behavior preserved."
+  },
+  "qa": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaMin": 0,
+    "alphaMax": 254,
+    "fullyTransparentFraction": 0.7814286549886068,
+    "opaqueBoundsPixels": [
+      325,
+      19,
+      742,
+      1493
+    ],
+    "alphaThresholdForRigBounds": 127,
+    "visualReview": {
+      "hosieriesOnBothVisibleLegs": true,
+      "originalSkirtHemAndShoesRetained": true,
+      "facePoseHairAccessoriesRetained": true,
+      "noGarterOrNewAccessories": true,
+      "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+    },
+    "faceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.012178134295531828,
+          "ry": 0.002595443971689315,
+          "x": 0.46898592028047426,
+          "y": 0.12326621587122166
+        },
+        {
+          "rx": 0.012158952667862266,
+          "ry": 0.0030557217247353385,
+          "x": 0.527345075263181,
+          "y": 0.11751276498371599
+        }
+      ],
+      "face": {
+        "bottom": 0.18813902139663696,
+        "left": 0.4294775724411011,
+        "right": 0.5705777853727341,
+        "top": 0.09407221525907516
+      },
+      "mouth": {
+        "rx": 0.01919734218071012,
+        "ry": 0.00529317313445965,
+        "x": 0.5054244339517351,
+        "y": 0.1607659192157478
+      },
+      "path": "public/wardrobe/fits/mei-ning-teal-attire/sheer-black-stockings/character.png"
+    },
+    "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+    "preservedRigSettings": [
+      "armMobility",
+      "mouthCovered",
+      "expression"
+    ],
+    "runtimePreview": "pending parent integration"
+  }
+}

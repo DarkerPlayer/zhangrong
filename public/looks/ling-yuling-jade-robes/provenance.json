@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "sourceReferences": [
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00018.400s.png",
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00036.800s.png",
+    "凌玉灵/LYL_ADULT_01/截图/01_BV18dxceyEqx_00078.200s.png"
+  ],
+  "retainedReferences": [
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-1.png",
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-2.png",
+    "docs/references/three-characters-20261008/ling-yuling-jade-robes/source-3.png"
+  ],
+  "referencePriorities": {
+    "face": "source-1.png: exact source expression, proportions, texture and shading; no relighting",
+    "outfit": "source-2.png and source-3.png: supplied outfit construction; unseen detail remains inferred"
+  },
+  "generator": "builtin-imagegen",
+  "generatedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8d841d87-aa83-4bdd-853a-81da2473fc0f.png",
+  "prompt": "Create a restrained fashion-costume revision of this existing adult woman's full-body desktop sprite. Only revise the lower outfit as specified. Keep the exact face and original expression, hairstyle, proportions, hand pose and upper costume unchanged. Maintain 1024x1536 full-body framing and real transparent background with no background glow. This is an ordinary standing fashion catalog pose. Replace the ankle-length robe skirt with a structured gray-white and gold above-knee wrap skirt. Keep the original golden waist belt, long sleeves and shoulder ornaments, with a flowing rear robe panel behind the body. Knees and calves visibly unobstructed. Gold closed-toe court heels. Preserve every other detail of the adult character.",
+  "adopted": "character.png",
+  "image": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "sha256": "aed28cc24d4860c9e877b5565f49978e516cc906cce97b1fec2266fdf059c17a"
+  },
+  "rigCalibration": {
+    "method": "macOS Vision landmarks, checked against adopted image",
+    "report": ".runtime/three-characters-20261008/ling-face.json",
+    "speechStrength": 0.16,
+    "blushStrength": 0
+  },
+  "dialoguePolicy": "provided-corpus-only",
+  "limitations": [
+    "Generated adaptation, not pixel-identical face copy",
+    "Only one source outfit adopted; no new separately detachable parts",
+    "No new voice clone; only verified original wording is enforced"
+  ],
+  "initialGeneratedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-bd589479-aa31-46aa-9ffc-66e3bf2ca90a.png",
+  "userOutfitRevision": "More visible legs: above-knee dress, side opening or shortened skirt; original face, upper outfit and accessories preserved",
+  "revisionPrompts": "docs/references/three-characters-20261008/leg-variation.json"
+}

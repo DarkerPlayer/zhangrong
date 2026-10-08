@@ -1,4 +1,8 @@
+import { CUTE_ACTIONS } from "../../server/cute-actions.mjs";
+import { AUTHORED_ACTIONS } from "../../server/authored-actions.mjs";
+
 export const DEFAULT_MOTION_FALLBACKS = Object.freeze({
+  ...Object.fromEntries([...AUTHORED_ACTIONS,...CUTE_ACTIONS].map(({kind}) => [kind, Object.freeze([])])),
   spit: Object.freeze([]),
   walk_confident: Object.freeze(["walk_feminine", "legacy_walk", "idle_neutral"]),
   walk_feminine: Object.freeze(["legacy_walk", "idle_neutral"]),

@@ -37,7 +37,7 @@ test("wardrobe contains legacy shoes and six extracted Fancha parts", () => {
     if (item.kind === "color") assert.match(item.color, /^#[0-9a-f]{6}$/i);
     else assert.match(item.asset, /^\/wardrobe\/items\/.+\.png$/);
   }
-  assert.equal(wardrobeCatalog.getWardrobeItemsBySlot("hair")[0].id, "fancha-sidepart-hair");
+  assert.equal(wardrobeCatalog.getWardrobeItemsBySlot("hair")[0].id, "songyu-halfup-hair");
 });
 
 test("fitted shoe selections resolve actual artwork and never borrow another model's body", () => {
@@ -61,7 +61,7 @@ test("each previously fitted model offers both reusable shoes without borrowing 
   for (const characterId of fittedCharacterIds) {
     const character = getCharacter(characterId);
     assert.equal(character.id, characterId);
-    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => item.slot === "shoes" && !item.sourceLookId)) {
       const looks = wardrobeCatalog.getFittedLooksForItem(character.id, item.id);
       assert.ok(looks.length > 0, `${character.id}:${item.id}`);
       assert.ok(looks.every((look) => look.characterId === character.id));
@@ -72,7 +72,7 @@ test("each previously fitted model offers both reusable shoes without borrowing 
 
 test("every previously processed outfit reports a real fit or an explicit generation issue for each shoe", () => {
   for (const look of LOOKS.filter((item) => fittedCharacterIds.includes(item.characterId))) {
-    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+    for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => item.slot === "shoes" && !item.sourceLookId)) {
       const status = wardrobeCatalog.getWardrobeFitStatus(look.id, item.id);
       assert.ok(["ready", "blocked"].includes(status.status), `${look.id}:${item.id}`);
       if (status.status === "ready") assert.ok(wardrobeCatalog.getWardrobeFit(look.id, item.id));
@@ -82,11 +82,16 @@ test("every previously processed outfit reports a real fit or an explicit genera
   assert.equal(wardrobeCatalog.getWardrobeFitStatus("missing", "unknown").status, "pending");
 });
 
-test("every fitted shoe has a local full-body PNG and its own face rig", async () => {
+test("every fitted item has a local full-body PNG and its own face rig", async () => {
   for (const fit of wardrobeCatalog.WARDROBE_FITS) {
     const image = await readFile(new URL(`../public${fit.asset}`, import.meta.url));
-    assert.equal(image.readUInt32BE(16), 1024);
-    assert.equal(image.readUInt32BE(20), 1536);
+    if (wardrobeCatalog.getWardrobeItem(fit.itemId)?.slot === "hosiery") {
+      assert.ok(image.readUInt32BE(16) >= 512);
+      assert.ok(image.readUInt32BE(20) > image.readUInt32BE(16));
+    } else {
+      assert.equal(image.readUInt32BE(16), 1024);
+      assert.equal(image.readUInt32BE(20), 1536);
+    }
     assert.equal(image[25], 6);
     const rig = JSON.parse(await readFile(new URL(`../public${fit.rig}`, import.meta.url), "utf8"));
     assert.equal(rig.eyes.length, 2);
@@ -111,10 +116,10 @@ test("wardrobe caption stays in a separate layout row instead of covering shoes"
   }
 });
 
-test("wardrobe separates sixteen stable adult appearance models from outfit variants", () => {
-  assert.equal(CHARACTERS.length, 16);
+test("wardrobe separates twenty-three stable adult appearance models from outfit variants", () => {
+  assert.equal(CHARACTERS.length, 23);
   assert.equal(OUTFIT_VARIANTS.length, LOOKS.length);
-  assert.equal(new Set(CHARACTERS.map((item) => item.id)).size, 16);
+  assert.equal(new Set(CHARACTERS.map((item) => item.id)).size, 23);
   assert.ok(CHARACTERS.every((item) => item.age >= 25));
   assert.equal(getCharacterForLook("linwei-red-sole").id, "linwei");
   assert.deepEqual(
@@ -210,7 +215,7 @@ test("Fancha keeps her rose office outfit while her independent safe base is pen
 test("Fancha reports pending shoe fits and never substitutes another character's artwork", () => {
   const look = LOOKS.find((item) => item.id === "fancha-rose-office");
   assert.ok(look);
-  for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => !item.sourceLookId)) {
+  for (const item of wardrobeCatalog.WARDROBE_ITEMS.filter(item => item.slot === "shoes" && !item.sourceLookId)) {
     assert.equal(wardrobeCatalog.getWardrobeFitStatus(look.id, item.id).status, "pending");
     assert.equal(wardrobeCatalog.getWardrobeFit(look.id, item.id), null);
     assert.deepEqual(wardrobeCatalog.getFittedLooksForItem("fancha", item.id), []);

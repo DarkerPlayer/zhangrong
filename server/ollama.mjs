@@ -124,6 +124,7 @@ const fallbackError = (fallback, error) => ({ ...fallback,
 export async function modelReply(input, { signal } = {}) {
   if (signal?.aborted) throw abortError();
   const fallback = offlineReply(input);
+  if (fallback.corpusOnly) return fallback;
   if (deterministic(input, fallback)) return fallback;
   try {
     const body = await chatPayload(input, signal, false);
@@ -141,6 +142,11 @@ export async function modelReply(input, { signal } = {}) {
 export async function modelReplyStream(input, { signal, onDelta = () => {} } = {}) {
   if (signal?.aborted) throw abortError();
   const fallback = offlineReply(input);
+  if (fallback.corpusOnly) {
+    if (fallback.reply) await onDelta(fallback.reply);
+    if (signal?.aborted) throw abortError();
+    return fallback;
+  }
   if (deterministic(input, fallback)) {
     await onDelta(fallback.reply);
     if (signal?.aborted) throw abortError();

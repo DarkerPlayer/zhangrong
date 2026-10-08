@@ -148,6 +148,20 @@ test("full-body fitting keeps opaque art and gesture margins inside small and la
   assert.ok(Number.isFinite(fitGlamModel(0, 0, 0, 0, true, rig).scale));
 });
 
+test("home framing is opt-in and the three leg-focused looks fit their complete artwork", () => {
+  for (const homeFraming of [undefined, null, 'portrait', 'invalid', true]) {
+    assert.equal(normalizeRig({ homeFraming }).homeFraming, 'portrait');
+  }
+  assert.equal(normalizeRig({ homeFraming: 'full-body' }).homeFraming, 'full-body');
+  for (const lookId of ['wen-furen-black-gold', 'ling-yuling-jade-robes', 'mei-ning-teal-attire']) {
+    const rig = normalizeRig(JSON.parse(readFileSync(new URL(`../public/looks/${lookId}/rig.json`, import.meta.url))));
+    assert.equal(rig.homeFraming, 'full-body');
+    const fit = fitGlamModel(700, 790, 1024, 1536, rig.homeFraming === 'full-body', rig);
+    assert.ok(fit.y + rig.bounds.top * 1536 * fit.scale >= 0);
+    assert.ok(fit.y + rig.bounds.bottom * 1536 * fit.scale <= 790, `${lookId} feet must remain inside the home viewport`);
+  }
+});
+
 test("crouch framing reveals the complete pose in a short portrait viewport", () => {
   const width = 270;
   const height = 251;
@@ -359,4 +373,16 @@ test("all authored looks and fitted shoes avoid opaque arm cuts or use one joine
       }
     }
   }
+});
+test("eye axes follow the source head tilt in pixel space and allow per-eye calibration", async () => {
+  const { resolveEyeAxes, normalizeRig } = await import("../src/glam-motion.mjs");
+  assert.equal(typeof resolveEyeAxes, "function");
+  const rig = normalizeRig({ eyes: [{ x: .5, y: .1 }, { x: .55, y: .11 }] });
+  const axes = resolveEyeAxes(rig, 1000, 1500);
+  const slope = .015 / .05;
+  assert.ok(Math.abs(axes[0][1] / axes[0][0] - slope) < 1e-6);
+  assert.deepEqual(axes[0], axes[1]);
+  const custom = normalizeRig({ eyes: [{ angle: -8 }, { angle: 5 }] });
+  const customAxes = resolveEyeAxes(custom, 1000, 1500);
+  assert.ok(customAxes[0][1] < 0 && customAxes[1][1] > 0);
 });

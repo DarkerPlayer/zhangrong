@@ -1,0 +1,234 @@
+{
+  "createdAt": "2026-10-04",
+  "characterId": "wanhong",
+  "lookId": "wanhong-vermilion-robes",
+  "name": "绾红 · 朱绡云袖",
+  "nameStatus": "暂定名称",
+  "method": "built-in ImageGen",
+  "sourceDirectory": "/Users/yunfeikong/Downloads/其他 (1)_完整72张_衣物优先复核_20261004",
+  "references": [
+    {
+      "path": "docs/references/wanhong/underlayer-catalog-20261005.png",
+      "role": "用户第二张产品图上排白色不透明系带三角泳裤为内搭剪裁参考，配色改为朱红；本次仅调整内搭"
+    },
+    {
+      "path": "docs/references/wanhong/reference-primary-20261005.png",
+      "role": "本次脸型与侧目表情、胸前交叠剪裁、分片裙与双侧粉绿腰饰主参考，优先于之前参考"
+    },
+    {
+      "path": "docs/references/wanhong/reference-21.png",
+      "role": "脸型、表情、服装和配饰主参考"
+    },
+    {
+      "path": "docs/references/wanhong/reference-03.png",
+      "role": "站姿与红白衣料辅助参考"
+    }
+  ],
+  "scope": "仅按主来源精修腰间六枚挂饰：独立细珠链挂点、长细颈和小梨形下端、绿色窄带长环；画面左绿粉绿、右绿粉粉。主图与独立腰饰同步更新，保留现有角色ID、姓名映射和衣橱关系。",
+  "prompts": {
+    "hair": "Produce a standalone wearable hairstyle reference extracted/reconstructed from this adult fantasy character. ONLY the dark brown-black half-up high round bun with the long flowing trailing hair, center-part swept side locks, bronze crescent hair ornaments with red details, delicate golden chains draping across bun and down sides. Hair and ornaments form one reusable hairstyle asset. No face, head skin, neck, body, clothing or mannequin. Three quarter front view shaped like a wig with empty transparent face opening, strands natural and realistic, high quality 3D fantasy rendering. Genuine transparent alpha background, centered complete hairstyle, no writing or watermark.",
+    "earrings": "Reconstruct ONLY a matched pair of the delicate pear-shaped pale pearl/clear crystal drop earrings of this reference as a standalone jewelry wardrobe asset. Small silver-gold hooks, slender delicate metal setting, lustrous pale teardrop pendants. Pair shown side by side, product detail view, no hair, skin, ears, head, costume, person or background. High-quality realistic 3D jewelry render, true transparent background, no text or watermark.",
+    "necklace": "Reconstruct ONLY the fine silver-toned long beaded necklace visible around this reference character's neckline as a standalone jewelry asset. Delicate single chain with tiny regularly spaced beads, elegant long U shape hanging naturally. No invented large pendant. No dress, body, skin, mannequin, hair, earrings or other objects. Product detail catalog view, high-quality 3D jewelry rendering, genuine transparent background, no lettering or watermark.",
+    "master": "Use case: precise-object-edit. Image 1 is the EDIT TARGET: the finished full-body adult fantasy woman with coral bikini-cut underlayer. Image 2 is the user's ORIGINAL reference, used ONLY for the six hanging hip ornaments.\nReplace ONLY the small pink-green hanging decorations at both hips of image 1 with a faithful copy of the original-reference ornaments, including their fine chain attachment. Match ONLY the six small dangling hip ornaments in the original mountain reference, not its other clothing or body. They are two groups of THREE individually suspended slender ornaments. Image-left group colors, from left to right: pale yellow-green, soft pink, pale green. Image-right group colors, from left to right: pale green, soft pink, soft pink. These groups are NOT mirrored copies. Every ornament hangs from its own spaced attachment on a hair-thin pale-gold horizontal/very shallow curved beaded waist chain under the hands, not all from one attachment ring. Each has a very long slim continuous neck (about the upper two thirds) widening only near its bottom into a SMALL elongated pear/water-drop bulb, gently tapered tip, subtly uneven hanging lengths. Thin pale leaf-green flat ribbons/long narrow loops descend alongside the narrow necks; the rightmost pink ornament on image-right has a particularly visible green long loop. Small simple attachments, no chunky knots. Pale softly translucent pink-green polished material with restrained highlights, muted saturation. Keep original-reference relative proportions and spacing. No oversized round drops, no bouquet clusters, no big bows, no braided rope, no large metal rings or extra beads. Copy visible ornament details as closely as possible; do not invent ornate jewelry.\nOn the edit target attach the six separate pendants directly below the hands along the hip line above the coral briefs, with original-reference thin chain sections. Keep their scale natural and delicate relative to the hands and thighs. Replace the existing shared green bow clusters; leave the red briefs' own side ties untouched. Preserve the entire existing face, expression, eyes, hair, head, hands, pose, body proportions, coral opaque briefs, crossed red bodice and higher neckline, gold waist belt and CENTRAL gold chain details, necklace, ivory outer robe, long central red skirt panel, drapes, hem, shoes, lighting, framing and genuine alpha transparency. Do not change any garment cut, coverage or any other object. Full body same 1024x1536 composition; no background, text or watermark.\nPrecision note: each pendant body visible from neck top to tiny bottom tip is about 4 to 5 times its widest bulb width, not an extremely long 10:1 needle. The three pendants on each side are closely parallel with slight natural height variation. The original mountain reference takes priority over the existing jewelry. Change only the jewelry as instructed.",
+    "dress": "Use case: precise-object-edit. Image 1 is the existing standalone fantasy dress wardrobe item to update; image 2 shows its new arrangement worn by an adult character. Edit ONLY the garment in image 1: REMOVE the opaque ivory knee-length inner skirt completely. Keep the coral red brocade wrap bodice, pale neckline piping, red waist sash, gold diamond clasp and central gold chain tassels, long narrow red central front panel, long divided side/back skirt panels. The two skirt openings below the waist must now be fully empty transparent space, with no white fabric or body inside. No underwear inside this standalone dress item: the red bikini briefs in image 2 are a DIFFERENT separate garment and should not appear here. Keep the red dress textile, silhouette, folds, lighting and high-quality 3D ghost-mannequin product view of image 1 unchanged. No person, skin, visible mannequin, hip pendants, outer ivory robe or peach scarf. Full garment inside portrait frame, true transparent alpha background, no text or watermark.",
+    "robe": "Extract/reconstruct ONLY the ivory flowing outer robe with peach gauze shoulder scarf seen in the reference as one standalone outerwear garment on genuine transparent background. Ghost mannequin, no person, skin, hands, body, face. Open front, cream silk wide long sleeves, delicate pale blue sleeve edge motif, tiny bronze sleeve fasteners, long softly folded hem and blush peach scarf along front edges. Exclude red inner dress, sash, hair, jewelry. Empty open space inside robe must be transparent. Full item in frame, high quality 3D costume product rendering, no text or watermark.",
+    "masterBase": "Use case: precise-object-edit. Revise the adult woman's fantasy fashion character in image 2, using image 1 for facial likeness and costume colors/accessory craftsmanship. Deliver a complete full-body desktop character asset, centered 1024x1536 portrait, genuine transparent alpha background.\nFACE: match image 1's mature adult face age 28, softly oval with tapered chin, small straight nose, relaxed rose lips, slender natural brows and blue-gray eyes looking gently viewer-left. Same dark high half-up bun and loose side wisps, red-bronze hair ornaments and fine chains, subtle reserved expression and minimal makeup.\nCLOTHING: retain image 2's fully clothed body proportions and opaque coral-vermilion fitted wrap bodice; improve the crossed fabric tailoring and narrow ivory neckline piping toward image 1, with the neckline ending at the upper sternum. Ivory long-sleeved outer robe and blush-peach shoulder drapes. Replace the closed bell-shaped skirt with a straight multi-panel skirt featuring two side openings and a central coral front panel, BUT add a clearly visible opaque ivory inner skirt from waist to just above the knees. This inner skirt must cover the hips, pelvis and upper thighs completely; side openings show the contrasting ivory fabric above knees and lower legs below knees. This is a layered historical fantasy clothing design with conservative coverage.\nACCESSORIES: faithfully include both left and right hip pendant clusters from image 1. Each cluster is three slender glossy pale-green and pale-pink teardrop jade ornaments hung by light green ribbons. Preserve the gold diamond waist clasp; colored pendants must be visible below the relaxed hands. Retain drop earrings, delicate existing necklace, nude natural nails.\nPOSE: calm neutral standing fashion catalog pose, hands lightly together at lower waist, three-quarter head facing viewer-left. Full hair, sleeves, skirt and hem inside frame. Long ivory robe falling at outside of legs, subtle flat ivory shoes under hem. Soft neutral diffuse illumination, polished realistic Chinese fantasy animation render, rich fine textile detail. No mountains, scene, text, number, watermark, extra people, painted backdrop or gradient. Transparent background and natural alpha edges.",
+    "pendants": "Use case: precise-object-edit. Image 1 is the EDIT TARGET: a standalone six-piece hip ornament accessory; image 2 is its original visual reference, use only the small decorations just below the hands. Correct proportions of the accessory in image 1 to match image 2 more closely: shorten the excessively long narrow necks so EACH entire pendant body from its top to bottom tip is about 4.5 to 5 times its widest bulb width (currently too needle-like, about 8 times). Keep a continuous long slim neck smoothly widening into a modest elongated small pear-shaped base and a tiny pointed tip. Reduce the green ribbon loop widths and lengths to fine, narrow, discreet loops alongside the necks, as in image 2, rather than broad long strips. Keep exact colors: left group green/pink/green, right group green/pink/pink. Keep three INDEPENDENT hanging points on each extremely fine curved gold bead chain, two groups in the same order. Left group's rightmost green hangs a little lower; right group's green hangs a little lower. Soft pale translucent colors tending milky near the bottom, restrained reflection. Preserve no person, no skin, no clothing, no mannequin and genuine transparent background. Full six ornaments isolated product view; do not introduce bows, common attachment rings, ropes or additional ornaments.",
+    "briefs": "Use case: product-mockup. Generate a standalone ordinary opaque coral-vermilion bikini bottom, same basic cut as the PLAIN WHITE tie-side bikini bottoms at the upper center-right of image 1. Use only that one plain white swimwear item for construction, not the lace/mesh/thong products elsewhere on this catalogue. Recolor it coral-vermilion to coordinate with image 2's red fantasy dress. Moderately broad triangular front with full opaque front and seat coverage, conventional leg openings, simple narrow straps with tied bows at the left and right sides. Smooth fine satin-like swim fabric with subtle natural folds and neat sewn edges, no sheer material and no exaggerated micro cut. Image 2 shows the intended worn item under the long central dress panel; include only the briefs as an empty garment in this output, no skirt panel, dress, belt, body, hips, skin, mannequin, hands, head, gold jewelry or jade ornaments. Front three-quarter flat product display, single complete garment centered with all ties visible, realistic detailed clothing catalogue rendering, genuine transparent background, no text, no lettering, no watermark."
+  },
+  "originalOutputs": {
+    "master": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-d7dee211-8e15-45ad-add2-17f35707a317.png",
+    "dress": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8078b0f0-8127-4fdd-9d84-c9fc2416c50b.png",
+    "robe": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-a5bfe98f-4942-40b0-b27c-47d78e6dd0cc.png",
+    "hair": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-3eca2d6d-87f2-4b85-a4b7-c14a3ae7843e.png",
+    "earrings": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-afc41f0f-e73e-45df-89d6-e58e35dd5069.png",
+    "necklace": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-5658116f-85c4-46f1-ba5e-c207f69c6703.png",
+    "pendants": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-f5844071-4d9f-4c8e-90d6-b4d7bf32662a.png",
+    "masterBase": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-15b27ff9-360b-4f67-b291-02af0ab75ee9.png",
+    "briefs": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-3547f274-d4b1-4270-bfeb-df52e63b2582.png"
+  },
+  "assets": [
+    {
+      "path": "public/looks/wanhong-vermilion-robes/character.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.5812,
+      "sha256": "64f53af1fe548229a3b215d82b02d71bd75933277ffbb63b52bef23a1dcf6ea2"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-beaded-necklace.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.9509,
+      "sha256": "769ba8dcbe3049fc71166eb6bc57887f7fdbe1ca27b643f91cdd73c7e7da1b83"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-drop-earrings.png",
+      "size": [
+        1247,
+        1261
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.7281,
+      "sha256": "b110fa3f9a8d6e6d9ab17d94e99110a58bbc61a9ec0297783807f4bc59e76c16"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-ivory-robe.png",
+      "size": [
+        1027,
+        1532
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.3895,
+      "sha256": "bcc747b4f20345eaea2143890e70f2b8e15cfde24394ebf76321943bd43097de"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-jade-waist-pendants.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.7602,
+      "sha256": "b89fb9f37760caa6df94926d1cd4dbf8d200ffd72ca63f0c66943360303ec3ce"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-ornamented-hair.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.527,
+      "sha256": "838566b556d0572bd4c6d7e7b1327f6b3f9bda2b6b8771b10b8f09f61a4dd44e"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-vermilion-briefs.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.6937,
+      "sha256": "3be9dd78c2b2f132b3ef2621184cebf8834d4bd0a2d28558eb443d1c50b6dc69"
+    },
+    {
+      "path": "public/wardrobe/items/wanhong-vermilion-dress.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "transparentFraction": 0.6308,
+      "sha256": "564905a7c3a04f7f350e64c27311f5430d8e0c0b0e1486f0aa7d6258b8c1a61e"
+    }
+  ],
+  "rigSha256": "209c5b1fc8ae631c42fa3b9bc56ef0475bf6067d34d8d153e52fb089e418ec31",
+  "updatedAt": "2026-10-05",
+  "differencesFromReference": [
+    "采用主图的挂件已还原六个独立挂点、左右非镜像色序与更细长形状；仍非逐像素一致，左侧被手遮挡的连接结构及材质无法完全确认。",
+    "生成主图额外出现两处较低的红色绑带；最后一轮移除绑带与细修带环的输出被图像工具安全校验拒绝，未采用该轮，保留成功版本。",
+    "独立单品图的透明材质与高光仍是重建结果；未改动角色ID、用户自定义名字或其他角色适配图。"
+  ],
+  "backup": ".runtime/wanhong-pendants-20261005/before/",
+  "referenceAssignment": [
+    {
+      "target": "脸部",
+      "reference": "reference-primary-20261005.png",
+      "details": "柔和椭圆脸、蓝灰眼睛朝画面左侧、克制闭口表情、碎发",
+      "verification": "新图与桌面实际尺寸核对"
+    },
+    {
+      "target": "胸前与裙装",
+      "reference": "reference-primary-20261005.png",
+      "details": "朱红交叠胸前与象牙白滚边；双侧分片和中央长裙片；方形白色内衬已由独立朱红三角内搭替换",
+      "verification": "服装结构与透明边缘检查"
+    },
+    {
+      "target": "腰饰",
+      "reference": "reference-primary-20261005.png",
+      "details": "每侧三枚独立浅金细链挂点；长细颈、小梨形带微尖下端、绿色窄带与长环；左组浅黄绿/粉/浅绿，右组浅绿/粉/粉",
+      "verification": "来源高分辨率独立复核；主图与独立库存图数量、结构、色序对照"
+    },
+    {
+      "target": "内搭",
+      "reference": "underlayer-catalog-20261005.png",
+      "details": "第二张上排不透明系带三角泳裤结构、朱红配色，独立underwear单品",
+      "verification": "主图、独立衣橱图与界面检查"
+    }
+  ],
+  "calibration": {
+    "source": "docs/references/wanhong/landmarks-pendants-20261005.jsonl",
+    "method": "Apple Vision landmarks plus reviewed head/shoulders and current-image skin/lip sampling",
+    "confidence": 1,
+    "boundsAlphaThreshold": 8,
+    "armMobility": 0
+  },
+  "history": [
+    {
+      "revision": "2026-10-05-before-underlayer-replacement",
+      "scope": "按2026-10-05主参考精修脸部与胸前剪裁；双侧分片开衩采用不透明象牙白膝上内衬，保留中央长裙片；两侧各三颗粉绿垂珠；更新裙装单品，增加可复用腰饰。未新增动作或跨角色适配成图。",
+      "prompts": {
+        "master": "Make one small precise jewelry edit to this full-body adult fantasy character image. Keep the entire face, hair, figure, hands, bodice, opaque ivory knee-length inner skirt, split outer panels, outer robe, lighting, composition and transparent alpha absolutely unchanged. There are two visible pale green/pink jade teardrop ornaments at each hip. Change ONLY those small ornament clusters so there are THREE distinct slender teardrop jade pendants on EACH hip, six pendants total, individually hung by light green ribbons in a row, alternating pale green and pale pink. Keep each cluster at the same hip location just below the hands, without covering the central gold decoration. Preserve every other pixel as closely as possible, especially the face and conservative opaque skirt lining. Genuine transparent background.",
+        "dress": "Use case: precise-object-edit. Create a standalone ghost-mannequin wardrobe garment reproducing ONLY the outfit's coral-vermilion wrap dress and its attached opaque ivory above-knee inner skirt from the reference. No person, skin, head, hands, legs or mannequin visible. Preserve the red floral brocade V-neck wrap bodice and crossed lower chest, pale ivory edging, wide red waist sash with gold diamond clasp and central gold chain tassels. Lower dress construction: a long straight red central panel to the floor, two separated side openings revealing the opaque ivory inner skirt which runs to just above the knees. Keep the inner skirt built in as part of this garment. No white outer robe or sleeves, no peach shoulder scarf, no hair, no earrings or necklace, and exclude the separate pink-green hip pendants. Full garment with empty transparent head/arm openings, realistic 3D textile catalogue rendering, centered on true transparent alpha, no text, no shadow backdrop. Match colors and cut of reference exactly."
+      },
+      "originalOutputs": {
+        "master": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-944ee3da-f989-4de1-8b07-b6e725718aff.png",
+        "dress": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-8f9623ff-3ba8-4004-9fae-bf28407a11e4.png"
+      },
+      "verification": {
+        "date": "2026-10-05",
+        "relatedTests": 112,
+        "build": "passed",
+        "assetHashes": "matched",
+        "crossLookItemChecks": 301,
+        "crossCharacterVisualGeneration": false,
+        "desktopPackage": "updated with verified matching assets and catalogs; user names retained",
+        "visualPreview": "same production build in browser; native screenshot tool returned stale pixels",
+        "screenshot": "docs/screenshots/wanhong-refinement-20261005.jpg"
+      },
+      "backup": ".runtime/wanhong-underlayer-20261005/before/"
+    },
+    {
+      "revision": "2026-10-05-before-pendant-fidelity",
+      "scope": "按用户第二张产品图上排不透明系带泳裤结构，将方形象牙白膝上内衬替换为朱红不透明系带三角内搭。保留脸部、外裙、中央裙片与六枚腰饰；裙装单品去内衬，内搭单独加入衣橱，共八件原配。未新增动作或跨角色适配成图。",
+      "prompts": {
+        "master": "Use case: precise-object-edit. Make a localized wardrobe edit of the adult 28-year-old fantasy woman in image 1. Image 2 is a clothing product catalogue: use ONLY the plain OPAQUE white tie-side bikini bottoms in its upper row as the cut/construction reference; recolor that item coral-vermilion to coordinate with the red dress.\nChange ONLY the current box-shaped opaque ivory knee-length lining visible inside the dress slits into ordinary opaque coral-red bikini-cut briefs with full front and seat coverage, moderate-height leg openings, and simple tied sides. This is the same modest coverage as the plain white swimwear bottom product, not any sheer lace, mesh, micro thong or other item on the catalogue. Remove the two rectangular white thigh-length fabric sections entirely. The coral briefs sit under the waist sash and behind the existing central long red front dress panel; the central long skirt panel continues to hang in front exactly as now. The ivory outer robe and long outside skirt folds also stay, now draping over the sides of the legs without that square white inner skirt.\nEverything else must remain unchanged: exact face and calm expression, gaze, hair, bust and bodice, neckline, hands, pose, six pale green/pink hip pendants and their green ribbons, gold waist ornament, outer robe, peach drapes, jewelry, nude nails, long hem and subtle footwear. Same complete full-body neutral standing fashion character, same camera and framing, no erotic pose or anatomical focus. Preserve opaque clothing coverage of intimate anatomy. Retain original image dimensions and genuine transparent alpha background; no scenery, text or watermark. Do not redesign the face or enlarge any body part.",
+        "pendants": "Create ONLY a paired set of small decorative HIP JEWELRY ornaments for a fantasy costume, in a standalone product asset on a genuine transparent background. Match the pale green and pink jade teardrop ornaments and their thin light green ribbons visible below the character's hands in the reference. TWO separate clusters side by side; each cluster contains exactly THREE distinct slender pear/teardrop-shaped jade beads, six pendants total. Long slim upper neck widening to a smooth rounded drop base, lustrous semi-translucent jade/porcelain material, alternating pale green and soft pink, individually attached with clearly visible thin light green knotted silk cords. Each cluster may connect to a tiny gold attachment loop at top. No people, clothing, belt, body, hands, background, stand, writing or watermark. Detailed realistic 3D jewelry product render with ample empty space between the two clusters."
+      },
+      "originalOutputs": {
+        "master": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-a27f3430-da27-4ff0-a3e6-ba9ad7b130d8.png",
+        "pendants": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-ec452ad3-4732-4e61-8685-18a29481102c.png"
+      },
+      "verification": {
+        "date": "2026-10-05",
+        "relatedTests": 114,
+        "build": "passed; existing chunk-size warning",
+        "assetHashes": "all 8 PNGs and rig matched",
+        "crossLookItemChecks": 344,
+        "crossCharacterVisualGeneration": false,
+        "desktopPackage": "updated and restarted; 356 build/catalog files matched; user model names retained",
+        "visualPreview": "same production build in browser; confirmed removed white thigh lining, red tie-side briefs, retained face, outer robe and six pendants; original item shown in underwear inventory",
+        "screenshot": "docs/screenshots/wanhong-underlayer-20261005.jpg"
+      },
+      "backup": ".runtime/wanhong-pendants-20261005/before/"
+    }
+  ],
+  "verification": {
+    "date": "2026-10-05",
+    "relatedTests": 48,
+    "crossCharacterVisualGeneration": false,
+    "assetHashes": "8 assets and rig inspected, generated master and pendants copied unmodified",
+    "visualPreview": "same production build: six independent pendants, correct non-mirrored color order and wardrobe item visible; source and UI compared; native new catalog confirmed",
+    "build": "passed; existing chunk-size warning",
+    "desktopPackage": "restarted; 356 build/catalog files matched; custom name 幕沛灵 retained",
+    "screenshot": "docs/screenshots/wanhong-pendants-20261005.jpg",
+    "diffCheck": "passed"
+  }
+}

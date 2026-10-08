@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "sourceRoot": "/Users/yunfeikong/Codex/抓取神器/data/exports/温夫人_凌玉灵_梅凝_素材整理_2026-10-08",
+  "sourceReferences": [
+    "梅凝/MN02/截图/02_BV1Hpjfz8Ewm_00053.960s.png",
+    "梅凝/MN02/截图/08_BV1KJV9zjEEP_00035.000s.png",
+    "梅凝/MN02/截图/07_BV1KJV9zjETX_00004.120s.png"
+  ],
+  "retainedReferences": [
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-1.png",
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-2.png",
+    "docs/references/three-characters-20261008/mei-ning-teal-attire/source-3.png"
+  ],
+  "referencePriorities": {
+    "face": "source-1.png: exact source expression, proportions, texture and shading; no relighting",
+    "outfit": "source-2.png and source-3.png: supplied outfit construction; unseen detail remains inferred"
+  },
+  "generator": "builtin-imagegen",
+  "generatedOriginal": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-51bac52f-596e-422d-bac6-1caea457f2df.png",
+  "prompt": "Create a single full-body transparent PNG desktop character sprite, portrait 1024x1536, isolated one person only, entire hairstyle and shoes visible, centered with comfortable transparent margins. Faithful extraction/adaptation of supplied fictional animation character, not a redesign. Facial fidelity is highest priority: preserve reference face shape, exact eyes, eyebrows, nose, mouth, expression, skin texture and original face shading. Do not beautify or relight face to harmonize body, do not genericize. Outfit and accessories remain faithful, no additional text, scene, watermark, props unrelated to character, no floor or shadow behind. Natural standing posture, feet aligned to bottom baseline, arms relaxed or softly gathered at waist. Real alpha transparency. Mei Ning, adult fictional woman. Image 1 defines exact face and gentle attentive expression, retain gray-brown eye color and same slightly open mouth, softly angled eyebrows, no facial relighting. Image 2 defines full standing body, dark trousers and tall dark boots, hands gently folded near waist. Image 3 supports texture details only. Preserve paired high looped hair buns with blue and pink flower ornaments, long hanging dark hair, pink floral drop earrings. Teal woven diagonal cross-collar tunic with white/gray inner collar, turquoise irregular stone-like trim around shoulders and chest, asymmetric green ridged leaf-panel mantle on her left shoulder, maroon thin edging and sash, leather forearm wraps, dark fitted trousers and boots. Exactly these colors and construction, not long dress, not revealing redesign.",
+  "adopted": "character.png",
+  "image": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "sha256": "8ad0efd014dd6bdffa2a2ac0cb2fe9e92ddc0a615c1c63c6fdd37892155fddd2"
+  },
+  "rigCalibration": {
+    "method": "macOS Vision landmarks, checked against adopted image",
+    "report": ".runtime/three-characters-20261008/mei-face.json",
+    "speechStrength": 0.16,
+    "blushStrength": 0
+  },
+  "dialoguePolicy": "provided-corpus-only",
+  "limitations": [
+    "Generated adaptation, not pixel-identical face copy",
+    "Only one source outfit adopted; no new separately detachable parts",
+    "No new voice clone; only verified original wording is enforced"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "status": "preview-only",
+  "date": "2026-10-05",
+  "scope": "single standing portrait; production model and action frames unchanged",
+  "candidate": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-4c0b46c3-cc36-4e1c-a75c-24451cfff0dd.png",
+  "references": [
+    {
+      "file": "user-face-primary-forest-20261005.png",
+      "role": "主立绘脸型、侧目眼神、闭口表情"
+    },
+    {
+      "file": "user-face-downcast-20261005.png",
+      "role": "侧面五官核对、后续垂眼表情参考"
+    },
+    {
+      "file": "user-face-frontal-tea-20261005.png",
+      "role": "正面五官比例核对、后续举杯说话表情参考"
+    }
+  ],
+  "prompt": "Use case: compositing / identity-preserve. Make ONE full-body sprite preview by editing image 1, the previously accepted full-body costume.\nThe user has REPLACED the previous face reference with images 2, 3 and 4. Image 2 (woman in foreground left in a forest) is the PRIMARY FACE: use her exact recognizable facial identity, soft narrow oval cheek/jaw outline, subtle sideways attentive gaze, relaxed natural brows, slightly lowered upper eyelids and CLOSED relaxed lips. Keep her original natural face proportions, understated muted rose lips, delicate nose, original rendering texture and soft shadow pattern. Copy this face faithfully, with its slight three-quarter head orientation, rather than inventing a new attractive face. Image 3 (seated woman looking down) corroborates the SAME woman's cheek, nose and lip shape from another angle; its lowered/closed eyelids are only supporting identity context, do not put closed eyes in this standing preview. Image 4 (woman holding tea cup) corroborates the SAME woman's frontal eye spacing, nose width, rounded eye contours and fuller midface; do not copy the open speaking mouth or cup.\nONLY edit the face and adjacent fringe/hairline of image 1, permitting a small head turn to match image 2 faithfully. Preserve the source face's shadows and texture even if they do not match the body lighting. No glamour redesign, relighting, sharpened cat-eyes, nose refinement, artificially thin pointed jaw, extra blush, bigger eyes, or generic porcelain doll face. The final face must read as the exact foreground woman from image 2, supported by images 3 and 4, NOT the previous face in image 1.\nKeep the full body, pose, head position/scale, clothing and sleeve embroidery, skirt, headdress, hair length, all pendants/tassels, hands and silhouette of image 1 unchanged. Blend just the face/neck seam. No other people, source scenery, subtitles or logos. ONE full-body portrait transparent PNG, matching image 1 canvas/framing, with the full crown and dress hem visible. Real alpha=0 outside subject, no background or halo. Fidelity to the specific supplied face/expression takes priority over 3D style uniformity.",
+  "tool": "builtin imagegen"
+}

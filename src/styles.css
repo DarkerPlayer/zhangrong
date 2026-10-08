@@ -2627,6 +2627,8 @@ select {
   bottom: calc(100% + 8px);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   gap: 3px;
   min-width: 142px;
   padding: 6px;
@@ -2637,6 +2639,7 @@ select {
   backdrop-filter: blur(16px);
 }
 .look-action-menu button {
+  flex-shrink: 0;
   justify-content: flex-start;
   width: 100%;
   padding: 10px 11px;
@@ -2781,6 +2784,88 @@ html.pet-transparent #root {
 }
 .pet-topline button:hover {
   background: #e4ceff24;
+}
+.source-dialogue-picker {
+  position: relative;
+  margin: 0 0 14px;
+  color: var(--muted, #8f889d);
+  font-size: 12px;
+}
+.source-dialogue-picker summary {
+  cursor: pointer;
+  padding: 7px 0;
+}
+.source-dialogue-picker ul {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  z-index: 8;
+  list-style: none;
+  padding: 8px 14px;
+  margin: 4px 0;
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid #ab96c34d;
+  border-radius: 12px;
+  background: #262637;
+  color: #ece5f5;
+  box-shadow: 0 8px 26px #0005;
+}
+.source-dialogue-picker li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid #ab96c324;
+}
+.source-dialogue-picker li span {
+  flex: 1;
+  line-height: 1.6;
+}
+.source-dialogue-picker button {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #a889d126;
+  color: inherit;
+}
+.source-dialogue-picker button:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+.source-dialogue-picker > p {
+  line-height: 1.7;
+}
+@media (min-width: 761px) and (min-height: 700px) {
+  .app[data-corpus-only]:not(.compact) .welcome {
+    top: 21%;
+  }
+  .app[data-corpus-only]:not(.compact) .welcome h1 {
+    font-size: 50px;
+    line-height: 1.35;
+    margin: 18px 0 12px;
+  }
+  .app[data-corpus-only]:not(.compact) .day-pill {
+    margin-top: 16px;
+  }
+}
+.pet-corpus-status {
+  position: absolute;
+  top: 48px;
+  left: 8%;
+  right: 8%;
+  z-index: 4;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #211d32de;
+  color: #e4dfee;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+.pet-corpus-status + .pet-bubble {
+  top: 100px;
 }
 .pet-bubble {
   position: absolute;

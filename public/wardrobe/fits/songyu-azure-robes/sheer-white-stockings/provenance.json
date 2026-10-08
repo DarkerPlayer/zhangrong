@@ -1,0 +1,126 @@
+{
+  "createdAt": "2026-10-08",
+  "lookId": "songyu-azure-robes",
+  "itemId": "sheer-white-stockings",
+  "selection": {
+    "hosiery": "sheer-white-stockings"
+  },
+  "method": "source-copy-fully-occluded",
+  "status": "fully-occluded/no-visible-image-change",
+  "sourceImage": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png",
+  "sourceSha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086",
+  "sourceRig": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/rig.json",
+  "sourceRigSha256": "65478db92d79b0d643dbc95d42b194d7ca61e2d336c72efb8e7d9660dfa70125",
+  "prompt": null,
+  "generatedFile": null,
+  "asset": {
+    "path": "public/wardrobe/fits/songyu-azure-robes/sheer-white-stockings/character.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 781763,
+    "opaquePixels": 0,
+    "alphaBounds": [
+      62,
+      0,
+      1010,
+      1536
+    ],
+    "sha256": "ca2216bb5616a4fef61827ac48370288759a57420ff3711d87d731ae37f2f086"
+  },
+  "calibration": {
+    "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010128083709403213,
+          "ry": 0.0019228787326055485,
+          "x": 0.45669772869237424,
+          "y": 0.097675833923488
+        },
+        {
+          "rx": 0.009955024476942631,
+          "ry": 0.0019558440743996375,
+          "x": 0.5047010550130773,
+          "y": 0.09810435985372856
+        }
+      ],
+      "face": {
+        "bottom": 0.15426069498062134,
+        "left": 0.42113420367240906,
+        "right": 0.5394794270396233,
+        "top": 0.0753638818860054
+      },
+      "mouth": {
+        "rx": 0.013300836892340961,
+        "ry": 0.005647773075022733,
+        "x": 0.4802585047871747,
+        "y": 0.1328700313696073
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/songyu-azure-robes/sheer-white-stockings/character.png"
+    },
+    "sourceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010128083709403213,
+          "ry": 0.0019228787326055485,
+          "x": 0.45669772869237424,
+          "y": 0.097675833923488
+        },
+        {
+          "rx": 0.009955024476942631,
+          "ry": 0.0019558440743996375,
+          "x": 0.5047010550130773,
+          "y": 0.09810435985372856
+        }
+      ],
+      "face": {
+        "bottom": 0.15426069498062134,
+        "left": 0.42113420367240906,
+        "right": 0.5394794270396233,
+        "top": 0.0753638818860054
+      },
+      "mouth": {
+        "rx": 0.013300836892340961,
+        "ry": 0.005647773075022733,
+        "x": 0.4802585047871747,
+        "y": 0.1328700313696073
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/looks/songyu-azure-robes/character.png"
+    },
+    "armMobility": 0,
+    "mouthCovered": false,
+    "sourceFace": "not configured in source rig; no face overlay added",
+    "faceRGBMeanAbsoluteDifference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "headAdjustedToNewLandmarks": false,
+    "rigSha256": "65478db92d79b0d643dbc95d42b194d7ca61e2d336c72efb8e7d9660dfa70125"
+  },
+  "validation": {
+    "visualReviewed": true,
+    "preserved": [
+      "face identity and expression",
+      "original clothing coverage and hem",
+      "hair and accessories",
+      "stance and hands",
+      "original footwear",
+      "existing face veil where present"
+    ],
+    "imageEditing": "Original character PNG and rig copied byte-for-byte; no image generation needed because stockings are fully occluded.",
+    "runtime": "Not independently exercised by this asset-only subtask; parent performs integration QA."
+  },
+  "limitations": [
+    "Stockings fully covered by floor-length gown; selection has no visible change."
+  ]
+}

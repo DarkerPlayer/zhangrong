@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { planWardrobeSelection, importedWardrobeSelection } from '../src/wardrobe-selection.mjs';
-import { setLocalWardrobe, resolveWardrobeAppearance } from '../server/wardrobe.mjs';
+import { getEmbeddedWardrobeItems, setLocalWardrobe, resolveWardrobeAppearance } from '../server/wardrobe.mjs';
 import { restoreState } from '../src/state.mjs';
 import { capturePersonaAppearance, switchPersonaAppearance } from '../src/persona-appearance.mjs';
 
@@ -42,6 +42,77 @@ test('source outfit originals restore that slot and malformed item slots cannot 
   assert.deepEqual(original.selection,{});
   assert.equal(planWardrobeSelection({lookId,selection:{},slotId:'watch',itemId:nails}).status,'invalid');
   assert.equal(planWardrobeSelection({lookId,selection:{},slotId:'unknown',itemId:null}).status,'invalid');
+});
+
+test('Wanhong necklace and waist pendants coexist as original accessories', () => {
+  const sourceLookId = 'wanhong-vermilion-robes';
+  const accessories = getEmbeddedWardrobeItems(sourceLookId).filter(item => item.slot === 'accessories');
+  assert.deepEqual(accessories.map(item => item.id).sort(), [
+    'wanhong-beaded-necklace',
+    'wanhong-jade-waist-pendants',
+  ]);
+  const original = resolveWardrobeAppearance(sourceLookId, {});
+  for (const item of accessories) {
+    const result = planWardrobeSelection({lookId:sourceLookId,selection:{},slotId:'accessories',itemId:item.id});
+    assert.equal(result.status,'ready');
+    assert.deepEqual(result.selection,{});
+    assert.equal(result.appearance,original);
+  }
+});
+
+test('unfitted waist pendants replace the requested accessory slot without replacing another character appearance', () => {
+  const necklace = 'wanhong-beaded-necklace';
+  const pendants = 'wanhong-jade-waist-pendants';
+  const currentSelection = {nails,accessories:necklace};
+  setLocalWardrobe({fits:[{
+    lookId,selection:currentSelection,asset:asset('nails-necklace'),rig:rig('nails-necklace'),
+  }]});
+  try {
+    const current = resolveWardrobeAppearance(lookId,currentSelection);
+    const result = planWardrobeSelection({lookId,selection:currentSelection,slotId:'accessories',itemId:pendants});
+    assert.equal(result.status,'pending');
+    assert.deepEqual(result.selection,{nails,accessories:pendants});
+    assert.equal(result.appearance,undefined);
+    assert.deepEqual(currentSelection,{nails,accessories:necklace});
+    assert.equal(resolveWardrobeAppearance(lookId,currentSelection).asset,asset('nails-necklace'));
+    assert.equal(current.characterId,'linwei');
+  } finally {setLocalWardrobe();}
+});
+
+test('Wanhong original underlayer restores only underwear while retaining another fitted slot', () => {
+  const sourceLookId = 'wanhong-vermilion-robes';
+  const briefs = 'wanhong-vermilion-briefs';
+  const original = planWardrobeSelection({lookId:sourceLookId,selection:{},slotId:'underwear',itemId:briefs});
+  assert.equal(original.status,'ready');
+  assert.deepEqual(original.selection,{});
+  assert.equal(original.appearance.asset,'/looks/wanhong-vermilion-robes/character.png');
+  const replacement = 'local-item-replacement-underlayer';
+  setLocalWardrobe({
+    items:[{id:replacement,slot:'underwear',asset:asset('replacement-underlayer')}],
+    fits:[
+      {lookId:sourceLookId,selection:{nails},asset:asset('wanhong-nails'),rig:rig('wanhong-nails')},
+      {lookId:sourceLookId,selection:{underwear:replacement,nails},asset:asset('wanhong-underlayer-nails'),rig:rig('wanhong-underlayer-nails')},
+    ],
+  });
+  try {
+    const result = planWardrobeSelection({lookId:sourceLookId,selection:{underwear:replacement,nails},slotId:'underwear',itemId:briefs});
+    assert.equal(result.status,'ready');
+    assert.deepEqual(result.selection,{nails});
+    assert.equal(result.appearance.asset,asset('wanhong-nails'));
+  } finally {setLocalWardrobe();}
+});
+
+test('unfitted Wanhong underlayer keeps another character appearance and its fitted slots', () => {
+  installFits();
+  try {
+    const currentSelection = {nails,watch};
+    const result = planWardrobeSelection({lookId,selection:currentSelection,slotId:'underwear',itemId:'wanhong-vermilion-briefs'});
+    assert.equal(result.status,'pending');
+    assert.deepEqual(result.selection,{underwear:'wanhong-vermilion-briefs',nails,watch});
+    assert.equal(result.appearance,undefined);
+    assert.deepEqual(currentSelection,{nails,watch});
+    assert.equal(resolveWardrobeAppearance(lookId,currentSelection).asset,asset('nails-watch'));
+  } finally {setLocalWardrobe();}
 });
 
 test('imported combinations and restore-to-original are accepted only when the exact artwork exists', () => {

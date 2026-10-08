@@ -1,0 +1,84 @@
+{
+  "lookId": "wen-furen-black-gold",
+  "itemId": "sheer-black-stockings",
+  "selection": {
+    "hosiery": "sheer-black-stockings"
+  },
+  "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in sheer black nylon tights with a fine, smooth translucent black weave, extending continuously upward underneath the existing skirt and down into the existing shoes. The fabric should follow her exact existing leg contours. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-e2ca75fc-4e5f-42a1-b309-0dcd70eb33fb.png",
+  "references": [
+    "public/looks/wen-furen-black-gold/character.png"
+  ],
+  "provider": "builtin-imagegen",
+  "pixelProcessing": "none; generated PNG copied byte-for-byte",
+  "asset": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/character.png",
+  "rig": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/rig.json",
+  "sourceSha256": "175a8381ddc544dd58a0ace7ddf057b05d72e2729b2da88720266210fbf7e679",
+  "generatedSha256": "4344eb34095bf2613c569b046ede76dcb894f69b14ba000c35fba6908ebfc8aa",
+  "assetSha256": "4344eb34095bf2613c569b046ede76dcb894f69b14ba000c35fba6908ebfc8aa",
+  "rigSha256": "be253a75f9372559665aec8e21daf2581d31e65a29d3c25b83b6b2407aeeb0ed",
+  "faceConfidence": 1,
+  "calibration": {
+    "tool": "Apple Vision via scripts/face-landmarks.swift --full-body",
+    "method": "Every output independently detected. Original head offsets mapped to its new face box; eyes and mouth replaced with output landmarks; colors sampled read-only; alpha bounds measured per output. Original non-coordinate face behavior preserved."
+  },
+  "qa": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaMin": 0,
+    "alphaMax": 254,
+    "fullyTransparentFraction": 0.6127961476643881,
+    "opaqueBoundsPixels": [
+      125,
+      11,
+      876,
+      1505
+    ],
+    "alphaThresholdForRigBounds": 127,
+    "visualReview": {
+      "hosieriesOnBothVisibleLegs": true,
+      "originalSkirtHemAndShoesRetained": true,
+      "facePoseHairAccessoriesRetained": true,
+      "noGarterOrNewAccessories": true,
+      "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+    },
+    "faceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.01072096850919857,
+          "ry": 0.002646738579581198,
+          "x": 0.49685369312516603,
+          "y": 0.09164972261570292
+        },
+        {
+          "rx": 0.009615369068011193,
+          "ry": 0.0021218602691110977,
+          "x": 0.5432553908189119,
+          "y": 0.0980041311182831
+        }
+      ],
+      "face": {
+        "bottom": 0.15372520685195923,
+        "left": 0.4554702341556549,
+        "right": 0.5771582946181297,
+        "top": 0.07259983569383621
+      },
+      "mouth": {
+        "rx": 0.015344387980750773,
+        "ry": 0.0050477904167458565,
+        "x": 0.5109919708113281,
+        "y": 0.13007770013784592
+      },
+      "path": "public/wardrobe/fits/wen-furen-black-gold/sheer-black-stockings/character.png"
+    },
+    "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+    "preservedRigSettings": [
+      "armMobility",
+      "mouthCovered",
+      "expression"
+    ],
+    "runtimePreview": "pending parent integration"
+  }
+}

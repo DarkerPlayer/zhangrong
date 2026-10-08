@@ -1,0 +1,84 @@
+{
+  "lookId": "ling-yuling-jade-robes",
+  "itemId": "black-fishnet-stockings",
+  "selection": {
+    "hosiery": "black-fishnet-stockings"
+  },
+  "prompt": "Use case: identity-preserve. Edit the supplied image of the existing adult woman as a full-body wardrobe sprite. Change only the visible bare legs: dress both legs in conventional black small-diamond fishnet fashion tights, a neat fine regular diamond mesh following her exact leg contours, continuously extending upward underneath the existing skirt and down into her existing shoes. Keep the face, facial proportions, expression, original facial lighting, hairstyle, pose, hands, body shape, upper clothing, complete skirt shape and hem length, ornaments and shoes exactly as in the input. Do not redesign or beautify the face. No garter straps or exposed stocking tops, no extra accessories, no other clothing changes. Keep the complete head-to-toe figure at the same scale and location and preserve fine hair and garment edges. Output one 1024x1536 PNG with genuinely transparent alpha background; remove any backdrop or ambient background halo, no checkerboard pixels, no cast shadow, no text. Input image is the sole edit target and identity reference.",
+  "generatedSource": "/Users/yunfeikong/.codex/generated_images/01a11960-59c5-7102-b1e6-27fae2651cb1/exec-46ec0925-6f15-43c2-a2fc-236dc5fa0d3f.png",
+  "references": [
+    "public/looks/ling-yuling-jade-robes/character.png"
+  ],
+  "provider": "builtin-imagegen",
+  "pixelProcessing": "none; generated PNG copied byte-for-byte",
+  "asset": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/character.png",
+  "rig": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/rig.json",
+  "sourceSha256": "aed28cc24d4860c9e877b5565f49978e516cc906cce97b1fec2266fdf059c17a",
+  "generatedSha256": "51673bce7a62eb7e30156d918ba95fc10a8ace8b9ae41269eec994570e4a1c3f",
+  "assetSha256": "51673bce7a62eb7e30156d918ba95fc10a8ace8b9ae41269eec994570e4a1c3f",
+  "rigSha256": "5dca42bc8c1d9ddc4b6c9b1972e2cbf5dad978603d8b178061bb9bb9706e8121",
+  "faceConfidence": 1,
+  "calibration": {
+    "tool": "Apple Vision via scripts/face-landmarks.swift --full-body",
+    "method": "Every output independently detected. Original head offsets mapped to its new face box; eyes and mouth replaced with output landmarks; colors sampled read-only; alpha bounds measured per output. Original non-coordinate face behavior preserved."
+  },
+  "qa": {
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "alphaMin": 0,
+    "alphaMax": 254,
+    "fullyTransparentFraction": 0.7039769490559896,
+    "opaqueBoundsPixels": [
+      285,
+      22,
+      752,
+      1505
+    ],
+    "alphaThresholdForRigBounds": 127,
+    "visualReview": {
+      "hosieriesOnBothVisibleLegs": true,
+      "originalSkirtHemAndShoesRetained": true,
+      "facePoseHairAccessoriesRetained": true,
+      "noGarterOrNewAccessories": true,
+      "note": "Vision and image review confirm close preservation; generated edits are not asserted pixel-identical."
+    },
+    "faceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010491777701048033,
+          "ry": 0.0022995684298097174,
+          "x": 0.5174331173139501,
+          "y": 0.08587520494660694
+        },
+        {
+          "rx": 0.00804848690726434,
+          "ry": 0.002139876307895028,
+          "x": 0.558330288826598,
+          "y": 0.08688658838539998
+        }
+      ],
+      "face": {
+        "bottom": 0.143157958984375,
+        "left": 0.47766464948654175,
+        "right": 0.595581516623497,
+        "top": 0.06454671174287796
+      },
+      "mouth": {
+        "rx": 0.013765467853973368,
+        "ry": 0.005259197278780492,
+        "x": 0.537282857632013,
+        "y": 0.12017708878204675
+      },
+      "path": "public/wardrobe/fits/ling-yuling-jade-robes/black-fishnet-stockings/character.png"
+    },
+    "shoulders": "Reviewed against original: unchanged pose, retained original shoulder anchors",
+    "preservedRigSettings": [
+      "armMobility",
+      "mouthCovered",
+      "expression"
+    ],
+    "runtimePreview": "pending parent integration"
+  }
+}

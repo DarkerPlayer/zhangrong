@@ -6,6 +6,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { resolveWardrobeAppearance } from "../server/wardrobe.mjs";
+import { normalizeRig, fitGlamModel } from "../src/glam-motion.mjs";
 
 test("same-character shoe swaps create a fresh canvas rather than reusing a destroyed WebGL context", async () => {
   const dom = new JSDOM("<html><body></body></html>", { url: "http://localhost:4317" });
@@ -48,13 +49,18 @@ test("same-character shoe swaps create a fresh canvas rather than reusing a dest
   }
 });
 
-test("connected artwork renders once with an intact body while facial and ambient motion run", async () => {
+for (const { mouthCovered, homeFraming } of [{ mouthCovered: false }, { mouthCovered: true }, { mouthCovered: false, homeFraming: 'full-body' }]) {
+test(`connected artwork preserves body and face motion (veil: ${mouthCovered}, home: ${homeFraming || 'default'})`, async () => {
   const dom = new JSDOM("<html><body></body></html>", { url: "http://localhost:4317" });
   for (const name of ["window", "document", "navigator", "HTMLElement"]) {
     Object.defineProperty(globalThis, name, { value: dom.window[name], configurable: true });
   }
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   const rig = JSON.parse(await readFile("public/looks/linwei-white-bikini/rig.json", "utf8"));
+  rig.mouthCovered = mouthCovered;
+  if (homeFraming) rig.homeFraming = homeFraming;
+  Object.defineProperty(dom.window.HTMLElement.prototype, 'clientWidth', { configurable: true, get: () => 700 });
+  Object.defineProperty(dom.window.HTMLElement.prototype, 'clientHeight', { configurable: true, get: () => 790 });
   globalThis.fetch = async () => ({ ok: true, blob: async () => new Blob(), json: async () => rig });
   globalThis.Image = class { naturalWidth = 128; naturalHeight = 192; async decode() {} };
   globalThis.ResizeObserver = class { observe() {} disconnect() {} };
@@ -113,6 +119,8 @@ test("connected artwork renders once with an intact body while facial and ambien
     plugins: [{ name: "gpu-boundary", setup(b) {
       b.onResolve({ filter: /^(pixi\.js|@pixi\/unsafe-eval)$/ }, () => ({ path: "gpu", namespace: "test" }));
       b.onLoad({ filter: /.*/, namespace: "test" }, () => ({ contents: gpu, loader: "js" }));
+      b.onResolve({ filter: /audio\.js$/ }, () => ({path: "audio", namespace: "speech"}));
+      b.onLoad({ filter: /.*/, namespace: "speech" }, () => ({contents: "export const getSpeechLevel = () => 0.8;", loader: "js"}));
     } }],
   });
   const React = await import("react");
@@ -125,6 +133,18 @@ test("connected artwork renders once with an intact body while facial and ambien
     }));
     await waitFor(() => assert.equal(ui.container.querySelector("canvas").dataset.ready, "true"));
     const app = globalThis.__glamRenderApps[0];
+    const initialCanvas = ui.container.querySelector('canvas');
+    const expected = fitGlamModel(700, 790, 128, 192, homeFraming === 'full-body', normalizeRig(rig));
+    assert.equal(initialCanvas.dataset.framing, homeFraming || 'portrait');
+    assert.equal(app.stage.children[0].scale.y, expected.scale);
+    assert.equal(ui.container.querySelector('.glam-pet').classList.contains('pet-mode'), false, 'home full-body framing must not enable desktop pet mode');
+    ui.rerender(React.createElement(GlamPet, { lookId: appearance.id, appearance, action: { kind: 'wave', nonce: 1 }, petMode: true }));
+    assert.equal(initialCanvas.dataset.framing, 'full-body');
+    assert.equal(app.stage.children[0].scale.y, fitGlamModel(700, 790, 128, 192, true, normalizeRig(rig)).scale);
+    ui.rerender(React.createElement(GlamPet, { lookId: appearance.id, appearance, action: { kind: 'wave', nonce: 1 }, petMode: false }));
+    assert.equal(ui.container.querySelector('canvas'), initialCanvas);
+    assert.equal(initialCanvas.dataset.framing, homeFraming || 'portrait');
+    assert.equal(app.stage.children[0].scale.y, expected.scale);
     for (let i = 0; i < 65; i++) app.tick();
     const canvas = ui.container.querySelector("canvas");
     const [body, arm] = app.stage.children;
@@ -133,6 +153,14 @@ test("connected artwork renders once with an intact body while facial and ambien
     assert.equal(canvas.dataset.armLayerMode, "joined-body");
     assert.equal(canvas.dataset.armAngle, "0.000");
     assert.ok(body.material.uniforms.uBlink > 0.9);
+    if (mouthCovered) {
+      assert.equal(body.material.uniforms.uMouthOpen, 0, "speech must not distort the veil");
+      assert.equal(body.material.uniforms.uBlush, 0, "blush must not repaint the veil");
+    } else {
+      assert.ok(body.material.uniforms.uMouthOpen > 0.1 && body.material.uniforms.uMouthOpen <= 0.175, "speech preserves the reference mouth proportions with a small response");
+    }
+    assert.equal(body.material.uniforms.uSmile, 0, "generic smile colouring must not repaint the reference face");
+    assert.equal(body.material.uniforms.uBlush, 0, "generic blush must not repaint source skin and shading");
     assert.ok(Math.abs(Number(canvas.dataset.breath)) > 0.001);
     assert.notEqual(body.geometry.buffer.data[0], 64, "the head still moves");
   } finally {
@@ -142,3 +170,5 @@ test("connected artwork renders once with an intact body while facial and ambien
     await rm(temporary, { recursive: true, force: true });
   }
 });
+
+}

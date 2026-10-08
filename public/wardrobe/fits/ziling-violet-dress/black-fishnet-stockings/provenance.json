@@ -1,0 +1,126 @@
+{
+  "createdAt": "2026-10-08",
+  "lookId": "ziling-violet-dress",
+  "itemId": "black-fishnet-stockings",
+  "selection": {
+    "hosiery": "black-fishnet-stockings"
+  },
+  "method": "built-in ImageGen",
+  "status": "fitted",
+  "sourceImage": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png",
+  "sourceSha256": "74c9fcbd04d8886de9e30962057ac2c89e9a947b74ff611f9e2b923bcb762b0f",
+  "sourceRig": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/rig.json",
+  "sourceRigSha256": "eb272a08ceb0491ca562da51b0ec17d0315309a7ac27d0dc2c20b1103a9d034f",
+  "prompt": "Use case: identity-preserve. Asset type: full-body character wardrobe fitting on a real transparent RGBA background. Edit the supplied full-body character image only. Add black hosiery made of a fine evenly spaced small diamond fishnet pattern over every currently exposed part of the legs. Keep mesh thin, regular and following leg curvature.\nKeep the exact adult face, purple eyes and composed closed-mouth expression, gold hair crown and long black hair, purple layered long dress and gold jewelry. Hosiery appears only through the EXISTING skirt slit. Keep the original ornate purple/gold footwear and all leg ornaments on top of the hosiery. Do not widen or shorten the slit.\nLock identity and every facial detail: same eyes, eyelids, brows, nose, lips, expression, face shape, skin color and existing facial shading. Do not beautify, relight, restyle or redraw the face. Keep the same adult body proportions, stance, hand poses and nails, hair, accessories, original clothing coverage and footwear. This is an ordinary fashion hosiery addition to an existing clothed character, no new exposure. Upper body remains unchanged. Match the existing illustration rendering. Preserve exact full-body composition, camera, scale, subject position, all head-to-toe and fabric extents on the original 1024x1536 portrait canvas. Transparent background, no background scene, gradient, glow, floor, shadow plane, captions, watermark or checkerboard baked into the pixels. Hosiery top edge stays hidden under the clothing; no garter belt, no extra accessories. Produce one full-body image.",
+  "generatedFile": "/Users/yunfeikong/.codex/generated_images/01a11963-236b-7401-9040-ca9d56bef292/exec-a225dd5c-9323-4f74-8dee-d214edfe352a.png",
+  "asset": {
+    "path": "public/wardrobe/fits/ziling-violet-dress/black-fishnet-stockings/character.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      254
+    ],
+    "transparentPixels": 908339,
+    "opaquePixels": 0,
+    "alphaBounds": [
+      39,
+      0,
+      1008,
+      1536
+    ],
+    "sha256": "d0a9edb7364577944cfceec6622c24543e3e6a0b128beccb93261c6715881173"
+  },
+  "calibration": {
+    "method": "independent Vision face landmarks plus full-body visual comparison; existing shoulders retained after visual check",
+    "landmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010809059875893645,
+          "ry": 0.0025649505685265694,
+          "x": 0.4904350910509434,
+          "y": 0.09791976489940168
+        },
+        {
+          "rx": 0.009807783395405778,
+          "ry": 0.0026700706146343123,
+          "x": 0.5380154573365878,
+          "y": 0.09720494367173416
+        }
+      ],
+      "face": {
+        "bottom": 0.15166383981704712,
+        "left": 0.458684504032135,
+        "right": 0.571110188961029,
+        "top": 0.07671338319778442
+      },
+      "mouth": {
+        "rx": 0.015547386830867538,
+        "ry": 0.0038894746530271362,
+        "x": 0.5148047507933171,
+        "y": 0.12916170964117946
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/wardrobe/fits/ziling-violet-dress/black-fishnet-stockings/character.png"
+    },
+    "sourceLandmarks": {
+      "confidence": 1,
+      "eyes": [
+        {
+          "rx": 0.010972565529464795,
+          "ry": 0.0026011396765861505,
+          "x": 0.4905547022024659,
+          "y": 0.09803977501854888
+        },
+        {
+          "rx": 0.00996926796462505,
+          "ry": 0.0027285438284385677,
+          "x": 0.5383785224994448,
+          "y": 0.09736029368859933
+        }
+      ],
+      "face": {
+        "bottom": 0.15187746286392212,
+        "left": 0.45824921131134033,
+        "right": 0.5711923688650131,
+        "top": 0.07658202201128006
+      },
+      "mouth": {
+        "rx": 0.015511291165943852,
+        "ry": 0.003928252981506397,
+        "x": 0.5146179058982794,
+        "y": 0.12951888187689115
+      },
+      "path": "/Users/yunfeikong/Codex/女友/public/looks/ziling-violet-dress/character.png"
+    },
+    "armMobility": 0,
+    "mouthCovered": false,
+    "sourceFace": "not configured in source rig; no face overlay added",
+    "faceRGBMeanAbsoluteDifference": [
+      11.25232383808096,
+      9.534857571214392,
+      9.067391304347826
+    ],
+    "headAdjustedToNewLandmarks": true,
+    "rigSha256": "105b54cea432ed4e01078f3f94563490fa0bf8d1bdebfd8651b2b21350a187a0"
+  },
+  "validation": {
+    "visualReviewed": true,
+    "preserved": [
+      "face identity and expression",
+      "original clothing coverage and hem",
+      "hair and accessories",
+      "stance and hands",
+      "original footwear",
+      "existing face veil where present"
+    ],
+    "imageEditing": "Built-in ImageGen only; PNG copied without pixel post-processing.",
+    "runtime": "Not independently exercised by this asset-only subtask; parent performs integration QA."
+  },
+  "limitations": [
+    "Generated edits preserve reference likeness but do not claim pixel-identical face reproduction."
+  ]
+}

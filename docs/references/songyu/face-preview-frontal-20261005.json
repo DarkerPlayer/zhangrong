@@ -1,0 +1,12 @@
+{
+  "status": "accepted-and-adopted",
+  "date": "2026-10-05",
+  "primaryReference": "user-selected-frontal-primary-20261005.png",
+  "referenceRole": "用户最新指定的正脸；五官、脸型、眼神、微张嘴表情及原有阴影均以此为准，替代此前森林侧目主参考",
+  "candidate": "/Users/yunfeikong/.codex/generated_images/01a0ff71-5f99-78c1-94b8-c14abfc003a5/exec-9a1dee49-c25a-46dc-bb2f-6451a9137af6.png",
+  "productionAssetsChanged": true,
+  "prompt": "Use case: compositing / identity-preserve.\nImage 1 is the current full-body sprite to edit. Image 2 is the user's newly selected SINGLE authoritative face source, superseding all previous face references.\nReplace ONLY the face/head orientation of image 1 with the central foreground woman's FRONT-FACING face from image 2. Faithfully reproduce her actual face and expression: frontal oval face, both eyes visible, relaxed slightly lowered upper eyelids, gaze toward viewer with the subtle iris direction of the source, natural gently arched eyebrows, soft fuller midface, small nose, and small OPEN lips caught mid-speech exactly as in image 2. Preserve the mouth opening rather than closing it or turning it into a smile. Reproduce her original forehead, hairline and subtle asymmetries, exact facial proportions and original source shadows/skin shading. Treat this as a literal face transplant, not a beauty redesign. Do not impose generic photoreal model or stylized doll features. Fidelity to the source face takes priority over harmonizing lighting with the body.\nRemove the sideways/three-quarter face of image 1: the face should face the viewer as in image 2. Head center, scale and height stay appropriate to the same body, with a naturally connected neck. Only blend the outer face/hairline and neck junction; avoid relighting or redrawing central features.\nKeep image 1's body, standing pose, arms, hands, dress, lace sleeves, embroidered front skirt, blue wrap belt, jade pendant, metal ring, tassel, crown and long hair silhouette unchanged. Do not transfer the teacup, raised hands, seated pose, scenery, other woman, subtitles or logos from image 2.\nOutput ONE full-body sprite, same framing and portrait dimensions as image 1, genuine transparent alpha=0 background, full crown and dress hem visible, no background glow, no text, no sheet or inset.",
+  "tool": "builtin imagegen",
+  "finalPath": "public/looks/songyu-azure-robes/character.png",
+  "rigPath": "public/looks/songyu-azure-robes/rig.json"
+}

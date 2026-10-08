@@ -21,9 +21,18 @@ async function fixture(t, mode = 'success') {
     import path from 'node:path';
     const request = JSON.parse(await readFile(process.argv[process.argv.indexOf('--request') + 1], 'utf8'));
     await writeFile(path.join(request.outputDirectory, 'request-seen.json'), JSON.stringify({ request, offline: process.env.HF_HUB_OFFLINE }));
+    if (${JSON.stringify(mode)} === 'wait') {
+      // Expose the valid create-before-write interval deterministically: file
+      // existence alone must never be mistaken for a ready generation worker.
+      await writeFile(path.join(request.outputDirectory, 'worker.pid'), '');
+      await new Promise(resolve => setTimeout(resolve, 40));
+    }
     await writeFile(path.join(request.outputDirectory, 'worker.pid'), String(process.pid));
     await writeFile(path.join(request.outputDirectory, 'reference-0.png'), 'temporary reference');
-    if (${JSON.stringify(mode)} === 'wait') { setInterval(() => {}, 1000); }
+    if (${JSON.stringify(mode)} === 'wait') {
+      console.log(JSON.stringify({ type: 'progress', phase: 'fixture-ready', progress: 0 }));
+      setInterval(() => {}, 1000);
+    }
     else if (${JSON.stringify(mode)} === 'error') { process.stderr.write('Face could not be detected.'); process.exit(7); }
     else {
       console.log(JSON.stringify({ type: 'progress', phase: 'denoise', progress: 50, message: 'Step 2/4' }));
@@ -95,17 +104,30 @@ test('simultaneous generations allocate only one worker', async (t) => {
 test('cancellation stops the generation process and releases the serialization lock', async (t) => {
   const { runtime, reference, outputDirectory } = await fixture(t, 'wait');
   const controller = new AbortController();
-  const pending = runtime.generate({ references: [reference], prompt: 'x', outputDirectory, signal: controller.signal });
-  let pid;
-  for (let attempt = 0; attempt < 100; attempt++) {
-    try { pid = Number(await readFile(path.join(outputDirectory, 'worker.pid'), 'utf8')); break; } catch {}
-    await new Promise((resolve) => setTimeout(resolve, 10));
+  let markReady, deadline;
+  const ready = new Promise(resolve => { markReady = resolve; });
+  const pending = runtime.generate({ references: [reference], prompt: 'x', outputDirectory, signal: controller.signal,
+    onProgress: ({ phase }) => { if (phase === 'fixture-ready') markReady(); },
+  });
+  try {
+    await Promise.race([
+      ready,
+      pending.then(() => { throw new Error('Waiting worker exited before reporting readiness'); }),
+      new Promise((_, reject) => { deadline = setTimeout(() => reject(new Error('Worker did not report readiness within 5 seconds')), 5000); }),
+    ]);
+    clearTimeout(deadline);
+    const pid = Number(await readFile(path.join(outputDirectory, 'worker.pid'), 'utf8'));
+    assert.ok(Number.isInteger(pid) && pid > 0, 'worker reported a valid PID after initialization');
+    await assert.rejects(runtime.generate({ references: [reference], prompt: 'x', outputDirectory }), /正在|busy/i);
+    controller.abort();
+    await assert.rejects(pending, { name: 'AbortError' });
+    assert.throws(() => process.kill(pid, 0), { code: 'ESRCH' });
+    await assert.rejects(access(path.join(outputDirectory, 'reference-0.png')));
+    assert.equal((await runtime.info()).state, 'ready');
+  } finally {
+    // Even an assertion failure must reap the worker before fixture removal.
+    clearTimeout(deadline);
+    controller.abort();
+    await pending.catch(() => {});
   }
-  assert.ok(pid, 'worker started');
-  await assert.rejects(runtime.generate({ references: [reference], prompt: 'x', outputDirectory }), /正在|busy/i);
-  controller.abort();
-  await assert.rejects(pending, { name: 'AbortError' });
-  assert.throws(() => process.kill(pid, 0), { code: 'ESRCH' });
-  await assert.rejects(access(path.join(outputDirectory, 'reference-0.png')));
-  assert.equal((await runtime.info()).state, 'ready');
 });

@@ -2,7 +2,8 @@ const aborted = () => new DOMException("Action loading cancelled", "AbortError")
 
 /** One decoded action group per character, retained briefly between uses. */
 export function createGlamActionResources({
-  actions = {}, loadFrame, releaseFrame, onRelease = () => {}, idleMs = 30000,
+  actions = {}, loadFrame, releaseFrame, borrowFrame = () => null,
+  onRelease = () => {}, idleMs = 30000,
 }) {
   let current = null;
   let disposed = false;
@@ -15,7 +16,8 @@ export function createGlamActionResources({
     record.controller.abort();
     // Detach sampler references before destroying any GPU texture.
     onRelease(record.kind);
-    for (const frame of record.frames) if (frame) releaseFrame(frame);
+    for (const frame of new Set(record.frames)) if (record.owned.has(frame)) releaseFrame(frame);
+    record.owned.clear();
     record.frames.length = 0;
   }
 
@@ -35,23 +37,34 @@ export function createGlamActionResources({
       release(current);
       const sources = actions[kind];
       if (!Array.isArray(sources) || !sources.length) return Promise.resolve([]);
-      const record = { kind, frames: [], controller: new AbortController(), ready: false, active: false };
+      const record = { kind, frames: [], owned: new Set(), controller: new AbortController(), ready: false, active: false };
       current = record;
+      // Prepare/recover often use the same resting portrait. Keep sequence
+      // indices intact without decoding duplicate pixels or owning its texture.
+      const unique = new Map();
+      sources.forEach((source, index) => {
+        const key = source?.src ?? source;
+        if (!unique.has(key)) unique.set(key, { source, indices: [] });
+        unique.get(key).indices.push(index);
+      });
+      const tasks = [...unique.values()];
       let cursor = 0;
       const worker = async () => {
-        while (cursor < sources.length) {
+        while (cursor < tasks.length) {
           if (record.controller.signal.aborted) throw aborted();
-          const index = cursor++;
-          const frame = await loadFrame(sources[index], record.controller.signal);
+          const { source, indices } = tasks[cursor++];
+          const borrowed = borrowFrame(source);
+          const frame = borrowed || await loadFrame(source, record.controller.signal);
           if (disposed || current !== record || record.controller.signal.aborted) {
-            releaseFrame(frame);
+            if (!borrowed) releaseFrame(frame);
             throw aborted();
           }
-          record.frames[index] = frame;
+          if (!borrowed) record.owned.add(frame);
+          for (const index of indices) record.frames[index] = frame;
         }
       };
       // Bound fetch/decode concurrency instead of decoding every pose together.
-      record.promise = Promise.all(Array.from({ length: Math.min(2, sources.length) }, worker))
+      record.promise = Promise.all(Array.from({ length: Math.min(2, tasks.length) }, worker))
         .then(() => {
           if (disposed || current !== record) throw aborted();
           record.ready = true;
@@ -64,6 +77,7 @@ export function createGlamActionResources({
     cancelPending() {
       if (current && !current.ready) release(current);
     },
+    clear() { release(current); },
     setActive(kind) {
       if (!current) return;
       current.active = current.kind === kind;
